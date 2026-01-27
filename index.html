@@ -13,22 +13,37 @@
     --primary-blue: #0a3a6a; 
     --accent-yellow: #ffcc00; 
     --bg: #000000; 
-    --container-bg: #121212; 
+    --container-bg: rgba(18, 18, 18, 0.95); 
     --input-bg: #1e1e1e;
     --text: #ffffff;
     --text-dim: #bbbbbb;
     --border: #333333;
+    --glow: rgba(255, 204, 0, 0.15);
+  }
+
+  /* Smooth fade-in for the whole page */
+  @keyframes fadeInPage {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Shimmer effect for the submit button */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
 
   body { 
-    font-family: system-ui, sans-serif; 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
     background-color: var(--bg); 
+    background-image: radial-gradient(circle at top right, #111, #000);
     color: var(--text);
     margin: 0; 
     display: flex; 
     justify-content: center; 
     padding: 20px; 
     box-sizing: border-box; 
+    min-height: 100vh;
   }
 
   .container { 
@@ -36,83 +51,139 @@
     width: 100%; 
     max-width: 500px; 
     padding: 30px; 
-    border-radius: 12px; 
-    box-shadow: 0 4px 30px rgba(0,0,0,0.5); 
+    border-radius: 20px; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px var(--glow); 
     border: 1px solid var(--border);
+    animation: fadeInPage 0.6s ease-out;
+    backdrop-filter: blur(10px);
   }
 
   .header-wrap { 
     display: flex; 
+    flex-direction: column;
     align-items: center; 
     justify-content: center; 
     gap: 12px; 
-    margin-bottom: 25px; 
+    margin-bottom: 35px; 
   }
 
-  .header-wrap img { width: 45px; height: 45px; object-fit: contain; }
+  .header-wrap img { 
+    width: 70px; 
+    height: 70px; 
+    object-fit: contain; 
+    filter: drop-shadow(0 0 10px var(--accent-yellow));
+  }
   
   h1 { 
     color: var(--accent-yellow); 
     margin: 0; 
-    font-size: 22px; 
-    font-weight: 800; 
+    font-size: 24px; 
+    font-weight: 900; 
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
   }
   
   label { 
     display: block; 
-    font-weight: 600; 
+    font-weight: 700; 
     margin-bottom: 8px; 
-    color: var(--text-dim); 
-    font-size: 14px;
+    color: var(--accent-yellow); 
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .required::after { content: " *"; color: #ff4444; }
   
   input, textarea, select { 
     width: 100%; 
-    padding: 12px; 
-    margin-bottom: 20px; 
+    padding: 14px; 
+    margin-bottom: 22px; 
     border: 1px solid var(--border); 
-    border-radius: 8px; 
+    border-radius: 10px; 
     font-size: 16px; 
     box-sizing: border-box; 
     background-color: var(--input-bg);
     color: white;
+    transition: all 0.3s ease;
   }
 
   input:focus, textarea:focus {
     border-color: var(--accent-yellow);
+    background-color: #252525;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
     outline: none;
   }
   
-  .dim-row { display: flex; gap: 10px; margin-bottom: 20px; }
+  .dim-row { display: flex; gap: 10px; margin-bottom: 22px; }
   .dim-field { flex: 1; }
-  .dim-field label { font-size: 11px; text-transform: uppercase; color: #888; }
-  .dim-field input { margin-bottom: 0; }
+  .dim-field label { font-size: 10px; color: #888; }
+  .dim-field input { margin-bottom: 0; text-align: center; }
 
-  .radio-group { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-  .radio-option { display: flex; align-items: center; font-weight: normal; cursor: pointer; color: var(--text); }
-  .radio-option input { width: auto; margin-bottom: 0; margin-right: 8px; }
+  .radio-group { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 25px; 
+    flex-wrap: wrap; 
+  }
+  
+  .radio-option { 
+    flex: 1;
+    min-width: 100px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer; 
+    color: var(--text-dim); 
+    transition: 0.2s;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .radio-option input { display: none; }
+  
+  .radio-option:has(input:checked) {
+    background: var(--accent-yellow);
+    color: #000;
+    border-color: var(--accent-yellow);
+  }
 
   button[type="submit"] { 
     width: 100%; 
-    background: var(--accent-yellow); 
+    background: linear-gradient(90deg, #ffcc00, #ffeb3b, #ffcc00);
+    background-size: 200% auto;
     color: #000; 
     border: none; 
-    padding: 18px; 
-    border-radius: 8px; 
+    padding: 20px; 
+    border-radius: 12px; 
     font-size: 18px; 
     font-weight: 900; 
     text-transform: uppercase; 
     cursor: pointer; 
-    transition: transform 0.1s;
+    box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+    transition: 0.3s;
+    animation: shimmer 3s infinite linear;
   }
 
-  button[type="submit"]:active { transform: scale(0.98); }
+  button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
+  }
 
-  #thanksMessage p { color: #00ff41; }
+  button[type="submit"]:active { transform: scale(0.97); }
+
+  #thanksMessage {
+    animation: fadeInPage 0.5s ease;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 </style>
 </head>
 <body>
@@ -124,14 +195,19 @@
   </div>
 
   <form id="pickupForm">
-    <label>Name (Optional)</label>
-    <input type="text" name="name" placeholder="Contact Name">
+    <label>Contact Name (Optional)</label>
+    <input type="text" name="name" placeholder="Who are we looking for?">
 
-    <label class="required">Email</label>
-    <input type="email" name="email" placeholder="email@example.com" required>
-
-    <label class="required">Phone Number</label>
-    <input type="tel" name="phone" placeholder="(555) 555-5555" required>
+    <div style="display: flex; gap: 15px;">
+        <div style="flex: 1;">
+            <label class="required">Email</label>
+            <input type="email" name="email" placeholder="Email" required>
+        </div>
+        <div style="flex: 1;">
+            <label class="required">Phone</label>
+            <input type="tel" name="phone" placeholder="Phone #" required>
+        </div>
+    </div>
 
     <label class="required">Pickup Address</label>
     <input type="text" name="address" placeholder="123 Street Name" required>
@@ -139,8 +215,8 @@
     <label class="required">City</label>
     <input type="text" name="city" placeholder="City Name" required>
 
-    <label class="required">Destination</label>
-    <textarea name="destination" rows="2" placeholder="Delivery address" required></textarea>
+    <label class="required">Destination Address</label>
+    <textarea name="destination" rows="2" placeholder="Where is it going?" required></textarea>
 
     <label class="required">Package Type</label>
     <div class="radio-group">
@@ -152,23 +228,25 @@
 
     <label class="required">Dimensions (Inches)</label>
     <div class="dim-row">
-      <div class="dim-field"><label>L</label><input type="text" name="dim_l" placeholder="L" required></div>
-      <div class="dim-field"><label>W</label><input type="text" name="dim_w" placeholder="W" required></div>
-      <div class="dim-field"><label>H</label><input type="text" name="dim_h" placeholder="H" required></div>
+      <div class="dim-field"><label>Length</label><input type="text" name="dim_l" placeholder="L" required></div>
+      <div class="dim-field"><label>Width</label><input type="text" name="dim_w" placeholder="W" required></div>
+      <div class="dim-field"><label>Height</label><input type="text" name="dim_h" placeholder="H" required></div>
     </div>
 
-    <label>PO Number (Optional)</label>
+    <label>PO Number</label>
     <input type="text" name="po_number" placeholder="Optional PO#">
 
-    <label>Other Information (Optional)</label>
-    <textarea name="other_info" rows="3" placeholder="Additional notes..."></textarea>
+    <label>Additional Notes</label>
+    <textarea name="other_info" rows="3" placeholder="Gate codes, floor #, etc..."></textarea>
 
-    <button type="submit">Submit Pickup Request</button>
+    <button type="submit">Send Pickup Request</button>
   </form>
 
   <div id="thanksMessage" style="display:none; text-align:center; padding: 20px;">
-    <p style="font-weight:bold; font-size:20px;">✅ Thank you! Your request has been sent.</p>
-    <button onclick="location.reload()" style="background:#333; color:white; border:1px solid #444; padding:12px 20px; border-radius:8px; cursor:pointer; font-weight: bold;">Send Another Pickup</button>
+    <div style="font-size: 50px; margin-bottom: 20px;">✅</div>
+    <h2 style="color: var(--accent-yellow);">Request Received!</h2>
+    <p style="color: var(--text-dim); margin-bottom: 30px;">Our dispatch team has been notified. We'll be there shortly.</p>
+    <button onclick="location.reload()" style="background:#222; color:white; border:1px solid #444; padding:15px 25px; border-radius:10px; cursor:pointer; font-weight: bold; width: 100%;">Send Another Pickup</button>
   </div>
 </div>
 
@@ -186,35 +264,34 @@
 
   firebase.auth().signInAnonymously();
   
-  // YOUR OTHER CODE (like const db...) CONTINUES HERE
-
   const db = firebase.database();
   const form = document.getElementById("pickupForm");
 
   form.addEventListener("submit", e => {
     e.preventDefault();
     
+    // Smooth button click feedback
+    const btn = form.querySelector('button');
+    btn.innerText = "Sending...";
+    btn.style.opacity = "0.7";
+
     const pickupData = {
       name: form.name.value || "Not Provided",
       email: form.email.value,
       phone: form.phone.value,
-      
       pickup_location: form.address.value,
       pickup_city: form.city.value,
       city: form.city.value, 
       destination: form.destination.value,
       dest_city: "", 
-      
       package_type: form.pkg_type.value,
       dimensions: {
         length: form.dim_l.value,
         width: form.dim_w.value,
         height: form.dim_h.value
       },
-      
       po_number: form.po_number.value || "N/A",
       other_info: form.other_info.value || "None",
-      
       status: "pending",
       assigned_to: "Unassigned", 
       timestamp: Date.now()
@@ -223,10 +300,12 @@
     db.ref("pickups").push(pickupData).then(() => {
       form.style.display = "none";
       document.getElementById("thanksMessage").style.display = "block";
-      window.scrollTo(0,0);
+      window.scrollTo({top: 0, behavior: 'smooth'});
     }).catch((error) => {
       console.error("Firebase Error:", error);
       alert("Error sending request.");
+      btn.innerText = "Submit Pickup Request";
+      btn.style.opacity = "1";
     });
   });
 </script>
