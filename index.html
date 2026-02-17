@@ -2,245 +2,295 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>E & C Courier Pickup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>E & C Courier Request</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#cca300">
 <link rel="icon" type="image/png" href="icon-512.png">
 
 <style>
   :root { 
-    --primary-blue: #0a3a6a; 
-    --accent-yellow: #ffcc00; 
-    --bg: #0a0a0a; 
-    --container-bg: rgba(18, 18, 18, 0.98); 
-    --input-bg: #cfcfcf; /* Adjusted to a softer offset white */
-    --text: #ffffff;
-    --text-dark: #111111;
-    --text-dim: #bbbbbb;
-    --border: rgba(255, 255, 255, 0.1);
-    --glow: rgba(255, 204, 0, 0.1);
+    --accent: #cca300;       
+    --bg: #222222; 
+    --card: #141414; 
+    --text: #e0e0e0; 
+    --input-bg: #1e1e1e;
+    --border: #333333;
+    --placeholder: #777777;
+    --success: #00b32d;
   }
 
   @keyframes fadeInPage {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+  @keyframes glow-pulse {
+    0% { box-shadow: 0 0 2px rgba(204, 163, 0, 0.1); border-color: var(--border); }
+    50% { box-shadow: 0 0 8px rgba(204, 163, 0, 0.3); border-color: var(--accent); }
+    100% { box-shadow: 0 0 2px rgba(204, 163, 0, 0.1); border-color: var(--border); }
   }
 
   body { 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
     background-color: var(--bg); 
-    background-image: radial-gradient(circle at top right, #1a1a1a, #000);
     color: var(--text);
     margin: 0; 
     display: flex; 
     justify-content: center; 
-    padding: 20px; 
+    align-items: flex-start;
+    padding: 20px 15px; 
     box-sizing: border-box; 
     min-height: 100vh;
   }
 
   .container { 
-    background: var(--container-bg); 
+    background: var(--card); 
     width: 100%; 
-    max-width: 500px; 
-    padding: 0 0 30px 0; 
-    border-radius: 24px; 
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
-    border: 1px solid rgba(255,255,255,0.15);
-    animation: fadeInPage 0.6s ease-out;
+    max-width: 600px; 
+    border-radius: 8px; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+    border: 1px solid var(--border);
+    animation: fadeInPage 0.5s ease-out;
     overflow: hidden;
-  }
-
-  .header-wrap { 
-    background: rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    display: flex; 
-    flex-direction: column;
-    align-items: center; 
-    justify-content: center; 
-    gap: 12px; 
-    margin-bottom: 30px; 
-  }
-
-  .header-wrap img { 
-    width: 75px; 
-    height: 75px; 
-    object-fit: contain; 
-    filter: drop-shadow(0 0 8px var(--accent-yellow));
-  }
-  
-  h1 { 
-    color: #ffffff; 
-    margin: 0; 
-    font-size: 22px; 
-    font-weight: 900; 
-    text-transform: uppercase;
-    letter-spacing: 3px;
-  }
-
-  form { padding: 0 30px; }
-  
-  label { 
-    display: block; 
-    font-weight: 700; 
-    margin-bottom: 8px; 
-    color: var(--accent-yellow); 
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .required::after { content: " *"; color: #ff4444; }
-  
-  input, textarea, select { 
-    width: 100%; 
-    padding: 14px; 
-    margin-bottom: 22px; 
-    border: 1px solid transparent; 
-    border-radius: 12px; 
-    font-size: 16px; 
-    box-sizing: border-box; 
-    background-color: var(--input-bg);
-    color: var(--text-dark);
-    transition: all 0.3s ease;
-    font-weight: 500;
-  }
-
-  input:focus, textarea:focus {
-    border-color: var(--accent-yellow);
-    background-color: #f0f0f0; 
-    box-shadow: 0 0 0 4px rgba(255, 204, 0, 0.15);
-    outline: none;
-  }
-  
-  .dim-row { display: flex; gap: 10px; margin-bottom: 22px; }
-  .dim-field { flex: 1; }
-  .dim-field label { font-size: 10px; color: #888; text-align: center;}
-  .dim-field input { margin-bottom: 0; text-align: center; }
-
-  .radio-group { 
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px; 
-    margin-bottom: 25px; 
-  }
-  
-  .radio-option { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    padding: 14px;
-    border-radius: 12px;
-    cursor: pointer; 
-    color: #eee; 
-    transition: 0.2s;
-    font-size: 14px;
-    font-weight: 600;
-  }
-  
-  .radio-option input { display: none; }
-  
-  .radio-option:has(input:checked) {
-    background: #ffffff;
-    color: #000;
-    border-color: #ffffff;
-  }
-
-  button[type="submit"] { 
-    width: 100%; 
-    background: linear-gradient(90deg, #ffcc00, #ffeb3b, #ffcc00);
-    background-size: 200% auto;
-    color: #000; 
-    border: none; 
-    padding: 20px; 
-    border-radius: 14px; 
-    font-size: 16px; 
-    font-weight: 900; 
-    text-transform: uppercase; 
-    cursor: pointer; 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    transition: 0.3s;
-    animation: shimmer 3s infinite linear;
+    position: relative;
     margin-top: 10px;
   }
 
-  button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(255, 204, 0, 0.4);
+  /* Header Styling */
+  .header-wrap { 
+    background: #000000;
+    border-bottom: 2px solid var(--accent);
+    padding: 25px 20px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 15px; 
   }
 
-  #thanksMessage { animation: fadeInPage 0.5s ease; padding: 40px 30px; }
+  .header-wrap img { 
+    height: 35px; 
+    width: auto; 
+    filter: drop-shadow(0 0 2px var(--accent));
+  }
+  
+  h1 { 
+    color: var(--text); 
+    margin: 0; 
+    font-size: 18px; 
+    font-weight: 800; 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(to right, var(--accent) 0%, #fff 50%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% auto;
+    animation: text-shine 4s linear infinite;
+  }
 
-  ::placeholder { color: #666; }
+  @keyframes text-shine { to { background-position: 200% center; } }
+
+  form { padding: 25px; }
+
+  /* Section Dividers */
+  .section-title {
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 20px 0 10px 0;
+    display: flex;
+    align-items: center;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin-left: 10px;
+  }
+  .section-title:first-of-type { margin-top: 0; }
+  
+  /* Input Styling */
+  .input-group { margin-bottom: 12px; }
+  
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 5px;
+    margin-left: 2px;
+  }
+  
+  .required-mark { color: var(--accent); margin-left: 2px; }
+
+  input, textarea, select { 
+    width: 100%; 
+    padding: 12px 14px; 
+    background: var(--input-bg); 
+    border: 1px solid var(--border); 
+    color: var(--text); 
+    border-radius: 6px; 
+    font-size: 15px; 
+    box-sizing: border-box; 
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 8px rgba(204, 163, 0, 0.15);
+    background: #252525;
+  }
+
+  ::placeholder { color: var(--placeholder); font-size: 14px; }
+
+  /* Layout Utilities */
+  .flex-row { 
+    display: flex; 
+    gap: 12px; 
+  }
+  
+  @media (max-width: 500px) {
+    .flex-row { flex-direction: column; gap: 12px; }
+  }
+
+  /* Button Styling */
+  button[type="submit"] { 
+    width: 100%; 
+    margin-top: 25px;
+    padding: 16px;
+    background: #1c1c1c;
+    color: var(--text);
+    font-weight: 800;
+    border: 1px solid var(--border);
+    border-bottom: 3px solid var(--accent);
+    cursor: pointer;
+    border-radius: 6px;
+    text-transform: uppercase;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    transition: all 0.2s ease;
+  }
+
+  button[type="submit"]:hover {
+    background: #252525;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  
+  button[type="submit"]:active { transform: translateY(1px); }
+
+  /* Success Message */
+  #thanksMessage { 
+    display: none;
+    padding: 40px 30px; 
+    text-align: center;
+    animation: fadeInPage 0.4s ease;
+  }
+  
+  .success-icon {
+    font-size: 40px;
+    color: var(--success);
+    margin-bottom: 15px;
+    display: block;
+  }
+  
+  .success-btn {
+    background: var(--accent) !important;
+    color: #000 !important;
+    border: none !important;
+    font-weight: 900 !important;
+  }
+
 </style>
 </head>
 <body>
 
 <div class="container">
   <div class="header-wrap">
-    <img src="icon-512.png" alt="Logo">
-    <h1>E & C Pickup</h1>
+    <img src="icon2.png" alt="E&C Logo" onerror="this.style.display='none'"> 
+    <h1>Client Portal</h1>
   </div>
 
   <form id="pickupForm">
-    <label>Contact/Business Name</label>
-    <input type="text" name="name" placeholder="">
-
-    <label class="required">Email</label>
-    <input type="email" name="email" placeholder="email@address.com" required>
-
-    <label class="required">Phone</label>
-    <input type="tel" name="phone" placeholder="Phone Number" required>
-
-    <label class="required">Pickup Address</label>
-    <input type="text" name="address" placeholder="123 Street Name" required>
-
-    <label class="required">City</label>
-    <input type="text" name="city" placeholder="City" required>
-
-    <label class="required">Destination Address</label>
-    <textarea name="destination" rows="2" placeholder="Full Address & City/Town" required></textarea>
-
-    <label class="required">Package Type</label>
-    <div class="radio-group">
-      <label class="radio-option"><input type="radio" name="pkg_type" value="Box" checked> Box</label>
-      <label class="radio-option"><input type="radio" name="pkg_type" value="Envelope"> Envelope</label>
-      <label class="radio-option"><input type="radio" name="pkg_type" value="Pallet"> Pallet</label>
-      <label class="radio-option"><input type="radio" name="pkg_type" value="Reel"> Reel</label>
-      <label class="radio-option"><input type="radio" name="pkg_type" value="Bundle"> Bundle</label>
-      <label class="radio-option"><input type="radio" name="pkg_type" value="Piece"> Piece</label>
+    
+    <div class="section-title">Pickup Details</div>
+    
+    <div class="input-group">
+      <label>Business / Contact Name <span class="required-mark">*</span></label>
+      <input type="text" name="name" placeholder="Who are we picking up from?" required autocomplete="organization">
     </div>
 
-    <label class="required">Dimensions (Inches)</label>
-    <div class="dim-row">
-      <div class="dim-field"><label>Length</label><input type="text" name="dim_l" placeholder="L" required></div>
-      <div class="dim-field"><label>Width</label><input type="text" name="dim_w" placeholder="W" required></div>
-      <div class="dim-field"><label>Height</label><input type="text" name="dim_h" placeholder="H" required></div>
+    <div class="flex-row">
+      <div class="input-group" style="flex: 2;">
+        <label>Pickup Address <span class="required-mark">*</span></label>
+        <input type="text" name="pickup_location" placeholder="Street Address" required autocomplete="street-address">
+      </div>
+      <div class="input-group" style="flex: 1;">
+        <label>City <span class="required-mark">*</span></label>
+        <input type="text" name="city" placeholder="City" required autocomplete="address-level2">
+      </div>
     </div>
 
-    <label>PO Number</label>
-    <input type="text" name="po_number" placeholder="Optional PO#">
+    <div class="flex-row">
+      <div class="input-group" style="flex: 1;">
+        <label>Email <span class="required-mark">*</span></label>
+        <input type="email" name="customer_email" placeholder="notifications@example.com" required autocomplete="email">
+      </div>
+      <div class="input-group" style="flex: 1;">
+        <label>Phone Number <span class="required-mark">*</span></label>
+        <input type="tel" name="customer_phone" placeholder="(204) 555-0123" required autocomplete="tel" oninput="formatPhone(this)">
+      </div>
+    </div>
 
-    <label>Additional Notes</label>
-    <textarea name="other_info" rows="3" placeholder="Pick-up instructions, delivery instructions etc."></textarea>
+    <div class="section-title">Delivery Details</div>
 
-    <button type="submit">Send Pickup Request</button>
+    <div class="input-group">
+      <label>Delivery Name <span class="required-mark">*</span></label>
+      <input type="text" name="delivery_name" placeholder="Business or Contact Name" required>
+    </div>
+
+    <div class="flex-row">
+      <div class="input-group" style="flex: 2;">
+        <label>Delivery Address <span class="required-mark">*</span></label>
+        <input type="text" name="destination" placeholder="Street Address" required>
+      </div>
+      <div class="input-group" style="flex: 1;">
+        <label>City <span class="required-mark">*</span></label>
+        <input type="text" name="drop_city" placeholder="City" required>
+      </div>
+    </div>
+
+    <div class="section-title">Cargo & Information</div>
+
+    <div class="input-group">
+      <label>Packages / Items / Dimensions <span class="required-mark">*</span></label>
+      <input type="text" name="package_details" placeholder="e.g. 2 Boxes (12x12x12), 1 Skid" required>
+    </div>
+
+    <div class="input-group">
+      <label>PO Number / Reference</label>
+      <input type="text" name="po_number" placeholder="Optional">
+    </div>
+
+    <div class="input-group">
+      <label>Driver Notes / Instructions</label>
+      <textarea name="other_info" rows="3" placeholder="Gate codes, specific door numbers, hours, etc."></textarea>
+    </div>
+
+    <button type="submit" id="submitBtn">Submit Request</button>
   </form>
 
-  <div id="thanksMessage" style="display:none; text-align:center;">
-    <div style="font-size: 60px; margin-bottom: 20px;">✅</div>
-    <h2 style="color: #ffffff; margin: 0 0 10px 0;">Request Received!</h2>
-    <p style="color: var(--text-dim); margin-bottom: 30px;">Our dispatch team has been notified.</p>
-    <button onclick="location.reload()" style="background:#ffffff; color:#000; border:none; padding:18px 25px; border-radius:12px; cursor:pointer; font-weight: 800; width: 100%; text-transform: uppercase;">Send Another Pickup</button>
+  <div id="thanksMessage">
+    <span class="success-icon">✓</span>
+    <h2 style="color: #fff; margin: 0 0 10px 0; text-transform: uppercase; font-size: 18px;">Request Received</h2>
+    <p style="color: #aaa; margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Our dispatch team has been notified and will review your request shortly.</p>
+    <button onclick="location.reload()" type="button" class="success-btn" style="width: 100%; padding: 15px; border-radius: 6px; cursor: pointer; text-transform: uppercase;">Submit Another</button>
   </div>
 </div>
 
@@ -249,6 +299,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+  // Firebase Configuration (Preserved)
   firebase.initializeApp({
     apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
     authDomain: "eandccourier-36fcc.firebaseapp.com",
@@ -256,47 +307,70 @@
     projectId: "eandccourier-36fcc"
   });
 
-  firebase.auth().signInAnonymously();
+  firebase.auth().signInAnonymously().catch(error => {
+    console.error("Auth Error", error);
+  });
+
   const db = firebase.database();
   const form = document.getElementById("pickupForm");
+  const submitBtn = document.getElementById("submitBtn");
+
+  // Helper: Phone Formatting
+  function formatPhone(input) {
+    let x = input.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+    input.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+  }
 
   form.addEventListener("submit", e => {
     e.preventDefault();
-    const btn = form.querySelector('button');
-    btn.innerText = "Sending...";
-    btn.style.opacity = "0.7";
+    
+    // UI Loading State
+    submitBtn.innerText = "Transmitting...";
+    submitBtn.style.opacity = "0.7";
+    submitBtn.disabled = true;
 
+    // Data Construction - Matches Command Center Structure
     const pickupData = {
-      name: form.name.value || "Not Provided",
-      email: form.email.value,
-      phone: form.phone.value,
-      pickup_location: form.address.value,
-      pickup_city: form.city.value,
-      city: form.city.value, 
-      destination: form.destination.value,
-      dest_city: "", 
-      package_type: form.pkg_type.value,
-      dimensions: {
-        length: form.dim_l.value,
-        width: form.dim_w.value,
-        height: form.dim_h.value
-      },
-      po_number: form.po_number.value || "N/A",
-      other_info: form.other_info.value || "None",
+      name: form.name.value.trim(),
+      pickup_location: form.pickup_location.value.trim(),
+      city: form.city.value.trim(),
+      
+      customer_email: form.customer_email.value.trim(),
+      customer_phone: form.customer_phone.value.trim(),
+      
+      delivery_name: form.delivery_name.value.trim(),
+      destination: form.destination.value.trim(),
+      // We store the drop city in 'city' field if needed, or append to destination
+      // To strictly match command.html creation logic which handles drop cities:
+      // Command center usually handles one 'city' field for sorting, but stores addresses separately.
+      // We will append drop city to destination for clarity in the console if the console doesn't display drop city explicitly
+      // OR store it as is if the backend supports it. 
+      // Based on command.html logic: `city` usually implies pickup city. 
+      // We will save drop_city in the object so it exists in the DB.
+      drop_city: form.drop_city.value.trim(), 
+      
+      package_details: form.package_details.value.trim(),
+      po_number: form.po_number.value.trim() || "",
+      other_info: form.other_info.value.trim() ? `[Client Request]: ${form.other_info.value.trim()}` : "[Client Request]",
+      
       status: "pending",
       assigned_to: "Unassigned", 
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      created_by: "Web Portal"
     };
 
+    // Push to Firebase
     db.ref("pickups").push(pickupData).then(() => {
       form.style.display = "none";
+      document.querySelector('.header-wrap').style.borderBottom = 'none'; // Clean look on success
       document.getElementById("thanksMessage").style.display = "block";
       window.scrollTo({top: 0, behavior: 'smooth'});
     }).catch((error) => {
       console.error("Firebase Error:", error);
-      alert("Error sending request.");
-      btn.innerText = "Send Pickup Request";
-      btn.style.opacity = "1";
+      alert("Transmission Error. Please try again or call dispatch.");
+      submitBtn.innerText = "Submit Request";
+      submitBtn.style.opacity = "1";
+      submitBtn.disabled = false;
     });
   });
 </script>
