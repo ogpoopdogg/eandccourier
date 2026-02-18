@@ -303,7 +303,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  // Firebase Configuration (Preserved)
   firebase.initializeApp({
     apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
     authDomain: "eandccourier-36fcc.firebaseapp.com",
@@ -311,15 +310,12 @@
     projectId: "eandccourier-36fcc"
   });
 
-  firebase.auth().signInAnonymously().catch(error => {
-    console.error("Auth Error", error);
-  });
+  firebase.auth().signInAnonymously().catch(error => { console.error("Auth Error", error); });
 
   const db = firebase.database();
   const form = document.getElementById("pickupForm");
   const submitBtn = document.getElementById("submitBtn");
 
-  // Helper: Phone Formatting
   function formatPhone(input) {
     let x = input.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
     input.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
@@ -327,17 +323,59 @@
 
   form.addEventListener("submit", e => {
     e.preventDefault();
-    
-    // UI Loading State
     submitBtn.innerText = "Transmitting...";
     submitBtn.style.opacity = "0.7";
     submitBtn.disabled = true;
 
-    // Geocode Pickup Address for Console Auto-Assign
+    const finalizeSubmission = (coords = {}) => {
+        const jobData = {
+          name: form.name.value.trim(),
+          pickup_location: form.pickup_location.value.trim(),
+          pickup_city: form.city.value.trim(),
+          city: form.city.value.trim(),
+          customer_email: form.customer_email.value.trim(),
+          customer_phone: form.customer_phone.value.trim(),
+          delivery_name: form.delivery_name.value.trim(),
+          destination: form.destination.value.trim(),
+          delivery_city: form.drop_city.value.trim(),
+          package_details: form.package_details.value.trim(),
+          po_number: form.po_number.value.trim() || "",
+          other_info: form.other_info.value.trim() ? `[Client Request]: ${form.other_info.value.trim()}` : "[Client Request]",
+          status: "pending_pickup",
+          assigned_to: "Unassigned", 
+          timestamp: Date.now(),
+          created_by: "Web Portal",
+          ...coords
+        };
+
+        db.ref("jobs").push(jobData).then(() => {
+          form.style.display = "none";
+          document.getElementById("thanksMessage").style.display = "block";
+          window.scrollTo({top: 0, behavior: 'smooth'});
+        }).catch((error) => {
+          submitBtn.innerText = "Submit Request";
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = "1";
+        });
+    };
+
     const geocoder = new google.maps.Geocoder();
     const addressStr = form.pickup_location.value.trim() + ", " + form.city.value.trim();
 
+    // The fix: Set a timeout for the Geocoder. If it takes longer than 3 seconds, submit without coords.
+    let geocodeFinished = false;
+    const geocodeTimeout = setTimeout(() => {
+        if (!geocodeFinished) {
+            geocodeFinished = true;
+            finalizeSubmission();
+        }
+    }, 3000);
+
     geocoder.geocode({ 'address': addressStr }, (results, status) => {
+        if (geocodeFinished) return;
+        geocodeFinished = true;
+        clearTimeout(geocodeTimeout);
+
         let coords = {};
         if (status === 'OK' && results[0]) {
             coords = {
@@ -345,65 +383,22 @@
                 lng: results[0].geometry.location.lng()
             };
         }
-
-        // Data Construction - Matches Command Center Structure (Jobs)
-        const jobData = {
-          name: form.name.value.trim(),
-          pickup_location: form.pickup_location.value.trim(),
-          pickup_city: form.city.value.trim(),
-          city: form.city.value.trim(), // Primary sort key in console
-          
-          customer_email: form.customer_email.value.trim(),
-          customer_phone: form.customer_phone.value.trim(),
-          
-          delivery_name: form.delivery_name.value.trim(),
-          destination: form.destination.value.trim(),
-          delivery_city: form.drop_city.value.trim(),
-          
-          package_details: form.package_details.value.trim(),
-          po_number: form.po_number.value.trim() || "",
-          other_info: form.other_info.value.trim() ? `[Client Request]: ${form.other_info.value.trim()}` : "[Client Request]",
-          
-          status: "pending_pickup", // Matches console expectation
-          assigned_to: "Unassigned", 
-          timestamp: Date.now(),
-          created_by: "Web Portal",
-          ...coords // Add lat/lng
-        };
-
-        // Push to Firebase jobs collection
-        db.ref("jobs").push(jobData).then(() => {
-          form.style.display = "none";
-          document.querySelector('.header-wrap').style.borderBottom = 'none'; // Clean look on success
-          document.getElementById("thanksMessage").style.display = "block";
-          window.scrollTo({top: 0, behavior: 'smooth'});
-        }).catch((error) => {
-          console.error("Firebase Error:", error);
-          alert("Transmission Error. Please try again or call dispatch.");
-          submitBtn.innerText = "Submit Request";
-          submitBtn.style.opacity = "1";
-          submitBtn.disabled = false;
-        });
+        finalizeSubmission(coords);
     });
   });
 
-  // PWA Install Logic
   let deferredPrompt;
   const installBtn = document.getElementById('installAppBtn');
-
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     installBtn.style.display = 'block';
   });
-
   installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        installBtn.style.display = 'none';
-      }
+      if (outcome === 'accepted') installBtn.style.display = 'none';
       deferredPrompt = null;
     }
   });
