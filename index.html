@@ -297,6 +297,7 @@
   </div>
 </div>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDltbEbiqlyQjyaGth0AzIkfLpOYr96YeQ&libraries=geometry,drawing"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -332,48 +333,57 @@
     submitBtn.style.opacity = "0.7";
     submitBtn.disabled = true;
 
-    // Data Construction - Matches Command Center Structure
-    const pickupData = {
-      name: form.name.value.trim(),
-      pickup_location: form.pickup_location.value.trim(),
-      city: form.city.value.trim(),
-      
-      customer_email: form.customer_email.value.trim(),
-      customer_phone: form.customer_phone.value.trim(),
-      
-      delivery_name: form.delivery_name.value.trim(),
-      destination: form.destination.value.trim(),
-      // We store the drop city in 'city' field if needed, or append to destination
-      // To strictly match command.html creation logic which handles drop cities:
-      // Command center usually handles one 'city' field for sorting, but stores addresses separately.
-      // We will append drop city to destination for clarity in the console if the console doesn't display drop city explicitly
-      // OR store it as is if the backend supports it. 
-      // Based on command.html logic: `city` usually implies pickup city. 
-      // We will save drop_city in the object so it exists in the DB.
-      drop_city: form.drop_city.value.trim(), 
-      
-      package_details: form.package_details.value.trim(),
-      po_number: form.po_number.value.trim() || "",
-      other_info: form.other_info.value.trim() ? `[Client Request]: ${form.other_info.value.trim()}` : "[Client Request]",
-      
-      status: "pending",
-      assigned_to: "Unassigned", 
-      timestamp: Date.now(),
-      created_by: "Web Portal"
-    };
+    // Geocode Pickup Address for Console Auto-Assign
+    const geocoder = new google.maps.Geocoder();
+    const addressStr = form.pickup_location.value.trim() + ", " + form.city.value.trim();
 
-    // Push to Firebase
-    db.ref("pickups").push(pickupData).then(() => {
-      form.style.display = "none";
-      document.querySelector('.header-wrap').style.borderBottom = 'none'; // Clean look on success
-      document.getElementById("thanksMessage").style.display = "block";
-      window.scrollTo({top: 0, behavior: 'smooth'});
-    }).catch((error) => {
-      console.error("Firebase Error:", error);
-      alert("Transmission Error. Please try again or call dispatch.");
-      submitBtn.innerText = "Submit Request";
-      submitBtn.style.opacity = "1";
-      submitBtn.disabled = false;
+    geocoder.geocode({ 'address': addressStr }, (results, status) => {
+        let coords = {};
+        if (status === 'OK' && results[0]) {
+            coords = {
+                lat: results[0].geometry.location.lat(),
+                lng: results[0].geometry.location.lng()
+            };
+        }
+
+        // Data Construction - Matches Command Center Structure (Jobs)
+        const jobData = {
+          name: form.name.value.trim(),
+          pickup_location: form.pickup_location.value.trim(),
+          pickup_city: form.city.value.trim(),
+          city: form.city.value.trim(), // Primary sort key in console
+          
+          customer_email: form.customer_email.value.trim(),
+          customer_phone: form.customer_phone.value.trim(),
+          
+          delivery_name: form.delivery_name.value.trim(),
+          destination: form.destination.value.trim(),
+          delivery_city: form.drop_city.value.trim(),
+          
+          package_details: form.package_details.value.trim(),
+          po_number: form.po_number.value.trim() || "",
+          other_info: form.other_info.value.trim() ? `[Client Request]: ${form.other_info.value.trim()}` : "[Client Request]",
+          
+          status: "pending_pickup", // Matches console expectation
+          assigned_to: "Unassigned", 
+          timestamp: Date.now(),
+          created_by: "Web Portal",
+          ...coords // Add lat/lng
+        };
+
+        // Push to Firebase jobs collection
+        db.ref("jobs").push(jobData).then(() => {
+          form.style.display = "none";
+          document.querySelector('.header-wrap').style.borderBottom = 'none'; // Clean look on success
+          document.getElementById("thanksMessage").style.display = "block";
+          window.scrollTo({top: 0, behavior: 'smooth'});
+        }).catch((error) => {
+          console.error("Firebase Error:", error);
+          alert("Transmission Error. Please try again or call dispatch.");
+          submitBtn.innerText = "Submit Request";
+          submitBtn.style.opacity = "1";
+          submitBtn.disabled = false;
+        });
     });
   });
 
