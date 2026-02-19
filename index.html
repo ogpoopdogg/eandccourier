@@ -391,10 +391,14 @@
 
             const now = new Date();
             const currentMins = now.getHours() * 60 + now.getMinutes();
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const currentDay = dayNames[now.getDay()];
 
             for (let d in driverZones) {
                 const z = driverZones[d];
                 if (z && z.paths) {
+                     if (z.days && !z.days.includes(currentDay)) continue;
+
                      if (z.start && z.end) {
                          const [sh, sm] = z.start.split(':').map(Number);
                          const [eh, em] = z.end.split(':').map(Number);
