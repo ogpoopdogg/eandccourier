@@ -395,25 +395,29 @@
             const currentDay = dayNames[now.getDay()];
 
             for (let d in driverZones) {
-                const z = driverZones[d];
-                if (z && z.paths) {
-                     if (z.days && !z.days.includes(currentDay)) continue;
+                const zones = driverZones[d];
+                for (let zId in zones) {
+                    const z = zones[zId];
+                    if (z && z.paths) {
+                         if (z.days && !z.days.includes(currentDay)) continue;
 
-                     if (z.start && z.end) {
-                         const [sh, sm] = z.start.split(':').map(Number);
-                         const [eh, em] = z.end.split(':').map(Number);
-                         const startMins = sh * 60 + sm;
-                         const endMins = eh * 60 + em;
-                         if (currentMins < startMins || currentMins > endMins) continue;
-                     }
-                     
-                     let match = false;
-                     for(let i = 0; i < z.paths.length; i++) {
-                         const poly = new google.maps.Polygon({ paths: z.paths[i] });
-                         if (google.maps.geometry.poly.containsLocation(loc, poly)) { match = true; break; }
-                     }
-                     if (match) { autoAssign = d; break; }
+                         if (z.start && z.end) {
+                             const [sh, sm] = z.start.split(':').map(Number);
+                             const [eh, em] = z.end.split(':').map(Number);
+                             const startMins = sh * 60 + sm;
+                             const endMins = eh * 60 + em;
+                             if (currentMins < startMins || currentMins > endMins) continue;
+                         }
+                         
+                         let match = false;
+                         for(let i = 0; i < z.paths.length; i++) {
+                             const poly = new google.maps.Polygon({ paths: z.paths[i] });
+                             if (google.maps.geometry.poly.containsLocation(loc, poly)) { match = true; break; }
+                         }
+                         if (match) { autoAssign = d; break; }
+                    }
                 }
+                if (autoAssign !== 'Unassigned') break;
             }
         }
         finalizeSubmission(coords, autoAssign);
