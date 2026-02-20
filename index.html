@@ -211,16 +211,23 @@
 </head>
 <body>
 
-<div id="auth-overlay" style="display: none; position: fixed; inset: 0; background: var(--bg); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-  <div class="container" style="padding: 40px 30px; text-align: center; margin-top: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
-    <img src="icon2.png" alt="E&C Logo" style="height: 50px; margin-bottom: 15px; filter: drop-shadow(0 0 5px var(--accent));" onerror="this.style.display='none'">
-    <h2 style="color: var(--accent); margin-top: 0; margin-bottom: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">E&C Courier Portal</h2>
+<div id="auth-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; overflow-y: auto; background: var(--bg); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box;">
+  
+  <div style="max-width: 600px; width: 100%; text-align: center; margin-bottom: 30px;">
+    <img src="icon2.png" alt="E&C Logo" style="height: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 5px var(--accent));" onerror="this.style.display='none'">
+    <h1 style="color: var(--accent); font-size: 26px; margin: 0 0 10px 0; text-transform: uppercase;">E&C Courier</h1>
+    <p style="color: #e0e0e0; font-size: 15px; margin-bottom: 15px; line-height: 1.5;">
+      Request and track local courier pickups and deliveries quickly and securely.
+    </p>
+    <p style="color: #aaa; font-size: 13px; margin-bottom: 20px; line-height: 1.5;">
+      <strong>Data Usage:</strong> We collect your email, phone, and address strictly to process dispatches and notify you about your requests.
+    </p>
+    <a href="https://app.eandccourier.ca/privacy" target="_blank" style="background: var(--accent); color: #000; padding: 10px 20px; border-radius: 5px; font-weight: bold; text-decoration: none; display: inline-block; font-size: 14px;">Privacy Policy & Terms</a>
+  </div>
+
+  <div class="container" style="padding: 30px; text-align: center; margin-top: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+    <h2 style="color: #fff; margin-top: 0; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; font-size: 18px;">Account Login</h2>
     
-    <p style="color: #e0e0e0; font-size: 13px; margin-bottom: 10px; line-height: 1.4;">Use this app to request local courier pickups and deliveries.
-    </p>
-    <p style="color: #aaa; font-size: 12px; margin-bottom: 25px; line-height: 1.4; background: #1a1a1a; padding: 10px; border-radius: 5px; border: 1px solid #333;">
-      <strong>Data Usage:</strong> We collect your email, phone number, and address strictly to create your account, process delivery dispatch, and notify you about your requests.
-    </p>
     <div class="input-group" style="text-align: left; margin-bottom: 15px;">
       <input type="email" id="auth-email" placeholder="Email Address" required>
     </div>
@@ -231,10 +238,7 @@
     <button type="button" onclick="customerLogin()" style="width: 100%; padding: 16px; background: var(--accent); color: #000; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 12px; font-size: 16px;">Login</button>
     <button type="button" onclick="customerSignUp()" style="width: 100%; padding: 16px; background: #1c1c1c; color: var(--text); font-weight: 800; border: 1px solid var(--border); border-bottom: 3px solid var(--accent); border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; font-size: 16px; transition: all 0.2s;">Create Account</button>
     
-    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
-      <a href="#" onclick="forgotPassword(); return false;" style="color: var(--placeholder); font-size: 13px; text-decoration: underline;">Forgot Password?</a>
-      <a href="https://app.eandccourier.ca/privacy" target="_blank" style="color: var(--accent); font-size: 13px; text-decoration: none; font-weight: bold;">Privacy Policy & Terms of Service</a>
-    </div>
+    <a href="#" onclick="forgotPassword(); return false;" style="color: var(--placeholder); font-size: 13px; text-decoration: underline;">Forgot Password?</a>
   </div>
 </div>
 
