@@ -237,6 +237,7 @@
     
     <button type="button" onclick="customerLogin()" style="width: 100%; padding: 16px; background: var(--accent); color: #000; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 12px; font-size: 16px;">Login</button>
     <button type="button" onclick="customerSignUp()" style="width: 100%; padding: 16px; background: #1c1c1c; color: var(--text); font-weight: 800; border: 1px solid var(--border); border-bottom: 3px solid var(--accent); border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; font-size: 16px; transition: all 0.2s;">Create Account</button>
+    <button type="button" onclick="googleSignIn()" style="width: 100%; padding: 16px; background: #ffffff; color: #000000; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; font-size: 16px;">Sign in with Google</button>
     
     <a href="#" onclick="forgotPassword(); return false;" style="color: var(--placeholder); font-size: 13px; text-decoration: underline;">Forgot Password?</a>
   </div>
@@ -371,6 +372,11 @@
     firebase.auth().createUserWithEmailAndPassword(e, p).then(() => {
       alert("Account created successfully!");
     }).catch(err => alert("Sign Up Error: " + err.message));
+  }
+
+  function googleSignIn() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).catch(err => alert("Google Login Error: " + err.message));
   }
 
   function forgotPassword() {
