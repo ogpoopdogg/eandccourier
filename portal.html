@@ -10,58 +10,58 @@
 
 <style>
   :root { 
-    --accent: #cca300;       
-    --bg: #222222; 
-    --card: #141414; 
-    --text: #e0e0e0; 
-    --input-bg: #1e1e1e;
-    --border: #333333;
-    --placeholder: #777777;
-    --success: #00b32d;
+    --accent: #d4a017;       
+    --bg: #0a0a0a; 
+    --card: #121212; 
+    --text: #f0f0f0; 
+    --text-muted: #888888;
+    --input-bg: #1a1a1a;
+    --border: #262626;
+    --border-hover: #3a3a3a;
+    --placeholder: #555555;
+    --success: #10b981;
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 10px 10px -5px rgba(0, 0, 0, 0.6);
   }
 
   @keyframes fadeInPage {
-    from { opacity: 0; transform: translateY(15px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  @keyframes glow-pulse {
-    0% { box-shadow: 0 0 2px rgba(204, 163, 0, 0.1); border-color: var(--border); }
-    50% { box-shadow: 0 0 8px rgba(204, 163, 0, 0.3); border-color: var(--accent); }
-    100% { box-shadow: 0 0 2px rgba(204, 163, 0, 0.1); border-color: var(--border); }
-  }
-
   body { 
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-    background-color: var(--bg); 
-    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important; 
+    background-color: var(--bg) !important; 
+    background-image: radial-gradient(circle at top, #1a1a1a 0%, var(--bg) 100%) !important;
+    color: var(--text) !important;
     margin: 0; 
     display: flex; 
     justify-content: center; 
     align-items: flex-start;
-    padding: 20px 15px; 
+    padding: 30px 15px; 
     box-sizing: border-box; 
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
 
   .container { 
-    background: var(--card); 
+    background: var(--card) !important; 
     width: 100%; 
-    max-width: 600px; 
-    border-radius: 8px; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
-    border: 1px solid var(--border);
-    animation: fadeInPage 0.5s ease-out;
-    overflow: hidden;
+    max-width: 640px; 
+    border-radius: 16px !important; 
+    box-shadow: var(--shadow-xl) !important; 
+    border: 1px solid var(--border) !important;
+    animation: fadeInPage 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     margin-top: 10px;
+    overflow: hidden;
   }
 
   /* Header Styling */
   .header-wrap { 
-    background: #000000;
-    border-bottom: 2px solid var(--accent);
-    padding: 25px 20px;
+    background: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 35px 30px 25px !important;
     display: flex; 
     align-items: center; 
     justify-content: center; 
@@ -69,38 +69,32 @@
   }
 
   .header-wrap img { 
-    height: 35px; 
-    width: auto; 
-    filter: drop-shadow(0 0 2px var(--accent));
+    height: 40px !important; 
+    filter: none !important;
   }
   
-  h1 { 
-    color: var(--text); 
+  h1, h2 { 
+    color: var(--text) !important; 
     margin: 0; 
-    font-size: 22px; 
-    font-weight: 800; 
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    background: linear-gradient(to right, var(--accent) 0%, #fff 50%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    background-size: 200% auto;
-    animation: text-shine 4s linear infinite;
+    font-size: 24px !important; 
+    font-weight: 700 !important; 
+    text-transform: none !important;
+    letter-spacing: -0.5px !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    animation: none !important;
   }
 
-  @keyframes text-shine { to { background-position: 200% center; } }
-
-  form { padding: 25px; }
+  form { padding: 30px !important; }
 
   /* Section Dividers */
   .section-title {
-    color: var(--accent);
-    font-size: 13px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin: 20px 0 10px 0;
+    color: var(--text-muted) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    margin: 30px 0 15px 0 !important;
     display: flex;
     align-items: center;
   }
@@ -108,103 +102,157 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--border);
-    margin-left: 10px;
+    background: var(--border) !important;
+    margin-left: 15px !important;
   }
-  .section-title:first-of-type { margin-top: 0; }
+  .section-title:first-of-type { margin-top: 0 !important; }
   
   /* Input Styling */
-  .input-group { margin-bottom: 12px; }
+  .input-group { margin-bottom: 16px !important; }
   
   label {
     display: block;
-    font-size: 13px;
-    font-weight: 700;
-    color: #888;
-    margin-bottom: 5px;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: var(--text-muted) !important;
+    margin-bottom: 8px !important;
     margin-left: 2px;
   }
   
-  .required-mark { color: var(--accent); margin-left: 2px; }
+  .required-mark { color: var(--accent) !important; margin-left: 2px; }
 
   input, textarea, select { 
     width: 100%; 
-    padding: 15px 16px; 
-    background: var(--input-bg); 
-    border: 1px solid var(--border); 
-    color: var(--text); 
-    border-radius: 6px; 
-    font-size: 17px; 
+    padding: 14px 16px !important; 
+    background: var(--input-bg) !important; 
+    border: 1px solid var(--border) !important; 
+    color: var(--text) !important; 
+    border-radius: 8px !important; 
+    font-size: 15px !important; 
     box-sizing: border-box; 
-    transition: all 0.2s;
+    transition: all 0.2s ease !important;
     font-family: inherit;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+  }
+
+  input:hover, textarea:hover {
+    border-color: var(--border-hover) !important;
   }
 
   input:focus, textarea:focus {
-    border-color: var(--accent);
+    border-color: var(--accent) !important;
     outline: none;
-    box-shadow: 0 0 8px rgba(204, 163, 0, 0.15);
-    background: #252525;
+    box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.15) !important;
+    background: #1f1f1f !important;
   }
 
-  ::placeholder { color: var(--placeholder); font-size: 16px; }
+  ::placeholder { color: var(--placeholder) !important; font-size: 15px !important; }
 
   /* Layout Utilities */
   .flex-row { 
     display: flex; 
-    gap: 12px; 
+    gap: 16px !important; 
   }
   
   @media (max-width: 500px) {
-    .flex-row { flex-direction: column; gap: 12px; }
+    .flex-row { flex-direction: column; gap: 16px !important; }
   }
 
-  /* Button Styling */
-  button[type="submit"] { 
-    width: 100%; 
-    margin-top: 25px;
-    padding: 20px;
-    background: #1c1c1c;
-    color: var(--text);
-    font-weight: 800;
-    border: 1px solid var(--border);
-    border-bottom: 3px solid var(--accent);
-    cursor: pointer;
-    border-radius: 6px;
-    text-transform: uppercase;
-    font-size: 18px;
-    letter-spacing: 1.5px;
-    transition: all 0.2s ease;
-  }
-
-  button[type="submit"]:hover {
-    background: #252525;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  /* Override specific inline button styles via CSS */
+  button[onclick="customerLogin()"], button[type="submit"] {
+    background: var(--accent) !important;
+    color: #000 !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(212, 160, 23, 0.2) !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    margin-top: 15px !important;
   }
   
-  button[type="submit"]:active { transform: translateY(1px); }
+  button[onclick="customerSignUp()"] {
+    background: var(--input-bg) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    text-transform: none !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 16px !important;
+  }
+  
+  button[onclick="firebase.auth().signOut()"] {
+      border: 1px solid var(--border) !important;
+      border-radius: 6px !important;
+      font-weight: 500 !important;
+  }
+
+  button { 
+    transition: all 0.2s ease !important;
+    font-family: inherit !important;
+    cursor: pointer !important;
+  }
+
+  button[onclick="customerLogin()"]:hover, button[type="submit"]:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(212, 160, 23, 0.3) !important;
+    background: #e3b022 !important;
+  }
+  
+  button[onclick="customerSignUp()"]:hover {
+    background: #222 !important;
+    border-color: var(--border-hover) !important;
+  }
+  
+  button:active { transform: translateY(1px) !important; }
+
+  /* Auth Overlay specifics */
+  #auth-overlay {
+      background: rgba(10, 10, 10, 0.98) !important;
+      backdrop-filter: blur(8px) !important;
+  }
+  
+  #auth-overlay > div:first-child h1 {
+      color: var(--text) !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.5px !important;
+  }
+  
+  #auth-overlay > div:first-child p {
+      color: var(--text-muted) !important;
+  }
 
   /* Success Message */
   #thanksMessage { 
     display: none;
-    padding: 40px 30px; 
+    padding: 50px 40px !important; 
     text-align: center;
-    animation: fadeInPage 0.4s ease;
+    animation: fadeInPage 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
   
   .success-icon {
-    font-size: 40px;
-    color: var(--success);
-    margin-bottom: 15px;
+    font-size: 48px !important;
+    color: var(--success) !important;
+    margin-bottom: 20px !important;
     display: block;
   }
   
   .success-btn {
-    background: var(--accent) !important;
-    color: #000 !important;
-    border: none !important;
-    font-weight: 900 !important;
+    background: var(--input-bg) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    margin-top: 10px !important;
+    box-shadow: none !important;
+  }
+  
+  .success-btn:hover {
+      background: #222 !important;
   }
 
 </style>
