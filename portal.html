@@ -414,6 +414,8 @@
     appId: "1:1067680083511:android:22d1eb3757302492bd19b2" 
   });
 
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       document.getElementById('auth-overlay').style.display = 'none';
