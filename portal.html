@@ -295,7 +295,7 @@
             <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="toggleTheme()" onerror="this.style.display='none'"> 
             <h1>Request Pickup Now</h1>
         </div>
-        <button id="devBtn" style="display:none; background:transparent; border:1px solid var(--accent); color:var(--accent); padding:5px 10px; font-size:10px; cursor:pointer; border-radius:4px; font-weight:bold;" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none');">DEV NOTES</button>
+        <button id="devBtn" style="display:none; background:transparent; border:1px solid var(--accent); color:var(--accent); padding:5px 10px; font-size:10px; cursor:pointer; border-radius:4px; font-weight:bold;" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none'); if(p.style.display==='flex' && !devQuill) { devQuill = new Quill('#dev-editor', { theme: 'snow', modules: { toolbar: [ ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }] ] } }); }">DEV NOTES</button>
     </div>
   </div>
 
@@ -678,7 +678,7 @@
   <div id="dev-list" style="max-height: 200px; overflow-y: auto; background:#000; padding:10px; border:1px solid #333; font-size:12px; font-family:monospace;">
     <p style="color:#666;">Authenticating...</p>
   </div>
-  <div id="dev-editor" style="height: 100px; background:#fff; color:#000;"></div>
+  <div id="dev-editor" style="min-height: 150px; background:#fff; color:#000;"></div>
   <button onclick="saveDevNote()" style="padding:10px; background:var(--accent); color:#000; border:none; font-weight:800; cursor:pointer;">POST UPDATE</button>
 </div>
 
@@ -693,18 +693,6 @@
 
 <script>
   let devQuill;
-
-  // 1. Initialize Quill immediately so it's ready when the portal opens
-  devQuill = new Quill('#dev-editor', {
-    theme: 'snow',
-    modules: { 
-      toolbar: [ 
-        ['bold', 'italic', 'underline'], 
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }], 
-        [{ 'align': [] }] 
-      ] 
-    }
-  });
 
   // 3. Save Function
   function saveDevNote() {
