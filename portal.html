@@ -421,6 +421,9 @@
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
   firebase.auth().onAuthStateChanged((user) => {
+    const portal = document.getElementById('dev-portal');
+    const list = document.getElementById('dev-list');
+
     if (user) {
       if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
         alert("Please check your email and verify your account before logging in.");
@@ -432,9 +435,29 @@
       if (document.querySelector('input[name="customer_email"]')) {
         document.querySelector('input[name="customer_email"]').value = user.email;
       }
+
+      const admins = ['emmanuel@eandccourier.ca', 'developer@eandccourier.ca'];
+      if (admins.includes(user.email)) {
+        document.getElementById('devBtn').style.display = 'block';
+        firebase.database().ref('developer').on('value', snap => {
+          list.innerHTML = '';
+          const notes = snap.val() || {};
+          
+          Object.values(notes).forEach(note => {
+            list.innerHTML += `
+              <div class="dev-item">
+                <div class="dev-hdr">${note.user} • ${note.date}</div>
+                <div style="color:#eee;">${note.text}</div>
+              </div>`;
+          });
+          list.scrollTop = list.scrollHeight; 
+        });
+      }
     } else {
       document.getElementById('auth-overlay').style.display = 'flex';
       document.getElementById('main-app-container').style.display = 'none';
+      portal.style.display = 'none';
+      list.innerHTML = '';
     }
   });
 
@@ -680,40 +703,6 @@
         [{ 'list': 'ordered'}, { 'list': 'bullet' }], 
         [{ 'align': [] }] 
       ] 
-    }
-  });
-
-  // 2. Reactive Auth & Data Listener
-  firebase.auth().onAuthStateChanged(user => {
-    const portal = document.getElementById('dev-portal');
-    const list = document.getElementById('dev-list');
-
-    // Define authorized emails
-    const admins = ['emmanuel@eandccourier.ca', 'developer@eandccourier.ca'];
-
-    if (user && admins.includes(user.email)) {
-      // Reveal the portal for admins
-      portal.style.display = 'flex';
-
-      // Start real-time database listener
-      firebase.database().ref('developer').on('value', snap => {
-        list.innerHTML = '';
-        const notes = snap.val() || {};
-        
-        Object.values(notes).forEach(note => {
-          list.innerHTML += `
-            <div class="dev-item">
-              <div class="dev-hdr">${note.user} • ${note.date}</div>
-              <div style="color:#eee;">${note.text}</div>
-            </div>`;
-        });
-        list.scrollTop = list.scrollHeight; 
-      });
-
-    } else {
-      // Hide portal if not authorized or logged out
-      portal.style.display = 'none';
-      list.innerHTML = '';
     }
   });
 
