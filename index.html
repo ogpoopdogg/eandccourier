@@ -26,7 +26,7 @@
     --text: #000000;
     --input-bg: #ffffff;
     --border: #cccccc;
-    --placeholder: #555555;
+    --placeholder: #d3d3d3;
   }
 
   body.light-mode h1 {
@@ -251,6 +251,15 @@
   .btn-cancel { background:#222; color:#ccc; border:1px solid #333; padding:12px; font-weight:700; cursor:pointer; font-size:13px; border-radius:4px; }
   .btn-save { background:var(--success); color:#000; border:none; padding:12px; font-weight:700; text-transform:uppercase; cursor:pointer; font-size:13px; border-radius:4px; }
 
+  /* Order History Styling */
+  .timeline { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; }
+  .timeline .step { position: relative; text-align: center; flex: 1; }
+  .timeline .step.active { color: var(--accent); }
+  .timeline .step.completed { color: var(--success); }
+  .order-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+  .order-date { font-size: 12px; color: var(--placeholder); margin-bottom: 5px; }
+  .order-title { font-size: 14px; font-weight: bold; color: var(--text); margin-bottom: 10px; }
+
 </style>
 </head>
 <body class="light-mode">
@@ -295,12 +304,15 @@
             <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="toggleTheme()" onerror="this.style.display='none'"> 
             <h1>Request Pickup Now</h1>
         </div>
-        
+        <button id="viewOrdersBtn" style="background:var(--accent); color:#000; border:none; padding:8px 12px; font-weight:700; border-radius:4px; cursor:pointer; font-size:12px; text-transform:uppercase;" onclick="showOrdersHistory()" type="button">View Orders</button>
     </div>
   </div>
 
   <form id="pickupForm">
+    <input type="text" name="website_url_hp" id="website_url_hp" style="display:none;" tabindex="-1" autocomplete="off">
     
+    <button type="button" id="autofillBtn" style="display:none; width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="autofillLastOrder()">Autofill from Last Order</button>
+
     <div class="section-title">Pickup Details</div>
     
     <div class="input-group">
@@ -379,6 +391,14 @@
   </div>
 </div>
 
+<div class="container" id="orders-history-container" style="display: none; padding: 20px;">
+  <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="color: var(--text); margin: 0; font-size: 18px; text-transform: uppercase;">Order History</h2>
+    <button onclick="hideOrdersHistory()" style="background:#222; color:#ccc; border:1px solid #333; padding:8px 12px; font-weight:700; cursor:pointer; font-size:12px; border-radius:4px;">BACK TO FORM</button>
+  </div>
+  <div id="orders-list"></div>
+</div>
+
 <div id="location-picker-modal" class="modal" onclick="if(event.target===this) { this.style.display='none'; document.body.style.overflow=''; }">
 <div class="modal-content" style="padding: 0; max-width: 600px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; position: relative;">
 <div style="padding: 15px; background: var(--card); border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center;">
@@ -439,6 +459,8 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   });
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
+  let lastKnownOrder = null;
+
   firebase.auth().onAuthStateChanged((user) => {
     const portal = document.getElementById('dev-portal');
     const list = document.getElementById('dev-list');
@@ -454,6 +476,13 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       if (document.querySelector('input[name="customer_email"]')) {
         document.querySelector('input[name="customer_email"]').value = user.email;
       }
+      
+      firebase.database().ref("user_orders/" + user.uid).once('value', snap => {
+        if (snap.exists()) {
+            lastKnownOrder = snap.val();
+            document.getElementById('autofillBtn').style.display = 'block';
+        }
+      });
     } else {
       document.getElementById('auth-overlay').style.display = 'flex';
       document.getElementById('main-app-container').style.display = 'none';
@@ -517,8 +546,106 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     input.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
   }
 
+  let pickupVerified = false, dropVerified = false;
+
+  function initPlaces() {
+    if(window.google && google.maps && google.maps.places) {
+        const pInput = document.getElementById('f-pickup');
+        const dInput = document.getElementById('f-drop-address');
+        const pAuto = new google.maps.places.Autocomplete(pInput);
+        const dAuto = new google.maps.places.Autocomplete(dInput);
+        pAuto.addListener('place_changed', () => { pickupVerified = true; });
+        dAuto.addListener('place_changed', () => { dropVerified = true; });
+        pInput.addEventListener('input', () => { pickupVerified = false; });
+        dInput.addEventListener('input', () => { dropVerified = false; });
+    } else {
+        setTimeout(initPlaces, 500);
+    }
+  }
+  initPlaces();
+
+  function autofillLastOrder() {
+    if (!lastKnownOrder) return;
+    form.name.value = lastKnownOrder.name || '';
+    form.pickup_location.value = lastKnownOrder.pickup_location || '';
+    form.city.value = lastKnownOrder.pickup_city || '';
+    form.customer_phone.value = lastKnownOrder.customer_phone || '';
+    form.delivery_name.value = lastKnownOrder.delivery_name || '';
+    form.destination.value = lastKnownOrder.destination || '';
+    form.drop_city.value = lastKnownOrder.delivery_city || '';
+    pickupVerified = true;
+    dropVerified = true;
+  }
+
+  function showOrdersHistory() {
+    document.getElementById('main-app-container').style.display = 'none';
+    document.getElementById('orders-history-container').style.display = 'block';
+    loadOrdersHistory();
+  }
+
+  function hideOrdersHistory() {
+    document.getElementById('orders-history-container').style.display = 'none';
+    document.getElementById('main-app-container').style.display = 'block';
+  }
+
+  function loadOrdersHistory() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    const list = document.getElementById('orders-list');
+    list.innerHTML = '<p style="color:#aaa;">Loading orders...</p>';
+    db.ref('jobs').orderByChild('customer_email').equalTo(user.email).once('value', snap => {
+        list.innerHTML = '';
+        if (!snap.exists()) {
+            list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
+            return;
+        }
+        const jobs = [];
+        snap.forEach(child => { jobs.push({...child.val(), id: child.key}); });
+        jobs.sort((a,b) => b.timestamp - a.timestamp);
+        
+        jobs.forEach(job => {
+            const dateStr = new Date(job.timestamp).toLocaleString();
+            const s = job.status || 'pending_pickup';
+            
+            let s1='', s2='', s3='', s4='';
+            if(s === 'pending_pickup') s1 = 'active';
+            else if(s === 'assigned') { s1 = 'completed'; s2 = 'active'; }
+            else if(s === 'picked_up' || s === 'en_route') { s1 = 'completed'; s2 = 'completed'; s3 = 'active'; }
+            else if(s === 'completed' || s === 'delivered') { s1 = 'completed'; s2 = 'completed'; s3 = 'completed'; s4 = 'completed'; }
+            
+            list.innerHTML += `
+                <div class="order-card">
+                    <div class="order-date">${dateStr}</div>
+                    <div class="order-title">${job.name} &rarr; ${job.delivery_name}</div>
+                    <div style="font-size:12px; color:var(--text); margin-bottom:15px;">Pkg: ${job.package_details}</div>
+                    <div class="timeline">
+                        <span class="step ${s1}">Ordered</span> ➔
+                        <span class="step ${s2}">Assigned</span> ➔
+                        <span class="step ${s3}">On the Way</span> ➔
+                        <span class="step ${s4}">Delivered</span>
+                    </div>
+                </div>
+            `;
+        });
+    });
+  }
+
   form.addEventListener("submit", e => {
     e.preventDefault();
+    if (document.getElementById('website_url_hp').value) return; 
+
+    const lastOrderTime = localStorage.getItem('lastOrderTime');
+    const nowTime = Date.now();
+    if (lastOrderTime && nowTime - lastOrderTime < 30000) {
+        alert("Please wait a moment before submitting another request.");
+        return;
+    }
+
+    if (!pickupVerified || !dropVerified) {
+        alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");
+        return;
+    }
+
     submitBtn.innerText = "Transmitting...";
     submitBtn.style.opacity = "0.7";
     submitBtn.disabled = true;
@@ -546,6 +673,12 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         };
 
         db.ref("jobs").push(jobData).then(() => {
+          if (firebase.auth().currentUser) {
+              const uid = firebase.auth().currentUser.uid;
+              db.ref("user_orders/" + uid).set(jobData);
+          }
+          localStorage.setItem('lastOrderTime', Date.now());
+          
           form.style.display = "none";
           document.getElementById("thanksMessage").style.display = "block";
           window.scrollTo({top: 0, behavior: 'smooth'});
@@ -559,7 +692,6 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     const geocoder = new google.maps.Geocoder();
     const addressStr = form.pickup_location.value.trim() + ", " + form.city.value.trim();
 
-    // The fix: Set a timeout for the Geocoder. If it takes longer than 3 seconds, submit without coords.
     let geocodeFinished = false;
     const geocodeTimeout = setTimeout(() => {
         if (!geocodeFinished) {
@@ -673,8 +805,10 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         const addr = results[0].formatted_address;
         if (currentPickerTarget === 'pickup') {
           document.getElementById('f-pickup').value = addr;
+          pickupVerified = true;
         } else {
           document.getElementById('f-drop-address').value = addr;
+          dropVerified = true;
         }
       }
       document.getElementById('location-picker-modal').style.display = 'none';
