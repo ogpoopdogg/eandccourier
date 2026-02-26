@@ -586,6 +586,7 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   function hideOrdersHistory() {
     document.getElementById('orders-history-container').style.display = 'none';
     document.getElementById('main-app-container').style.display = 'block';
+    db.ref('jobs').off();
   }
 
   function loadOrdersHistory() {
@@ -593,7 +594,7 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     if (!user) return;
     const list = document.getElementById('orders-list');
     list.innerHTML = '<p style="color:#aaa;">Loading orders...</p>';
-    db.ref('jobs').orderByChild('customer_email').equalTo(user.email).once('value', snap => {
+    db.ref('jobs').orderByChild('created_by').equalTo(user.email).on('value', snap => {
         list.innerHTML = '';
         if (!snap.exists()) {
             list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
