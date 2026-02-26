@@ -331,9 +331,8 @@
         <input type="text" id="f-pickup" name="pickup_location" placeholder="Street Address" required autocomplete="street-address" style="padding-right: 40px;">
         <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('pickup')" type="button">📍</button>
       </div>
-      <div class="input-group" style="flex: 1;">
-        <label>City <span class="required-mark">*</span></label>
-        <input type="text" name="city" placeholder="City" required autocomplete="address-level2">
+      <div class="input-group" style="display: none;">
+        <input type="hidden" name="city" required>
       </div>
     </div>
 
@@ -361,9 +360,8 @@
         <input type="text" id="f-drop-address" name="destination" placeholder="Street Address" required style="padding-right: 40px;">
         <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('drop')" type="button">📍</button>
       </div>
-      <div class="input-group" style="flex: 1;">
-        <label>City <span class="required-mark">*</span></label>
-        <input type="text" name="drop_city" placeholder="City" required>
+      <div class="input-group" style="display: none;">
+        <input type="hidden" name="drop_city" required>
       </div>
     </div>
 
@@ -543,6 +541,8 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   const db = firebase.database();
   let driverZones = {};
   db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
+  let driverLocations = {};
+  db.ref("driver_locations").on("value", s => driverLocations = s.val() || {});
 
   const form = document.getElementById("pickupForm");
   const submitBtn = document.getElementById("submitBtn");
@@ -554,14 +554,36 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 
   let pickupVerified = false, dropVerified = false;
 
+  function extractCity(components) {
+    if (!components) return '';
+    for (let comp of components) {
+        if (comp.types.includes("locality")) return comp.long_name;
+    }
+    for (let comp of components) {
+        if (comp.types.includes("sublocality_level_1")) return comp.long_name;
+    }
+    for (let comp of components) {
+        if (comp.types.includes("administrative_area_level_2")) return comp.long_name;
+    }
+    return '';
+  }
+
   function initPlaces() {
     if(window.google && google.maps && google.maps.places) {
         const pInput = document.getElementById('f-pickup');
         const dInput = document.getElementById('f-drop-address');
         const pAuto = new google.maps.places.Autocomplete(pInput);
         const dAuto = new google.maps.places.Autocomplete(dInput);
-        pAuto.addListener('place_changed', () => { pickupVerified = true; });
-        dAuto.addListener('place_changed', () => { dropVerified = true; });
+        pAuto.addListener('place_changed', () => { 
+            pickupVerified = true; 
+            const place = pAuto.getPlace();
+            document.getElementsByName('city')[0].value = extractCity(place.address_components);
+        });
+        dAuto.addListener('place_changed', () => { 
+            dropVerified = true; 
+            const place = dAuto.getPlace();
+            document.getElementsByName('drop_city')[0].value = extractCity(place.address_components);
+        });
         pInput.addEventListener('input', () => { pickupVerified = false; });
         dInput.addEventListener('input', () => { dropVerified = false; });
     } else {
@@ -616,7 +638,17 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             
             let s1='', s2='', s3='', s4='';
             if(s === 'completed') { s1 = 'completed'; s2 = 'completed'; s3 = 'completed'; s4 = 'completed'; }
-            else if(s === 'pending_delivery') { s1 = 'completed'; s2 = 'completed'; s3 = 'active'; }
+            else if(s === 'pending_delivery') { 
+                s1 = 'completed'; 
+                const driverData = driverLocations[job.assigned_to];
+                if (driverData && driverData.shift_active) {
+                    s2 = 'completed';
+                    s3 = 'active';
+                } else {
+                    s2 = 'active';
+                    s3 = '';
+                }
+            }
             else if(s === 'in_transit' || s === 'at_depot' || (s === 'pending_pickup' && job.assigned_to && job.assigned_to !== 'Unassigned')) { s1 = 'completed'; s2 = 'active'; }
             else { s1 = 'active'; }
             
@@ -806,11 +838,14 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     geocoder.geocode({ location: center }, (results, status) => {
       if (status === 'OK' && results[0]) {
         const addr = results[0].formatted_address;
+        const city = extractCity(results[0].address_components);
         if (currentPickerTarget === 'pickup') {
           document.getElementById('f-pickup').value = addr;
+          document.getElementsByName('city')[0].value = city;
           pickupVerified = true;
         } else {
           document.getElementById('f-drop-address').value = addr;
+          document.getElementsByName('drop_city')[0].value = city;
           dropVerified = true;
         }
       }
