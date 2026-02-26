@@ -542,7 +542,12 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   let driverZones = {};
   db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
   let driverLocations = {};
-  db.ref("driver_locations").on("value", s => driverLocations = s.val() || {});
+  db.ref("driver_locations").on("value", s => {
+    driverLocations = s.val() || {};
+    if (document.getElementById('orders-history-container').style.display === 'block') {
+      loadOrdersHistory();
+    }
+  });
 
   const form = document.getElementById("pickupForm");
   const submitBtn = document.getElementById("submitBtn");
