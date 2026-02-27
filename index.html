@@ -255,11 +255,11 @@
   .timeline { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; }
   .timeline .step { position: relative; text-align: center; flex: 1; }
   @keyframes active-status-pulse {
-    0% { color: #00bfff; text-shadow: 0 0 4px rgba(0, 191, 255, 0.2); }
-    50% { color: #ffffff; text-shadow: 0 0 12px rgba(0, 191, 255, 0.8), 0 0 18px rgba(0, 191, 255, 0.6); }
-    100% { color: #00bfff; text-shadow: 0 0 4px rgba(0, 191, 255, 0.2); }
+    0% { color: var(--accent); text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); transform: scale(1); }
+    50% { color: #ffffff; text-shadow: 0 0 15px rgba(255, 215, 0, 0.9), 0 0 20px rgba(255, 215, 0, 0.6); transform: scale(1.05); }
+    100% { color: var(--accent); text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); transform: scale(1); }
   }
-  .timeline .step.active { animation: active-status-pulse 2s infinite ease-in-out; }
+  .timeline .step.active { animation: active-status-pulse 2s infinite ease-in-out; display: inline-block; }
   .timeline .step.completed { color: var(--success); }
   .order-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
   .order-date { font-size: 12px; color: var(--placeholder); margin-bottom: 5px; }
@@ -619,6 +619,14 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   function hideOrdersHistory() {
     document.getElementById('orders-history-container').style.display = 'none';
     document.getElementById('main-app-container').style.display = 'block';
+    document.getElementById('pickupForm').style.display = 'block';
+    document.getElementById('thanksMessage').style.display = 'none';
+    document.getElementById('pickupForm').reset();
+    pickupVerified = false;
+    dropVerified = false;
+    submitBtn.innerText = "Submit Request";
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = "1";
     db.ref('jobs').off();
   }
 
@@ -707,7 +715,8 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
           delivery_city: form.drop_city.value.trim(),
           package_details: form.package_details.value.trim(),
           po_number: form.po_number.value.trim() || "",
-          other_info: form.other_info.value.trim() ? `[Client Request]: ${form.other_info.value.trim()}` : "[Client Request]",
+          other_info: form.other_info.value.trim(),
+          job_history: "[Client Request]",
           status: "pending_pickup",
           type: "pickup",
           assigned_to: assignedDriver, 
