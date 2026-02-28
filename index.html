@@ -338,12 +338,12 @@
 
     <div class="flex-row">
       <div class="input-group" style="flex: 1;">
-        <label>Email <span class="required-mark">*</span></label>
-        <input type="email" name="customer_email" placeholder="notifications@example.com" required autocomplete="email">
+        <label>Pickup Email <span class="required-mark">*</span></label>
+        <input type="email" name="p_email" placeholder="notifications@example.com" required autocomplete="email">
       </div>
       <div class="input-group" style="flex: 1;">
-        <label>Phone Number <span class="required-mark">*</span></label>
-        <input type="tel" name="customer_phone" placeholder="(204) 555-0123" required autocomplete="tel" oninput="formatPhone(this)">
+        <label>Pickup Phone <span class="required-mark">*</span></label>
+        <input type="tel" name="p_phone" placeholder="(204) 555-0123" required autocomplete="tel" oninput="formatPhone(this)">
       </div>
     </div>
 
@@ -362,6 +362,17 @@
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="drop_city" required>
+      </div>
+    </div>
+
+    <div class="flex-row">
+      <div class="input-group" style="flex: 1;">
+        <label>Delivery Email <span class="required-mark">*</span></label>
+        <input type="email" name="d_email" placeholder="notifications@example.com" required autocomplete="email">
+      </div>
+      <div class="input-group" style="flex: 1;">
+        <label>Delivery Phone <span class="required-mark">*</span></label>
+        <input type="tel" name="d_phone" placeholder="(204) 555-0123" required autocomplete="tel" oninput="formatPhone(this)">
       </div>
     </div>
 
@@ -476,8 +487,8 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       }
       document.getElementById('auth-overlay').style.display = 'none';
       document.getElementById('main-app-container').style.display = 'block';
-      if (document.querySelector('input[name="customer_email"]')) {
-        document.querySelector('input[name="customer_email"]').value = user.email;
+      if (document.querySelector('input[name="p_email"]')) {
+        document.querySelector('input[name="p_email"]').value = user.email;
       }
       
       firebase.database().ref("jobs").orderByChild("created_by").equalTo(user.email).limitToLast(1).on('value', snap => {
@@ -602,10 +613,13 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     form.name.value = lastKnownOrder.name || '';
     form.pickup_location.value = lastKnownOrder.pickup_location || '';
     form.city.value = lastKnownOrder.pickup_city || '';
-    form.customer_phone.value = lastKnownOrder.customer_phone || '';
+    form.p_email.value = lastKnownOrder.p_email || '';
+    form.p_phone.value = lastKnownOrder.p_phone || '';
     form.delivery_name.value = lastKnownOrder.delivery_name || '';
     form.destination.value = lastKnownOrder.destination || '';
     form.drop_city.value = lastKnownOrder.delivery_city || '';
+    form.d_email.value = lastKnownOrder.d_email || '';
+    form.d_phone.value = lastKnownOrder.d_phone || '';
     pickupVerified = true;
     dropVerified = true;
   }
@@ -708,11 +722,13 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
           pickup_location: form.pickup_location.value.trim(),
           pickup_city: form.city.value.trim(),
           city: form.city.value.trim(),
-          customer_email: form.customer_email.value.trim(),
-          customer_phone: form.customer_phone.value.trim(),
+          p_email: form.p_email.value.trim(),
+          p_phone: form.p_phone.value.trim(),
           delivery_name: form.delivery_name.value.trim(),
           destination: form.destination.value.trim(),
           delivery_city: form.drop_city.value.trim(),
+          d_email: form.d_email.value.trim(),
+          d_phone: form.d_phone.value.trim(),
           package_details: form.package_details.value.trim(),
           po_number: form.po_number.value.trim() || "",
           other_info: form.other_info.value.trim(),
