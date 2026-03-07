@@ -695,131 +695,171 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     Additionally, we safely fallback missing data using short-circuit evaluation (`job.package_details || 'N/A'`) and incorporate the new requested fields seamlessly.
   */
   function loadOrdersHistory() {
+  if (document.getElementById('orders-history-container').style.display !== 'block') return;
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  const list = document.getElementById('orders-list');
+  const header = document.getElementById('live-status-header');
+  
+  if (list.innerHTML === '') list.innerHTML = '<p style="color:#aaa;">Loading dashboard...</p>';
+  
+  db.ref('jobs').orderByChild('created_by').equalTo(user.email).on('value', snap => {
     if (document.getElementById('orders-history-container').style.display !== 'block') return;
-    const user = firebase.auth().currentUser;
-    if (!user) return;
-    const list = document.getElementById('orders-list');
-    const header = document.getElementById('live-status-header');
     
-    if (list.innerHTML === '') list.innerHTML = '<p style="color:#aaa;">Loading dashboard...</p>';
+    const now = new Date();
+    header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true });
     
-    db.ref('jobs').orderByChild('created_by').equalTo(user.email).on('value', snap => {
-        if (document.getElementById('orders-history-container').style.display !== 'block') return;
+    list.innerHTML = '';
+    if (!snap.exists()) {
+      list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
+      return;
+    }
+    const jobs = [];
+    snap.forEach(child => { jobs.push({...child.val(), id: child.key}); });
+    jobs.sort((a,b) => b.timestamp - a.timestamp);
+    
+    jobs.forEach(job => {
+      const dateStr = new Date(job.timestamp).toLocaleString();
+      const status = job.status || 'pending_pickup';
+      const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
+      
+      // ----- Determine completion for each of the 5 stages -----
+      let s1 = '', s2 = '', s3 = '', s4 = '', s5 = '';
+      let fillWidth = '0%';
+      
+      // Stage 1: Ordered – always completed once the job exists
+      s1 = 'completed';
+      
+      // Stage 2: Assigned – completed if a driver is assigned
+      if (assigned) s2 = 'completed';
+      
+      // Stage 3: Picked‑Up – completed when status indicates pickup happened
+      // Adjust these conditions to match the actual status set by the driver's "Picked Up" button
+      if (status === 'in_transit' || status === 'picked_up' || status === 'pending_delivery' || status === 'completed') {
+        s3 = 'completed';
+      }
+      
+      // Stage 4: Out for Delivery – completed when driver is en route to delivery
+      if (status === 'pending_delivery' || status === 'out_for_delivery' || status === 'completed') {
+        s4 = 'completed';
+      }
+      
+      // Stage 5: Delivered – completed when job is done
+      if (status === 'completed') {
+        s5 = 'completed';
+      }
+      
+      // Determine which stage is currently active (first incomplete stage)
+      if (!s2) {
+        // active stage is Assigned
+        s2 = 'active';
+        fillWidth = '25%';
+      } else if (!s3) {
+        s3 = 'active';
+        fillWidth = '50%';
+      } else if (!s4) {
+        s4 = 'active';
+        fillWidth = '75%';
+      } else if (!s5) {
+        s5 = 'active';
+        fillWidth = '100%';
+      } else {
+        // all completed
+        fillWidth = '100%';
+      }
+      
+      // If none of the above matched and no active stage set, keep first as active
+      if (!s2 && !s3 && !s4 && !s5) {
+        s1 = 'active';
+        fillWidth = '0%';
+      }
+      
+      const driverNameDisplay = assigned ? assigned.split('@')[0] : 'Pending Assignment';
+      const packageDetailsDisplay = job.package_details || 'N/A';
+      const poDisplay = job.po_number ? job.po_number : 'N/A';
+      const isCompleted = (status === 'completed');
+      const cardId = 'order-card-' + job.id;
+
+      // ----- Inner HTML for the timeline (shared by both completed and active orders) -----
+      const timelineHtml = `
+        <div class="ocean-timeline">
+          <div class="ocean-track"><div class="ocean-fill" style="width: ${fillWidth};"></div></div>
+          <div class="ocean-node ${s1}"><div class="ocean-label">Ordered</div></div>
+          <div class="ocean-node ${s2}"><div class="ocean-label">Assigned</div></div>
+          <div class="ocean-node ${s3}"><div class="ocean-label">Picked‑Up</div></div>
+          <div class="ocean-node ${s4}"><div class="ocean-label">Out for Delivery</div></div>
+          <div class="ocean-node ${s5}"><div class="ocean-label">Delivered</div></div>
+        </div>
+      `;
+
+      const cardInnerHtml = `
+        <div class="order-date">${dateStr}</div>
         
-        const now = new Date();
-        header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true });
+        <div class="dashboard-section">
+          <div class="loc-flex">
+            <div>
+              <strong>Pickup</strong>
+              ${job.name}<br>
+              <span style="color:#aaa; font-size:12px;">${job.pickup_location}</span>
+            </div>
+          </div>
+        </div>
         
-        list.innerHTML = '';
-        if (!snap.exists()) {
-            list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
-            return;
-        }
-        const jobs = [];
-        snap.forEach(child => { jobs.push({...child.val(), id: child.key}); });
-        jobs.sort((a,b) => b.timestamp - a.timestamp);
-        
-        jobs.forEach(job => {
-            const dateStr = new Date(job.timestamp).toLocaleString();
-            const s = job.status || 'pending_pickup';
-            const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
-            const driverData = assigned ? (driverLocations[assigned] || {}) : {};
-            
-            let s1='', s2='', s3='', s4='', fillWidth='0%';
-            
-            if (s === 'completed') { 
-                s1 = 'completed'; s2 = 'completed'; s3 = 'completed'; s4 = 'completed'; 
-                fillWidth = '100%';
-            } else if (s === 'pending_delivery') { 
-                s1 = 'completed'; s2 = 'completed';
-                if (driverData.shift_active) {
-                    s3 = 'active'; fillWidth = '66%';
-                } else {
-                    s2 = 'active'; fillWidth = '33%';
-                }
-            } else if (s === 'in_transit' || s === 'at_depot' || (s === 'pending_pickup' && assigned)) { 
-                s1 = 'completed'; s2 = 'active'; fillWidth = '33%';
-            } else { 
-                s1 = 'active'; fillWidth = '0%';
-            }
-            
-            const driverNameDisplay = assigned ? assigned.split('@')[0] : 'Pending Assignment';
-            const packageDetailsDisplay = job.package_details || 'N/A';
-            const poDisplay = job.po_number ? job.po_number : 'N/A';
-            const isCompleted = (s === 'completed');
-            const cardId = 'order-card-' + job.id;
+        <div class="dashboard-section" style="margin-top: 15px;">
+          <div class="loc-flex">
+            <div>
+              <strong>Delivery</strong>
+              ${job.delivery_name}<br>
+              <span style="color:#aaa; font-size:12px;">${job.destination}</span>
+            </div>
+          </div>
+        </div>
 
-            const cardInnerHtml = `
-                <div class="order-date">${dateStr}</div>
-                
-                <div class="dashboard-section">
-                    <div class="loc-flex">
-                        <div>
-                            <strong>Pickup</strong>
-                            ${job.name}<br>
-                            <span style="color:#aaa; font-size:12px;">${job.pickup_location}</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="dashboard-section" style="margin-top: 15px;">
-                    <div class="loc-flex">
-                        <div>
-                            <strong>Delivery</strong>
-                            ${job.delivery_name}<br>
-                            <span style="color:#aaa; font-size:12px;">${job.destination}</span>
-                        </div>
-                    </div>
-                </div>
+        <div class="dashboard-section" style="margin-top: 15px;">
+          <div class="loc-flex">
+            <div>
+              <strong>Packages/Items/Dimensions</strong>
+              <span style="color:#aaa; font-size:12px;">${packageDetailsDisplay}</span>
+            </div>
+          </div>
+        </div>
 
-                <div class="dashboard-section" style="margin-top: 15px;">
-                    <div class="loc-flex">
-                        <div>
-                            <strong>Packages/Items/Dimensions</strong>
-                            <span style="color:#aaa; font-size:12px;">${packageDetailsDisplay}</span>
-                        </div>
-                    </div>
-                </div>
+        <div class="dashboard-section" style="margin-top: 15px;">
+          <div class="loc-flex">
+            <div>
+              <strong>PO / Ref</strong>
+              <span style="color:#aaa; font-size:12px;">${poDisplay}</span>
+            </div>
+          </div>
+        </div>
 
-                <div class="dashboard-section" style="margin-top: 15px;">
-                    <div class="loc-flex">
-                        <div>
-                            <strong>PO / Ref</strong>
-                            <span style="color:#aaa; font-size:12px;">${poDisplay}</span>
-                        </div>
-                    </div>
-                </div>
+        ${timelineHtml}
+      `;
 
-                <div class="ocean-timeline">
-                    <div class="ocean-track"><div class="ocean-fill" style="width: ${fillWidth};"></div></div>
-                    <div class="ocean-node ${s1}"><div class="ocean-label">Ordered</div></div>
-                    <div class="ocean-node ${s2}"><div class="ocean-label">Assigned</div></div>
-                    <div class="ocean-node ${s3}"><div class="ocean-label">On Way</div></div>
-                    <div class="ocean-node ${s4}"><div class="ocean-label">Delivered</div></div>
-                </div>
-            `;
-
-            if (isCompleted) {
-                list.innerHTML += `
-                    <div style="margin-bottom: 25px;">
-                        <button onclick="const el = document.getElementById('${cardId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                            <span style="font-weight: bold; font-size: 13px;">✅ ${dateStr}</span>
-                            <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">📦 ${packageDetailsDisplay}</span>
-                        </button>
-                        <div id="${cardId}" class="order-card" style="display: none; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
-                            ${cardInnerHtml}
-                        </div>
-                    </div>
-                `;
-            } else {
-                list.innerHTML += `
-                    <div class="order-card">
-                        ${cardInnerHtml}
-                    </div>
-                `;
-            }
-        });
+      if (isCompleted) {
+        // Collapsible view for completed orders
+        list.innerHTML += `
+          <div style="margin-bottom: 25px;">
+            <button onclick="const el = document.getElementById('${cardId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+              <span style="font-weight: bold; font-size: 13px;">✅ ${dateStr}</span>
+              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">📦 ${packageDetailsDisplay}</span>
+            </button>
+            <div id="${cardId}" class="order-card" style="display: none; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
+              ${cardInnerHtml}
+            </div>
+          </div>
+        `;
+      } else {
+        // Active orders shown expanded
+        list.innerHTML += `
+          <div class="order-card">
+            ${cardInnerHtml}
+          </div>
+        `;
+      }
     });
-  }
+  });
+}
 
   form.addEventListener("submit", e => {
     e.preventDefault();
