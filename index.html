@@ -36,7 +36,7 @@
   }
 
   body.light-mode .section-title {
-    color: #b39700; /* Darker yellow so it can be seen clearly on white */
+    color: #b39700;
   }
 
   body.light-mode button[type="submit"] {
@@ -58,7 +58,6 @@
   body.light-mode button[onclick="customerSignUp()"] { background: var(--accent) !important; color: #000 !important; border: none !important; }
   body.light-mode input:focus, body.light-mode textarea:focus, body.light-mode select:focus { background: #ffffff !important; }
 
-  /* Feature 2: Light Mode Button Styling */
   body.light-mode .btn-back-form { background: transparent; border: 1px solid #000000; color: #000000; }
   body.light-mode .ocean-label { color: #000000 !important; }
 
@@ -99,7 +98,6 @@
     margin-top: 10px;
   }
 
-  /* Header Styling */
   .header-wrap { 
     background: #000000;
     border-bottom: 2px solid var(--accent);
@@ -135,7 +133,6 @@
 
   form { padding: 25px; }
 
-  /* Section Dividers */
   .section-title {
     color: var(--accent);
     font-size: 13px;
@@ -155,7 +152,6 @@
   }
   .section-title:first-of-type { margin-top: 0; }
   
-  /* Input Styling */
   .input-group { margin-bottom: 12px; }
   
   label {
@@ -191,7 +187,6 @@
 
   ::placeholder { color: var(--placeholder); font-size: 16px; }
 
-  /* Layout Utilities */
   .flex-row { 
     display: flex; 
     gap: 12px; 
@@ -201,7 +196,6 @@
     .flex-row { flex-direction: column; gap: 12px; }
   }
 
-  /* Button Styling */
   button[type="submit"] { 
     width: 100%; 
     margin-top: 25px;
@@ -227,7 +221,6 @@
   
   button[type="submit"]:active { transform: translateY(1px); }
 
-  /* Success Message */
   #thanksMessage { 
     display: none;
     padding: 40px 30px; 
@@ -249,13 +242,11 @@
     font-weight: 900 !important;
   }
 
-  /* Modal Styling for Map Picker */
   .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(2px); }
   .modal-content { background: var(--card); margin: 5% auto; padding: 30px; width: 90%; max-width: 550px; border: 1px solid var(--accent); color: var(--text); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box; }
   .btn-cancel { background:#222; color:#ccc; border:1px solid #333; padding:12px; font-weight:700; cursor:pointer; font-size:13px; border-radius:4px; }
   .btn-save { background:var(--success); color:#000; border:none; padding:12px; font-weight:700; text-transform:uppercase; cursor:pointer; font-size:13px; border-radius:4px; }
 
-  /* Order History Dashboard Styling */
   .order-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 6px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
   .order-date { font-size: 12px; color: var(--placeholder); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
   .dashboard-section { margin-bottom: 10px; font-size: 13px; color: var(--text); }
@@ -264,10 +255,8 @@
   .dashboard-meta { display: flex; flex-wrap: wrap; gap: 10px; background: #111; padding: 5px 10px; border-radius: 4px; margin-top: 5px; border: 1px solid #222; }
   .meta-item { flex: 1; min-width: 100px; }
   
-  /* Utility Button */
   .btn-back-form { background:#222; color:#ccc; border:1px solid #333; padding:8px 12px; font-weight:700; cursor:pointer; font-size:12px; border-radius:4px; }
 
-  /* Ocean Blue Timeline */
   .ocean-timeline { display: flex; position: relative; margin-top: 35px; align-items: center; justify-content: space-between; padding: 0 10px; margin-bottom: 20px; }
   .ocean-track { position: absolute; top: 50%; left: 10px; right: 10px; height: 6px; background: linear-gradient(to bottom, #444, #222); z-index: 0; transform: translateY(-50%); border-radius: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
   .ocean-fill { position: absolute; top: 0; left: 0; height: 100%; background: #2ecc71; border-radius: 3px; transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 0 8px rgba(0, 119, 182, 0.6); }
@@ -280,7 +269,6 @@
     100% { box-shadow: 0 0 8px #f39c12; transform: scale(1); }
   }
   
-  /* Feature 3: Updated Timeline Label Colors */
   .ocean-label { position: absolute; top: 28px; font-size: 10px; text-transform: uppercase; font-weight: bold; color: #ffffff; text-align: center; width: 70px; left: 50%; transform: translateX(-50%); letter-spacing: 0.5px; }
   .ocean-node.active .ocean-label { color: #ffffff; text-shadow: 0 0 4px rgba(243, 156, 18, 0.3); }
   .ocean-node.completed .ocean-label { color: #ffffff; }
@@ -464,84 +452,103 @@
     localStorage.setItem('ec_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); 
   }
 
-  // 1. Initialize Firebase first
-firebase.initializeApp({
-  apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
-  authDomain: "eandccourier-36fcc.firebaseapp.com",
-  databaseURL: "https://eandccourier-36fcc-default-rtdb.firebaseio.com",
-  projectId: "eandccourier-36fcc",
-  messagingSenderId: "1067680083511",
-  appId: "1:1067680083511:android:22d1eb3757302492bd19b2"
-});
+  // Initialize Firebase
+  firebase.initializeApp({
+    apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
+    authDomain: "eandccourier-36fcc.firebaseapp.com",
+    databaseURL: "https://eandccourier-36fcc-default-rtdb.firebaseio.com",
+    projectId: "eandccourier-36fcc",
+    messagingSenderId: "1067680083511",
+    appId: "1:1067680083511:android:22d1eb3757302492bd19b2"
+  });
 
+  // Set persistence once
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+
+  const db = firebase.database();
 
   let lastKnownOrder = null;
-  let currentUserJobs = null;          // holds all jobs for the logged-in user
-let jobsListener = null;             // reference to the Firebase listener
+  let currentUserJobs = null;
+  let jobsListener = null;
+  let driverZones = {};
+  let driverLocations = {};
 
- firebase.auth().onAuthStateChanged((user) => {
-  const portal = document.getElementById('dev-portal');
-  const list = document.getElementById('dev-list');
+  // Listen for driver zones
+  db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
 
-  if (user) {
-    if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
-      alert("Please check your email and verify your account before logging in.");
-      firebase.auth().signOut();
-      return;
+  // Listen for driver locations (including shift_active)
+  db.ref("driver_locations").on("value", s => {
+    driverLocations = s.val() || {};
+    if (document.getElementById('orders-history-container').style.display === 'block') {
+      renderOrdersHistory();
     }
-    document.getElementById('auth-overlay').style.display = 'none';
-    document.getElementById('main-app-container').style.display = 'block';
-    if (document.querySelector('input[name="p_email"]')) {
-      document.querySelector('input[name="p_email"]').value = user.email;
-    }
-
-    // Listen for the user's jobs once and store in currentUserJobs
-    if (jobsListener) {
-      jobsListener.off(); // remove previous listener if any
-    }
-    jobsListener = db.ref("jobs").orderByChild("created_by").equalTo(user.email).on('value', snap => {
-      const jobsData = snap.val();
-      currentUserJobs = jobsData ? jobsData : {};
-      // Also update lastKnownOrder for autofill
-      if (snap.exists()) {
-        const data = snap.val();
-        lastKnownOrder = Object.values(data)[0];
-        document.getElementById('autofillBtn').style.display = 'block';
-      } else {
-        lastKnownOrder = null;
-        document.getElementById('autofillBtn').style.display = 'none';
-      }
-      // If orders history is open, re-render
-      if (document.getElementById('orders-history-container').style.display === 'block') {
-        renderOrdersHistory();
-      }
-    });
-
-  } else {
-    document.getElementById('auth-overlay').style.display = 'flex';
-    document.getElementById('main-app-container').style.display = 'none';
-    // Clean up
-    if (jobsListener) {
-      jobsListener.off();
-      jobsListener = null;
-    }
-    currentUserJobs = null;
-  }
-
-  // Developer notes listener (unchanged)
-  firebase.database().ref('developer').on('value', snap => {
-    list.innerHTML = '';
-    const notes = snap.val() || {};
-    Object.values(notes).forEach(note => {
-      list.innerHTML += `
-        <div class="dev-item">
-          <div class="dev-hdr">${note.user} - <span style="color: orange;">${note.app || 'Database'}</span> - ${note.date}</div>
-          <div style="color:#eee;">${note.text}</div>
-        </div>`;
-    });
-    list.scrollTop = list.scrollHeight; 
   });
-});
+
+  // Single auth state listener (correct one)
+  firebase.auth().onAuthStateChanged((user) => {
+    const portal = document.getElementById('dev-portal');
+    const list = document.getElementById('dev-list');
+
+    if (user) {
+      if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
+        alert("Please check your email and verify your account before logging in.");
+        firebase.auth().signOut();
+        return;
+      }
+      document.getElementById('auth-overlay').style.display = 'none';
+      document.getElementById('main-app-container').style.display = 'block';
+      if (document.querySelector('input[name="p_email"]')) {
+        document.querySelector('input[name="p_email"]').value = user.email;
+      }
+
+      // Remove any previous jobs listener
+      if (jobsListener) {
+        jobsListener.off();
+      }
+      // Listen for the user's jobs once and store in currentUserJobs
+      jobsListener = db.ref("jobs").orderByChild("created_by").equalTo(user.email).on('value', snap => {
+        currentUserJobs = snap.val() || {};
+        // Update lastKnownOrder for autofill
+        if (snap.exists()) {
+          const data = snap.val();
+          lastKnownOrder = Object.values(data)[0];
+          document.getElementById('autofillBtn').style.display = 'block';
+        } else {
+          lastKnownOrder = null;
+          document.getElementById('autofillBtn').style.display = 'none';
+        }
+        // If orders history is open, re-render
+        if (document.getElementById('orders-history-container').style.display === 'block') {
+          renderOrdersHistory();
+        }
+      });
+
+    } else {
+      document.getElementById('auth-overlay').style.display = 'flex';
+      document.getElementById('main-app-container').style.display = 'none';
+      if (jobsListener) {
+        jobsListener.off();
+        jobsListener = null;
+      }
+      currentUserJobs = null;
+    }
+
+    // Developer notes listener (unchanged)
+    firebase.database().ref('developer').on('value', snap => {
+      list.innerHTML = '';
+      const notes = snap.val() || {};
+      Object.values(notes).forEach(note => {
+        list.innerHTML += `
+          <div class="dev-item">
+            <div class="dev-hdr">${note.user} - <span style="color: orange;">${note.app || 'Database'}</span> - ${note.date}</div>
+            <div style="color:#eee;">${note.text}</div>
+          </div>`;
+      });
+      list.scrollTop = list.scrollHeight; 
+    });
+  });
+
+  // Login functions
   function customerLogin() {
     const e = document.getElementById('auth-email').value.trim();
     const p = document.getElementById('auth-password').value.trim();
@@ -573,17 +580,6 @@ let jobsListener = null;             // reference to the Firebase listener
     }).catch(err => alert("Error: " + err.message));
   }
 
-  const db = firebase.database();
-  let driverZones = {};
-  db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
- let driverLocations = {};
-db.ref("driver_locations").on("value", s => {
-  driverLocations = s.val() || {};
-  // If orders history is open, re-render using the stored jobs
-  if (document.getElementById('orders-history-container').style.display === 'block') {
-    renderOrdersHistory();
-  }
-});
   const form = document.getElementById("pickupForm");
   const submitBtn = document.getElementById("submitBtn");
 
@@ -666,13 +662,30 @@ db.ref("driver_locations").on("value", s => {
     dropVerified = true;
   }
 
+  let ordersRefreshInterval = null;
+
   function showOrdersHistory() {
-  document.getElementById('main-app-container').style.display = 'none';
-  document.getElementById('orders-history-container').style.display = 'block';
-  renderOrdersHistory();  // was loadOrdersHistory()
-}
+    document.getElementById('main-app-container').style.display = 'none';
+    document.getElementById('orders-history-container').style.display = 'block';
+    renderOrdersHistory();
+
+    // Force re-render every 2 seconds while dashboard is open (for debugging – can be removed later)
+    if (ordersRefreshInterval) clearInterval(ordersRefreshInterval);
+    ordersRefreshInterval = setInterval(() => {
+      if (document.getElementById('orders-history-container').style.display === 'block') {
+        renderOrdersHistory();
+      } else {
+        clearInterval(ordersRefreshInterval);
+        ordersRefreshInterval = null;
+      }
+    }, 2000);
+  }
 
   function hideOrdersHistory() {
+    if (ordersRefreshInterval) {
+      clearInterval(ordersRefreshInterval);
+      ordersRefreshInterval = null;
+    }
     document.getElementById('orders-history-container').style.display = 'none';
     document.getElementById('main-app-container').style.display = 'block';
     document.getElementById('pickupForm').style.display = 'block';
@@ -685,165 +698,155 @@ db.ref("driver_locations").on("value", s => {
     submitBtn.style.opacity = "1";
   }
 
-  /*
-    CODER'S NOTE: loadOrdersHistory Refactor 
-    
-    Before: The template literal indiscriminately rendered every `.order-card` fully expanded, missing crucial package details and PO numbers. 
-    It relied entirely on a single large string interpolation block regardless of the job's completion state.
-
-    After: We've decoupled the inner HTML generation (`cardInnerHtml`) from the outer container. 
-    By evaluating `isCompleted`, we conditionally render a compact, toggleable stat bar for 'completed' orders to reduce UI clutter. 
-    This is a common optimization for list rendering in modern web dev—keep active items visible and archive older items behind an interaction.
-    Additionally, we safely fallback missing data using short-circuit evaluation (`job.package_details || 'N/A'`) and incorporate the new requested fields seamlessly.
-  */
   function renderOrdersHistory() {
-  if (document.getElementById('orders-history-container').style.display !== 'block') return;
-  const list = document.getElementById('orders-list');
-  const header = document.getElementById('live-status-header');
+    if (document.getElementById('orders-history-container').style.display !== 'block') return;
+    const list = document.getElementById('orders-list');
+    const header = document.getElementById('live-status-header');
 
-  if (!currentUserJobs || Object.keys(currentUserJobs).length === 0) {
-    list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
-    return;
-  }
-
-  const now = new Date();
-  header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true });
-
-  list.innerHTML = '';
-
-  const jobs = [];
-  Object.entries(currentUserJobs).forEach(([key, val]) => {
-    jobs.push({...val, id: key});
-  });
-  jobs.sort((a,b) => b.timestamp - a.timestamp);
-
-  jobs.forEach(job => {
-    const dateStr = new Date(job.timestamp).toLocaleString();
-    const status = job.status || 'pending_pickup';
-    const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
-
-    // Completion flags for each stage
-    const c1 = true; // Ordered always completed
-    const c2 = assigned !== null; // Assigned completed if a driver is assigned
-    const c3 = !!(job.picked_up_by) || status === 'in_transit'; // Picked‑Up completed if pickup happened
-    const c4 = (status === 'completed') || (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true); // Out for Delivery completed if delivered OR (pending_delivery + driver on shift)
-    const c5 = (status === 'completed'); // Delivered completed if job is completed
-
-    // Determine active stage (the one that should pulse)
-    let activeStage = null;
-    if (status === 'pending_pickup' && assigned) {
-      activeStage = 2; // Assigned
-    } else if (status === 'in_transit') {
-      activeStage = 3; // Picked‑Up
-    } else if (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true) {
-      activeStage = 4; // Out for Delivery
-    } else if (status === 'completed') {
-      activeStage = null; // no active stage for completed jobs
+    if (!currentUserJobs || Object.keys(currentUserJobs).length === 0) {
+      list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
+      return;
     }
 
-    // Build node classes array
-    const nodeClasses = [
-      c1 ? 'completed' : '',
-      c2 ? 'completed' : '',
-      c3 ? 'completed' : '',
-      c4 ? 'completed' : '',
-      c5 ? 'completed' : ''
-    ];
-    if (activeStage) {
-      nodeClasses[activeStage - 1] += ' active';
-    }
+    const now = new Date();
+    header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true });
 
-    // Fill width: number of completed nodes before the active node (if any) * 25%
-    let fillWidth = '0%';
-    if (activeStage) {
-      let completedBefore = 0;
-      for (let i = 0; i < activeStage - 1; i++) {
-        if (nodeClasses[i].includes('completed')) completedBefore++;
+    list.innerHTML = '';
+
+    const jobs = [];
+    Object.entries(currentUserJobs).forEach(([key, val]) => {
+      jobs.push({...val, id: key});
+    });
+    jobs.sort((a,b) => b.timestamp - a.timestamp);
+
+    jobs.forEach(job => {
+      const dateStr = new Date(job.timestamp).toLocaleString();
+      const status = job.status || 'pending_pickup';
+      const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
+
+      // Completion flags for each stage
+      const c1 = true; // Ordered always completed
+      const c2 = assigned !== null; // Assigned completed if a driver is assigned
+      const c3 = !!(job.picked_up_by) || status === 'in_transit'; // Picked‑Up completed if pickup happened
+      const c4 = (status === 'completed') || (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true); // Out for Delivery completed if delivered OR (pending_delivery + driver on shift)
+      const c5 = (status === 'completed'); // Delivered completed if job is completed
+
+      // Determine active stage (the one that should pulse)
+      let activeStage = null;
+      if (status === 'pending_pickup' && assigned) {
+        activeStage = 2; // Assigned
+      } else if (status === 'in_transit') {
+        activeStage = 3; // Picked‑Up
+      } else if (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true) {
+        activeStage = 4; // Out for Delivery
+      } else if (status === 'completed') {
+        activeStage = null; // no active stage for completed jobs
       }
-      fillWidth = (completedBefore * 25) + '%';
-    } else {
-      const completedCount = [c1,c2,c3,c4,c5].filter(Boolean).length;
-      if (completedCount > 1) {
-        fillWidth = ((completedCount - 1) * 25) + '%';
+
+      // Build node classes array
+      const nodeClasses = [
+        c1 ? 'completed' : '',
+        c2 ? 'completed' : '',
+        c3 ? 'completed' : '',
+        c4 ? 'completed' : '',
+        c5 ? 'completed' : ''
+      ];
+      if (activeStage) {
+        nodeClasses[activeStage - 1] += ' active';
       }
-    }
 
-    const packageDetailsDisplay = job.package_details || 'N/A';
-    const poDisplay = job.po_number ? job.po_number : 'N/A';
-    const isCompleted = (status === 'completed');
-    const cardId = 'order-card-' + job.id;
+      // Fill width: number of completed nodes before the active node (if any) * 25%
+      let fillWidth = '0%';
+      if (activeStage) {
+        let completedBefore = 0;
+        for (let i = 0; i < activeStage - 1; i++) {
+          if (nodeClasses[i].includes('completed')) completedBefore++;
+        }
+        fillWidth = (completedBefore * 25) + '%';
+      } else {
+        const completedCount = [c1,c2,c3,c4,c5].filter(Boolean).length;
+        if (completedCount > 1) {
+          fillWidth = ((completedCount - 1) * 25) + '%';
+        }
+      }
 
-    const timelineHtml = `
-      <div class="ocean-timeline">
-        <div class="ocean-track"><div class="ocean-fill" style="width: ${fillWidth};"></div></div>
-        <div class="ocean-node ${nodeClasses[0]}"><div class="ocean-label">Ordered</div></div>
-        <div class="ocean-node ${nodeClasses[1]}"><div class="ocean-label">Assigned</div></div>
-        <div class="ocean-node ${nodeClasses[2]}"><div class="ocean-label">Picked‑Up</div></div>
-        <div class="ocean-node ${nodeClasses[3]}"><div class="ocean-label">Out for Delivery</div></div>
-        <div class="ocean-node ${nodeClasses[4]}"><div class="ocean-label">Delivered</div></div>
-      </div>
-    `;
+      const packageDetailsDisplay = job.package_details || 'N/A';
+      const poDisplay = job.po_number ? job.po_number : 'N/A';
+      const isCompleted = (status === 'completed');
+      const cardId = 'order-card-' + job.id;
 
-    const cardInnerHtml = `
-      <div class="order-date">${dateStr}</div>
-      <div class="dashboard-section">
-        <div class="loc-flex">
-          <div>
-            <strong>Pickup</strong>
-            ${job.name}<br>
-            <span style="color:#aaa; font-size:12px;">${job.pickup_location}</span>
+      const timelineHtml = `
+        <div class="ocean-timeline">
+          <div class="ocean-track"><div class="ocean-fill" style="width: ${fillWidth};"></div></div>
+          <div class="ocean-node ${nodeClasses[0]}"><div class="ocean-label">Ordered</div></div>
+          <div class="ocean-node ${nodeClasses[1]}"><div class="ocean-label">Assigned</div></div>
+          <div class="ocean-node ${nodeClasses[2]}"><div class="ocean-label">Picked‑Up</div></div>
+          <div class="ocean-node ${nodeClasses[3]}"><div class="ocean-label">Out for Delivery</div></div>
+          <div class="ocean-node ${nodeClasses[4]}"><div class="ocean-label">Delivered</div></div>
+        </div>
+      `;
+
+      const cardInnerHtml = `
+        <div class="order-date">${dateStr}</div>
+        <div class="dashboard-section">
+          <div class="loc-flex">
+            <div>
+              <strong>Pickup</strong>
+              ${job.name}<br>
+              <span style="color:#aaa; font-size:12px;">${job.pickup_location}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="dashboard-section" style="margin-top: 15px;">
-        <div class="loc-flex">
-          <div>
-            <strong>Delivery</strong>
-            ${job.delivery_name}<br>
-            <span style="color:#aaa; font-size:12px;">${job.destination}</span>
+        <div class="dashboard-section" style="margin-top: 15px;">
+          <div class="loc-flex">
+            <div>
+              <strong>Delivery</strong>
+              ${job.delivery_name}<br>
+              <span style="color:#aaa; font-size:12px;">${job.destination}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="dashboard-section" style="margin-top: 15px;">
-        <div class="loc-flex">
-          <div>
-            <strong>Packages/Items/Dimensions</strong>
-            <span style="color:#aaa; font-size:12px;">${packageDetailsDisplay}</span>
+        <div class="dashboard-section" style="margin-top: 15px;">
+          <div class="loc-flex">
+            <div>
+              <strong>Packages/Items/Dimensions</strong>
+              <span style="color:#aaa; font-size:12px;">${packageDetailsDisplay}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="dashboard-section" style="margin-top: 15px;">
-        <div class="loc-flex">
-          <div>
-            <strong>PO / Ref</strong>
-            <span style="color:#aaa; font-size:12px;">${poDisplay}</span>
+        <div class="dashboard-section" style="margin-top: 15px;">
+          <div class="loc-flex">
+            <div>
+              <strong>PO / Ref</strong>
+              <span style="color:#aaa; font-size:12px;">${poDisplay}</span>
+            </div>
           </div>
         </div>
-      </div>
-      ${timelineHtml}
-    `;
+        ${timelineHtml}
+      `;
 
-    if (isCompleted) {
-      list.innerHTML += `
-        <div style="margin-bottom: 25px;">
-          <button onclick="const el = document.getElementById('${cardId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-            <span style="font-weight: bold; font-size: 13px;">✅ ${dateStr}</span>
-            <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">📦 ${packageDetailsDisplay}</span>
-          </button>
-          <div id="${cardId}" class="order-card" style="display: none; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
+      if (isCompleted) {
+        list.innerHTML += `
+          <div style="margin-bottom: 25px;">
+            <button onclick="const el = document.getElementById('${cardId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+              <span style="font-weight: bold; font-size: 13px;">✅ ${dateStr}</span>
+              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">📦 ${packageDetailsDisplay}</span>
+            </button>
+            <div id="${cardId}" class="order-card" style="display: none; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
+              ${cardInnerHtml}
+            </div>
+          </div>
+        `;
+      } else {
+        list.innerHTML += `
+          <div class="order-card">
             ${cardInnerHtml}
           </div>
-        </div>
-      `;
-    } else {
-      list.innerHTML += `
-        <div class="order-card">
-          ${cardInnerHtml}
-        </div>
-      `;
-    }
-  });
-}
+        `;
+      }
+    });
+  }
+
   form.addEventListener("submit", e => {
     e.preventDefault();
     if (document.getElementById('website_url_hp').value) return; 
@@ -1048,7 +1051,6 @@ db.ref("driver_locations").on("value", s => {
 </div>
 
 <style>
-  /* Use a fallback if --accent variable isn't defined in your main CSS */
   :root { --accent: #ffd700; } 
   .dev-item { border-bottom:1px solid #222; padding:8px 0; }
   .dev-hdr { color:var(--accent); font-weight:800; margin-bottom:4px; font-size:10px; }
@@ -1059,7 +1061,6 @@ db.ref("driver_locations").on("value", s => {
 <script>
   let devQuill;
 
-  // 3. Save Function
   function saveDevNote() {
     const currentUser = firebase.auth().currentUser;
     if (devQuill.getText().trim() === "") return;
@@ -1075,7 +1076,7 @@ db.ref("driver_locations").on("value", s => {
       date: dateStr,
       timestamp: firebase.database.ServerValue.TIMESTAMP
     }).then(() => {
-      devQuill.setText(''); // Reset editor
+      devQuill.setText('');
     }).catch(err => {
       console.error("Command Center Error:", err);
       alert("Post failed. Check database permissions.");
