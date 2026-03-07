@@ -470,7 +470,7 @@
   let lastKnownOrder = null;
   let currentUserJobs = null;
   let jobsListener = null;
-  let driverZones = {};
+  let expandedCompletedCards = new Set();  let driverZones = {};
   let driverLocations = {};
 
   // Listen for driver zones
