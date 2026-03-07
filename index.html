@@ -686,10 +686,10 @@ db.ref("driver_locations").on("value", s => {
   }
 
   function showOrdersHistory() {
-    document.getElementById('main-app-container').style.display = 'none';
-    document.getElementById('orders-history-container').style.display = 'block';
-    loadOrdersHistory();
-  }
+  document.getElementById('main-app-container').style.display = 'none';
+  document.getElementById('orders-history-container').style.display = 'block';
+  renderOrdersHistory();  // was loadOrdersHistory()
+}
 
   function hideOrdersHistory() {
     document.getElementById('orders-history-container').style.display = 'none';
