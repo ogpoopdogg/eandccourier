@@ -833,25 +833,20 @@ if (status === 'pending_delivery' && assigned) {
         ${timelineHtml}
       `;
 
-      if (isCompleted) {
-        list.innerHTML += `
-          <div style="margin-bottom: 25px;">
-            <button onclick="const el = document.getElementById('${cardId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-              <span style="font-weight: bold; font-size: 13px;">✅ ${dateStr}</span>
-              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">📦 ${packageDetailsDisplay}</span>
-            </button>
-            <div id="${cardId}" class="order-card" style="display: none; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
-              ${cardInnerHtml}
-            </div>
-          </div>
-        `;
-      } else {
-        list.innerHTML += `
-          <div class="order-card">
-            ${cardInnerHtml}
-          </div>
-        `;
-      }
+     if (isCompleted) {
+  const isExpanded = expandedCompletedCards.has(job.id);
+  list.innerHTML += `
+    <div style="margin-bottom: 25px;">
+      <button onclick="toggleCompletedCard('${job.id}')" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <span style="font-weight: bold; font-size: 13px;">✅ ${dateStr}</span>
+        <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">📦 ${packageDetailsDisplay}</span>
+      </button>
+      <div id="${cardId}" class="order-card" style="display: ${isExpanded ? 'block' : 'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
+        ${cardInnerHtml}
+      </div>
+    </div>
+  `;
+}
     });
   }
 
