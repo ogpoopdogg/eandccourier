@@ -665,7 +665,16 @@ db.ref("driver_locations").on("value", s => {
   }
 
   let ordersRefreshInterval = null;
-
+  function fetchAndRenderOrders() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  db.ref("jobs").orderByChild("created_by").equalTo(user.email).once('value').then(snap => {
+    currentUserJobs = snap.val() || {};
+    if (document.getElementById('orders-history-container').style.display === 'block') {
+      renderOrdersHistory();
+    }
+  });
+}
 function showOrdersHistory() {
   document.getElementById('main-app-container').style.display = 'none';
   document.getElementById('orders-history-container').style.display = 'block';
