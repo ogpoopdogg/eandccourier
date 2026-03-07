@@ -666,7 +666,7 @@ db.ref("driver_locations").on("value", s => {
 
   let ordersRefreshInterval = null;
 
- function showOrdersHistory() {
+function showOrdersHistory() {
   document.getElementById('main-app-container').style.display = 'none';
   document.getElementById('orders-history-container').style.display = 'block';
   renderOrdersHistory();
@@ -682,8 +682,14 @@ db.ref("driver_locations").on("value", s => {
       window.ordersRefreshInterval = null;
     }
   }, 2000);
-}
 
+  // Additional re-render after 1 second to catch any delayed data
+  setTimeout(() => {
+    if (document.getElementById('orders-history-container').style.display === 'block') {
+      renderOrdersHistory();
+    }
+  }, 1000);
+}
  function hideOrdersHistory() {
   // Clear the refresh interval
   if (window.ordersRefreshInterval) {
