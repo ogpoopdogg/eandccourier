@@ -21,7 +21,7 @@
   }
 
   body.light-mode {
-    --bg: #f8f8f8;
+    --bg: #f0f0f0;
     --card: #f2f2f2;
     --text: #000000;
     --input-bg: #f9f9f9;
@@ -73,6 +73,22 @@
       color: #555555;
   }
   body.light-mode .settings-section h3 {
+      color: #000000;
+  }
+  body.light-mode #settings-modal .modal-content h2 {
+      color: #000000;
+  }
+
+  /* Light mode order dashboard text */
+  body.light-mode .order-card,
+  body.light-mode .order-date,
+  body.light-mode .dashboard-section,
+  body.light-mode .dashboard-section strong,
+  body.light-mode .loc-flex,
+  body.light-mode .loc-flex div,
+  body.light-mode .ocean-label,
+  body.light-mode #orders-list button,
+  body.light-mode #orders-list button span {
       color: #000000;
   }
 
@@ -366,7 +382,7 @@
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Pickup Address <span class="required-mark">*</span></label>
         <input type="text" id="f-pickup" name="pickup_location" placeholder="Street Address" required autocomplete="street-address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('pickup')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('pickup')" type="button">Loc</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="city" required>
@@ -395,7 +411,7 @@
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Delivery Address <span class="required-mark">*</span></label>
         <input type="text" id="f-drop-address" name="destination" placeholder="Street Address" required style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('drop')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('drop')" type="button">Loc</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="drop_city" required>
@@ -435,7 +451,7 @@
   </form>
 
   <div id="thanksMessage">
-    <span class="success-icon">✅</span>
+    <span class="success-icon">✓</span>
     <h2 style="color: #fff; margin: 0 0 10px 0; text-transform: uppercase; font-size: 18px;">Request Received</h2>
     <p style="color: #aaa; margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Our dispatch team has been notified and will review your request shortly.</p>
     <button onclick="location.reload()" type="button" class="success-btn" style="width: 100%; padding: 15px; border-radius: 6px; cursor: pointer; text-transform: uppercase;">Submit Another</button>
@@ -516,6 +532,7 @@
     document.body.classList.toggle('light-mode'); 
     localStorage.setItem('ec_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); 
     updateThemeButtons();
+    saveUserSettings({theme: document.body.classList.contains('light-mode') ? 'light' : 'dark'});
   }
   function setTheme(mode) {
     if (mode === 'light') {
@@ -526,6 +543,7 @@
       localStorage.setItem('ec_theme', 'dark');
     }
     updateThemeButtons();
+    saveUserSettings({theme: mode});
   }
   function updateThemeButtons() {
     const isLight = document.body.classList.contains('light-mode');
@@ -568,6 +586,28 @@
     }
   });
 
+  // Save user settings to Firebase
+  function saveUserSettings(settings) {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    db.ref('user_settings/' + user.uid).update(settings);
+  }
+
+  // Load user settings from Firebase
+  function loadUserSettings(uid) {
+    db.ref('user_settings/' + uid).once('value', snap => {
+      const settings = snap.val();
+      if (settings) {
+        if (settings.theme) {
+          setTheme(settings.theme);
+        }
+        if (settings.autofillDefaults) {
+          localStorage.setItem('autofillDefaults', JSON.stringify(settings.autofillDefaults));
+        }
+      }
+    });
+  }
+
   // Single auth state listener (correct one)
   firebase.auth().onAuthStateChanged((user) => {
     const list = document.getElementById('dev-list');
@@ -583,6 +623,9 @@
       if (document.querySelector('input[name="p_email"]')) {
         document.querySelector('input[name="p_email"]').value = user.email;
       }
+
+      // Load user settings
+      loadUserSettings(user.uid);
 
       // Remove any previous jobs listener by calling the stored detach function
       if (jobsListener) {
@@ -788,6 +831,7 @@
     };
     localStorage.setItem('autofillDefaults', JSON.stringify(defaults));
     alert('Defaults saved!');
+    saveUserSettings({autofillDefaults: defaults});
   }
 
   function loadDefaultsIntoModal() {
@@ -1000,7 +1044,7 @@
         list.innerHTML += `
           <div style="margin-bottom: 25px;">
             <button onclick="toggleCompletedCard('${job.id}')" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-              <span style="font-weight: bold; font-size: 13px; color: orange;">✅ ${shortDate}</span>
+              <span style="font-weight: bold; font-size: 13px; color: orange;">${shortDate}</span>
               <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 30%;">${job.package_details || 'N/A'}</span>
               <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 30%;">
                 <span style="color: #ffd700;">${job.name || '?'}</span> → <span style="color: #90ee90;">${job.delivery_name || '?'}</span>
