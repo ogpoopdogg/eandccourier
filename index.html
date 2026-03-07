@@ -678,7 +678,7 @@ db.ref("driver_locations").on("value", s => {
 function showOrdersHistory() {
   document.getElementById('main-app-container').style.display = 'none';
   document.getElementById('orders-history-container').style.display = 'block';
-  renderOrdersHistory();
+  fetchAndRenderOrders();
 
   // Clear any existing interval
   if (window.ordersRefreshInterval) clearInterval(window.ordersRefreshInterval);
@@ -691,35 +691,6 @@ function showOrdersHistory() {
       window.ordersRefreshInterval = null;
     }
   }, 2000);
-
-  // Additional re-render after 1 second to catch any delayed data
-  setTimeout(() => {
-    if (document.getElementById('orders-history-container').style.display === 'block') {
-      renderOrdersHistory();
-    }
-  }, 1000);
-
-  // Retry fetching jobs up to 3 times with 1-second intervals to ensure data appears
-  let retries = 0;
-  const maxRetries = 3;
-  const retryFetch = () => {
-    const user = firebase.auth().currentUser;
-    if (!user) return;
-    db.ref("jobs").orderByChild("created_by").equalTo(user.email).once('value').then(snap => {
-      const freshJobs = snap.val() || {};
-      // Update currentUserJobs with fresh data
-      currentUserJobs = freshJobs;
-      if (document.getElementById('orders-history-container').style.display === 'block') {
-        renderOrdersHistory();
-      }
-      // If no jobs yet, retry up to maxRetries
-      if (Object.keys(freshJobs).length === 0 && retries < maxRetries) {
-        retries++;
-        setTimeout(retryFetch, 1000);
-      }
-    });
-  };
-  retryFetch();
 }
  function hideOrdersHistory() {
   // Clear the refresh interval
