@@ -700,15 +700,15 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   if (!user) return;
   const list = document.getElementById('orders-list');
   const header = document.getElementById('live-status-header');
-  
+
   if (list.innerHTML === '') list.innerHTML = '<p style="color:#aaa;">Loading dashboard...</p>';
-  
+
   db.ref('jobs').orderByChild('created_by').equalTo(user.email).on('value', snap => {
     if (document.getElementById('orders-history-container').style.display !== 'block') return;
-    
+
     const now = new Date();
     header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true });
-    
+
     list.innerHTML = '';
     if (!snap.exists()) {
       list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
@@ -717,38 +717,39 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     const jobs = [];
     snap.forEach(child => { jobs.push({...child.val(), id: child.key}); });
     jobs.sort((a,b) => b.timestamp - a.timestamp);
-    
+
     jobs.forEach(job => {
       const dateStr = new Date(job.timestamp).toLocaleString();
       const status = job.status || 'pending_pickup';
       const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
-      
-      // ----- Determine completion for each of the 5 stages -----
-      let s1 = '', s2 = '', s3 = '', s4 = '', s5 = '';
+
+      // Stage 1: Ordered – always completed
+      let s1 = 'completed';
+      let s2 = '', s3 = '', s4 = '', s5 = '';
       let fillWidth = '0%';
-      
-      // Stage 1: Ordered – always completed once the job exists
-      s1 = 'completed';
-      
+
       // Stage 2: Assigned – completed if a driver is assigned
       if (assigned) s2 = 'completed';
-      
-      // Stage 3: Picked‑Up – completed when status indicates pickup happened
-      // Adjust these conditions to match the actual status set by the driver's "Picked Up" button
-      if (status === 'in_transit' || status === 'picked_up' || status === 'pending_delivery' || status === 'completed') {
+
+      // Stage 3: Picked‑Up – completed if job was picked up (in_transit or has picked_up_by)
+      if (job.picked_up_by || status === 'in_transit') {
         s3 = 'completed';
       }
-      
-      // Stage 4: Out for Delivery – completed when driver is en route to delivery
-      if (status === 'pending_delivery' || status === 'out_for_delivery' || status === 'completed') {
+
+      // Stage 4: Out for Delivery – completed if:
+      //   - status is 'pending_delivery' AND assigned driver has shift_active = true
+      //   - OR status is 'completed' (implies it was out for delivery earlier)
+      if (status === 'completed') {
+        s4 = 'completed';
+      } else if (status === 'pending_delivery' && assigned && driverLocations[assigned]?.shift_active === true) {
         s4 = 'completed';
       }
-      
-      // Stage 5: Delivered – completed when job is done
+
+      // Stage 5: Delivered – completed if status is 'completed'
       if (status === 'completed') {
         s5 = 'completed';
       }
-      
+
       // Determine which stage is currently active (first incomplete stage)
       if (!s2) {
         // active stage is Assigned
@@ -767,13 +768,13 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         // all completed
         fillWidth = '100%';
       }
-      
-      // If none of the above matched and no active stage set, keep first as active
+
+      // If none of the above matched (should not happen, but guard)
       if (!s2 && !s3 && !s4 && !s5) {
         s1 = 'active';
         fillWidth = '0%';
       }
-      
+
       const driverNameDisplay = assigned ? assigned.split('@')[0] : 'Pending Assignment';
       const packageDetailsDisplay = job.package_details || 'N/A';
       const poDisplay = job.po_number ? job.po_number : 'N/A';
@@ -794,7 +795,7 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 
       const cardInnerHtml = `
         <div class="order-date">${dateStr}</div>
-        
+
         <div class="dashboard-section">
           <div class="loc-flex">
             <div>
@@ -804,7 +805,7 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             </div>
           </div>
         </div>
-        
+
         <div class="dashboard-section" style="margin-top: 15px;">
           <div class="loc-flex">
             <div>
