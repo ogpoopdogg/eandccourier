@@ -862,109 +862,110 @@ if (status === 'pending_delivery' && assigned) {
       }
     }
   }  form.addEventListener("submit", e => {
-    e.preventDefault();
-    if (document.getElementById('website_url_hp').value) return; 
+  e.preventDefault();
+  if (document.getElementById('website_url_hp').value) return; 
 
-    const lastOrderTime = localStorage.getItem('lastOrderTime');
-    const nowTime = Date.now();
-    if (lastOrderTime && nowTime - lastOrderTime < 30000) {
-        alert("Please wait a moment before submitting another request.");
-        return;
-    }
+  const lastOrderTime = localStorage.getItem('lastOrderTime');
+  const nowTime = Date.now();
+  if (lastOrderTime && nowTime - lastOrderTime < 30000) {
+      alert("Please wait a moment before submitting another request.");
+      return;
+  }
 
-    if (!pickupVerified || !dropVerified) {
-        alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");
-        return;
-    }
+  if (!pickupVerified || !dropVerified) {
+      alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");
+      return;
+  }
 
-    submitBtn.innerText = "Transmitting...";
-    submitBtn.style.opacity = "0.7";
-    submitBtn.disabled = true;
+  submitBtn.innerText = "Transmitting...";
+  submitBtn.style.opacity = "0.7";
+  submitBtn.disabled = true;
 
-    const finalizeSubmission = (coords = {}, assignedDriver = 'Unassigned') => {
-        const jobData = {
-          name: form.name.value.trim(),
-          pickup_location: form.pickup_location.value.trim(),
-          pickup_city: form.city.value.trim(),
-          city: form.city.value.trim(),
-          p_email: form.p_email.value.trim(),
-          p_phone: form.p_phone.value.trim(),
-          delivery_name: form.delivery_name.value.trim(),
-          destination: form.destination.value.trim(),
-          delivery_city: form.drop_city.value.trim(),
-          d_email: form.d_email.value.trim(),
-          d_phone: form.d_phone.value.trim(),
-          package_details: form.package_details.value.trim(),
-          po_number: form.po_number.value.trim() || "",
-          other_info: form.other_info.value.trim(),
-          job_history: "[Client Request]",
-          status: "pending_pickup",
-          type: "pickup",
-          assigned_to: assignedDriver, 
-          timestamp: Date.now(),
-          created_by: firebase.auth().currentUser ? firebase.auth().currentUser.email : "Web Portal",
-          ...coords
-        };
+  const finalizeSubmission = (coords = {}, assignedDriver = 'Unassigned') => {
+      const jobData = {
+        name: form.name.value.trim(),
+        pickup_location: form.pickup_location.value.trim(),
+        pickup_city: form.city.value.trim(),
+        city: form.city.value.trim(),
+        p_email: form.p_email.value.trim(),
+        p_phone: form.p_phone.value.trim(),
+        delivery_name: form.delivery_name.value.trim(),
+        destination: form.destination.value.trim(),
+        delivery_city: form.drop_city.value.trim(),
+        d_email: form.d_email.value.trim(),
+        d_phone: form.d_phone.value.trim(),
+        package_details: form.package_details.value.trim(),
+        po_number: form.po_number.value.trim() || "",
+        other_info: form.other_info.value.trim(),
+        job_history: "[Client Request]",
+        status: "pending_pickup",
+        type: "pickup",
+        assigned_to: assignedDriver, 
+        timestamp: Date.now(),
+        created_by: firebase.auth().currentUser ? firebase.auth().currentUser.email : "Web Portal",
+        ...coords
+      };
 
       db.ref("jobs").push(jobData).then((newRef) => {
-  localStorage.setItem('lastOrderTime', Date.now());
-  
-  // Optimistically add the new job to currentUserJobs
-  const newJobId = newRef.key;
-  if (!currentUserJobs) currentUserJobs = {};
-  currentUserJobs[newJobId] = { ...jobData, id: newJobId };
-  
-  // If orders dashboard is open, re-render immediately
-  if (document.getElementById('orders-history-container').style.display === 'block') {
-    renderOrdersHistory();
-  }
-  
-  form.style.display = "none";
-  document.getElementById("thanksMessage").style.display = "block";
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}).catch((error) => {
-  submitBtn.innerText = "Submit Request";
-  submitBtn.disabled = false;
-  submitBtn.style.opacity = "1";
-});
-
-    const geocoder = new google.maps.Geocoder();
-    const addressStr = form.pickup_location.value.trim() + ", " + form.city.value.trim();
-
-    let geocodeFinished = false;
-    const geocodeTimeout = setTimeout(() => {
-        if (!geocodeFinished) {
-            geocodeFinished = true;
-            finalizeSubmission();
-        }
-    }, 3000);
-
-    geocoder.geocode({ address: addressStr }, (results, status) => {
-      if (geocodeFinished) return;
-      geocodeFinished = true;
-      clearTimeout(geocodeTimeout);
-
-      if (status === "OK" && results[0]) {
-        const loc = results[0].geometry.location;
-        const coords = { lat: loc.lat(), lng: loc.lng() };
+        localStorage.setItem('lastOrderTime', Date.now());
         
-        let foundDriver = 'Unassigned';
-        for (const [dEmail, zone] of Object.entries(driverZones)) {
-          if (zone.polygon) {
-            const poly = new google.maps.Polygon({ paths: zone.polygon });
-            if (google.maps.geometry.poly.containsLocation(loc, poly)) {
-              foundDriver = dEmail;
-              break;
-            }
+        // Optimistically add the new job to currentUserJobs
+        const newJobId = newRef.key;
+        if (!currentUserJobs) currentUserJobs = {};
+        currentUserJobs[newJobId] = { ...jobData, id: newJobId };
+        
+        // If orders dashboard is open, re-render immediately
+        if (document.getElementById('orders-history-container').style.display === 'block') {
+          renderOrdersHistory();
+        }
+        
+        form.style.display = "none";
+        document.getElementById("thanksMessage").style.display = "block";
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      }).catch((error) => {
+        submitBtn.innerText = "Submit Request";
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+      });
+  };
+
+  // Geocoding logic (now outside finalizeSubmission)
+  const geocoder = new google.maps.Geocoder();
+  const addressStr = form.pickup_location.value.trim() + ", " + form.city.value.trim();
+
+  let geocodeFinished = false;
+  const geocodeTimeout = setTimeout(() => {
+      if (!geocodeFinished) {
+          geocodeFinished = true;
+          finalizeSubmission();
+      }
+  }, 3000);
+
+  geocoder.geocode({ address: addressStr }, (results, status) => {
+    if (geocodeFinished) return;
+    geocodeFinished = true;
+    clearTimeout(geocodeTimeout);
+
+    if (status === "OK" && results[0]) {
+      const loc = results[0].geometry.location;
+      const coords = { lat: loc.lat(), lng: loc.lng() };
+      
+      let foundDriver = 'Unassigned';
+      for (const [dEmail, zone] of Object.entries(driverZones)) {
+        if (zone.polygon) {
+          const poly = new google.maps.Polygon({ paths: zone.polygon });
+          if (google.maps.geometry.poly.containsLocation(loc, poly)) {
+            foundDriver = dEmail;
+            break;
           }
         }
-        finalizeSubmission(coords, foundDriver);
-      } else {
-        finalizeSubmission();
       }
-    });
+      finalizeSubmission(coords, foundDriver);
+    } else {
+      finalizeSubmission();
+    }
   });
-
+});
   // PWAs & Install logic
   let deferredPrompt;
   window.addEventListener('beforeinstallprompt', (e) => {
