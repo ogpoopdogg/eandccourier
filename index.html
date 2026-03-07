@@ -498,49 +498,69 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   let currentUserJobs = null;          // holds all jobs for the logged-in user
 let jobsListener = null;             // reference to the Firebase listener
 
-  firebase.auth().onAuthStateChanged((user) => {
-    const portal = document.getElementById('dev-portal');
-    const list = document.getElementById('dev-list');
+ firebase.auth().onAuthStateChanged((user) => {
+  const portal = document.getElementById('dev-portal');
+  const list = document.getElementById('dev-list');
 
-    if (user) {
-      if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
-        alert("Please check your email and verify your account before logging in.");
-        firebase.auth().signOut();
-        return;
-      }
-      document.getElementById('auth-overlay').style.display = 'none';
-      document.getElementById('main-app-container').style.display = 'block';
-      if (document.querySelector('input[name="p_email"]')) {
-        document.querySelector('input[name="p_email"]').value = user.email;
-      }
-      
-      firebase.database().ref("jobs").orderByChild("created_by").equalTo(user.email).limitToLast(1).on('value', snap => {
-        if (snap.exists()) {
-            const data = snap.val();
-            lastKnownOrder = Object.values(data)[0];
-            document.getElementById('autofillBtn').style.display = 'block';
-        }
-      });
-    } else {
-      document.getElementById('auth-overlay').style.display = 'flex';
-      document.getElementById('main-app-container').style.display = 'none';
+  if (user) {
+    if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
+      alert("Please check your email and verify your account before logging in.");
+      firebase.auth().signOut();
+      return;
+    }
+    document.getElementById('auth-overlay').style.display = 'none';
+    document.getElementById('main-app-container').style.display = 'block';
+    if (document.querySelector('input[name="p_email"]')) {
+      document.querySelector('input[name="p_email"]').value = user.email;
     }
 
-    firebase.database().ref('developer').on('value', snap => {
-      list.innerHTML = '';
-      const notes = snap.val() || {};
-      
-      Object.values(notes).forEach(note => {
-        list.innerHTML += `
-          <div class="dev-item">
-            <div class="dev-hdr">${note.user} - <span style="color: orange;">${note.app || 'Database'}</span> - ${note.date}</div>
-            <div style="color:#eee;">${note.text}</div>
-          </div>`;
-      });
-      list.scrollTop = list.scrollHeight; 
+    // Listen for the user's jobs once and store in currentUserJobs
+    if (jobsListener) {
+      jobsListener.off(); // remove previous listener if any
+    }
+    jobsListener = db.ref("jobs").orderByChild("created_by").equalTo(user.email).on('value', snap => {
+      const jobsData = snap.val();
+      currentUserJobs = jobsData ? jobsData : {};
+      // Also update lastKnownOrder for autofill
+      if (snap.exists()) {
+        const data = snap.val();
+        lastKnownOrder = Object.values(data)[0];
+        document.getElementById('autofillBtn').style.display = 'block';
+      } else {
+        lastKnownOrder = null;
+        document.getElementById('autofillBtn').style.display = 'none';
+      }
+      // If orders history is open, re-render
+      if (document.getElementById('orders-history-container').style.display === 'block') {
+        renderOrdersHistory();
+      }
     });
-  });
 
+  } else {
+    document.getElementById('auth-overlay').style.display = 'flex';
+    document.getElementById('main-app-container').style.display = 'none';
+    // Clean up
+    if (jobsListener) {
+      jobsListener.off();
+      jobsListener = null;
+    }
+    currentUserJobs = null;
+  }
+
+  // Developer notes listener (unchanged)
+  firebase.database().ref('developer').on('value', snap => {
+    list.innerHTML = '';
+    const notes = snap.val() || {};
+    Object.values(notes).forEach(note => {
+      list.innerHTML += `
+        <div class="dev-item">
+          <div class="dev-hdr">${note.user} - <span style="color: orange;">${note.app || 'Database'}</span> - ${note.date}</div>
+          <div style="color:#eee;">${note.text}</div>
+        </div>`;
+    });
+    list.scrollTop = list.scrollHeight; 
+  });
+});
   function customerLogin() {
     const e = document.getElementById('auth-email').value.trim();
     const p = document.getElementById('auth-password').value.trim();
