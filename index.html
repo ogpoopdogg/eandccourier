@@ -293,7 +293,7 @@
   #settings-modal .modal-content { max-width: 500px; }
   .settings-section { margin-bottom: 20px; }
   .settings-section h3 { color: var(--accent); margin-top: 0; }
-  .theme-toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .theme-toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
   .theme-toggle button { flex: 1; padding: 10px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); cursor: pointer; border-radius: 4px; }
   .theme-toggle button.active { background: var(--accent); color: #000; border-color: var(--accent); }
   #save-defaults-btn { margin-top: 10px; }
@@ -307,6 +307,9 @@
   .edit-btn { background: var(--accent); color: #000; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
   .address-book-btn { background: #333; color: var(--text); border: 1px solid var(--accent); padding: 8px; border-radius: 4px; cursor: pointer; font-size: 12px; }
   .saved-address-dropdown { margin-bottom: 10px; }
+
+  /* Ensure location picker is on top of settings */
+  #location-picker-modal { z-index: 2001; }
 </style>
 </head>
 <body> <!-- removed light-mode class for dark default -->
@@ -505,39 +508,71 @@
 <!-- Settings Modal -->
 <div id="settings-modal" class="modal" onclick="if(event.target===this) { this.style.display='none'; document.body.style.overflow=''; }">
 <div class="modal-content" style="background: var(--card); margin: 5% auto; padding: 30px; width: 90%; max-width: 550px; border: 1px solid var(--accent); color: var(--text); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box; max-height: 80vh; overflow-y: auto;">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2 style="color:var(--accent); margin:0;">Settings</h2>
-    <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="document.getElementById('settings-modal').style.display='none'; document.body.style.overflow='';">✖</button>
-  </div>
-  <div class="settings-section">
-    <h3>Autofill Defaults</h3>
-    <p>Fill in fields to auto-populate when using Autofill.</p>
-    <input type="text" id="default-name" placeholder="Pickup Contact Name" style="margin-bottom:8px;">
-    <div style="position: relative; margin-bottom:8px;">
-      <input type="text" id="default-pickup" placeholder="Pickup Address" style="padding-right: 40px;">
-      <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('settings-pickup')" type="button">📍</button>
+  
+  <!-- Main Settings Menu -->
+  <div id="settings-main">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="color:var(--accent); margin:0;">Settings</h2>
+      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="document.getElementById('settings-modal').style.display='none'; document.body.style.overflow='';">✖</button>
     </div>
-    <input type="text" id="default-city" placeholder="Pickup City" style="margin-bottom:8px;">
-    <input type="email" id="default-p_email" placeholder="Pickup Email" style="margin-bottom:8px;">
-    <input type="tel" id="default-p_phone" placeholder="Pickup Phone" style="margin-bottom:8px;">
-    <input type="text" id="default-delivery_name" placeholder="Delivery Contact Name" style="margin-bottom:8px;">
-    <div style="position: relative; margin-bottom:8px;">
-      <input type="text" id="default-destination" placeholder="Delivery Address" style="padding-right: 40px;">
-      <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('settings-drop')" type="button">📍</button>
+    <div class="settings-section">
+      <h3>Theme</h3>
+      <div class="theme-toggle">
+        <button id="theme-light" onclick="setTheme('light')">Light</button>
+        <button id="theme-dark" onclick="setTheme('dark')" class="active">Dark</button>
+      </div>
     </div>
-    <input type="text" id="default-drop_city" placeholder="Delivery City" style="margin-bottom:8px;">
-    <input type="email" id="default-d_email" placeholder="Delivery Email" style="margin-bottom:8px;">
-    <input type="tel" id="default-d_phone" placeholder="Delivery Phone" style="margin-bottom:8px;">
-    <input type="text" id="default-package_details" placeholder="Packages/Items/Dimensions" style="margin-bottom:8px;">
-    <input type="text" id="default-po_number" placeholder="PO Number" style="margin-bottom:8px;">
-    <textarea id="default-other_info" placeholder="Driver Notes" rows="2" style="margin-bottom:8px;"></textarea>
-    <button id="save-defaults-btn" class="btn-save" onclick="saveDefaults()">Save Autofill Details</button>
+    <div class="settings-section">
+      <button class="btn-save" style="width:100%;" onclick="showAutofillSettings()">Autofill Details</button>
+    </div>
+    <div class="settings-section">
+      <button class="btn-save" style="width:100%;" onclick="showAddressBookSettings()">Address Book</button>
+    </div>
   </div>
-  <div class="settings-section">
-    <button class="btn-save" onclick="addCurrentAddressToBook()">Save to Address Book</button>
-    <h3>Address Book</h3>
-    <div id="savedAddressesList"></div>
+
+  <!-- Autofill Details Sub-view -->
+  <div id="settings-autofill" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="color:var(--accent); margin:0;">Autofill Details</h2>
+      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="showSettingsMain()">← Back</button>
+    </div>
+    <div class="settings-section">
+      <p>Fill in fields to auto-populate when using Autofill.</p>
+      <input type="text" id="default-name" placeholder="Pickup Contact Name" style="margin-bottom:8px;">
+      <div style="position: relative; margin-bottom:8px;">
+        <input type="text" id="default-pickup" placeholder="Pickup Address" style="padding-right: 40px;">
+        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('settings-pickup')" type="button">📍</button>
+      </div>
+      <input type="text" id="default-city" placeholder="Pickup City" style="margin-bottom:8px;">
+      <input type="email" id="default-p_email" placeholder="Pickup Email" style="margin-bottom:8px;">
+      <input type="tel" id="default-p_phone" placeholder="Pickup Phone" style="margin-bottom:8px;">
+      <input type="text" id="default-delivery_name" placeholder="Delivery Contact Name" style="margin-bottom:8px;">
+      <div style="position: relative; margin-bottom:8px;">
+        <input type="text" id="default-destination" placeholder="Delivery Address" style="padding-right: 40px;">
+        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('settings-drop')" type="button">📍</button>
+      </div>
+      <input type="text" id="default-drop_city" placeholder="Delivery City" style="margin-bottom:8px;">
+      <input type="email" id="default-d_email" placeholder="Delivery Email" style="margin-bottom:8px;">
+      <input type="tel" id="default-d_phone" placeholder="Delivery Phone" style="margin-bottom:8px;">
+      <input type="text" id="default-package_details" placeholder="Packages/Items/Dimensions" style="margin-bottom:8px;">
+      <input type="text" id="default-po_number" placeholder="PO Number" style="margin-bottom:8px;">
+      <textarea id="default-other_info" placeholder="Driver Notes" rows="2" style="margin-bottom:8px;"></textarea>
+      <button id="save-defaults-btn" class="btn-save" onclick="saveDefaults()">Save Autofill Details</button>
+    </div>
   </div>
+
+  <!-- Address Book Sub-view -->
+  <div id="settings-addressbook" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="color:var(--accent); margin:0;">Address Book</h2>
+      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="showSettingsMain()">← Back</button>
+    </div>
+    <div class="settings-section">
+      <button class="btn-save" onclick="addCurrentAddressToBook()">Save to Address Book</button>
+      <div id="savedAddressesList"></div>
+    </div>
+  </div>
+
 </div>
 </div>
 
@@ -890,8 +925,30 @@
     loadDefaultsIntoModal();
     updateThemeButtons();
     renderSavedAddressesList();
+    // Show main menu, hide sub-views
+    document.getElementById('settings-main').style.display = 'block';
+    document.getElementById('settings-autofill').style.display = 'none';
+    document.getElementById('settings-addressbook').style.display = 'none';
     document.getElementById('settings-modal').style.display = 'block';
-    // Removed overflow hidden to allow background scrolling
+  }
+
+  function showSettingsMain() {
+    document.getElementById('settings-main').style.display = 'block';
+    document.getElementById('settings-autofill').style.display = 'none';
+    document.getElementById('settings-addressbook').style.display = 'none';
+  }
+
+  function showAutofillSettings() {
+    document.getElementById('settings-main').style.display = 'none';
+    document.getElementById('settings-autofill').style.display = 'block';
+    document.getElementById('settings-addressbook').style.display = 'none';
+  }
+
+  function showAddressBookSettings() {
+    document.getElementById('settings-main').style.display = 'none';
+    document.getElementById('settings-autofill').style.display = 'none';
+    document.getElementById('settings-addressbook').style.display = 'block';
+    renderSavedAddressesList(); // refresh list
   }
 
   let ordersRefreshInterval = null;
@@ -1433,14 +1490,7 @@
     currentAddressTarget = target;
     renderSavedAddressesList();
     document.getElementById('settings-modal').style.display = 'block';
-    // Scroll to address book section
-    setTimeout(() => {
-      const modalContent = document.querySelector('#settings-modal .modal-content');
-      const addrBookSection = document.getElementById('savedAddressesList');
-      if (modalContent && addrBookSection) {
-        modalContent.scrollTop = addrBookSection.offsetTop - 20;
-      }
-    }, 100);
+    showAddressBookSettings(); // go directly to address book sub-view
   }
 
   function renderSavedAddressesList() {
@@ -1465,17 +1515,14 @@
   }
 
   function addCurrentAddressToBook() {
-    const pickupName = form.name.value.trim();
-    const deliveryName = form.delivery_name.value.trim();
-    if (!pickupName && !deliveryName) {
-        alert('Please enter at least a pickup contact name or delivery contact name before saving to address book.');
-        return;
-    }
     const nickname = prompt('Enter a nickname for this address (e.g., Office, Warehouse):');
     if (!nickname) return;
     const address = document.getElementById(currentAddressTarget === 'pickup' ? 'f-pickup' : 'f-drop-address').value;
     const city = document.getElementsByName(currentAddressTarget === 'pickup' ? 'city' : 'drop_city')[0].value;
-    if (!address || !city) return; // silently fail if empty
+    if (!address || !city) {
+      alert('Please enter an address and city first.');
+      return;
+    }
     savedAddresses.push({ nickname, address, city, target: currentAddressTarget });
     localStorage.setItem('ec_addresses', JSON.stringify(savedAddresses));
     renderSavedAddressesList();
