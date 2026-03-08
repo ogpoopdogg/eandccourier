@@ -298,9 +298,18 @@
   .theme-toggle button.active { background: var(--accent); color: #000; border-color: var(--accent); }
   #save-defaults-btn { margin-top: 10px; }
 
+  /* new styles for search/filter */
+  .order-search-bar { display: flex; gap: 8px; margin: 15px 0 20px; flex-wrap: wrap; }
+  .order-search-bar input { flex: 2; min-width: 200px; padding: 12px; }
+  .order-search-bar select { flex: 1; min-width: 120px; padding: 12px; }
+  .order-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .cancel-btn { background: #b3002d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+  .edit-btn { background: var(--accent); color: #000; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+  .address-book-btn { background: #333; color: var(--text); border: 1px solid var(--accent); padding: 8px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+  .saved-address-dropdown { margin-bottom: 10px; }
 </style>
 </head>
-<body class="light-mode">
+<body> <!-- removed light-mode class for dark default -->
 
 <div id="auth-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; overflow-y: auto; background: var(--bg); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box;">
   
@@ -362,11 +371,14 @@
       <input type="text" name="name" placeholder="Who are we picking up from?" required autocomplete="organization">
     </div>
 
-    <div class="flex-row">
+    <div class="flex-row" style="align-items: flex-end;">
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Pickup Address <span class="required-mark">*</span></label>
         <input type="text" id="f-pickup" name="pickup_location" placeholder="Street Address" required autocomplete="street-address" style="padding-right: 40px;">
         <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('pickup')" type="button">📍</button>
+      </div>
+      <div class="input-group" style="flex: 0 0 auto;">
+        <button type="button" class="address-book-btn" onclick="openAddressBook('pickup')">📖</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="city" required>
@@ -391,11 +403,14 @@
       <input type="text" name="delivery_name" placeholder="Business or Contact Name" required>
     </div>
 
-    <div class="flex-row">
+    <div class="flex-row" style="align-items: flex-end;">
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Delivery Address <span class="required-mark">*</span></label>
         <input type="text" id="f-drop-address" name="destination" placeholder="Street Address" required style="padding-right: 40px;">
         <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('drop')" type="button">📍</button>
+      </div>
+      <div class="input-group" style="flex: 0 0 auto;">
+        <button type="button" class="address-book-btn" onclick="openAddressBook('drop')">📖</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="drop_city" required>
@@ -430,6 +445,13 @@
       <textarea name="other_info" rows="3" placeholder="Gate codes, specific door numbers, hours, etc."></textarea>
     </div>
 
+    <!-- Address book dropdown (hidden by default) -->
+    <div id="addressBookDropdown" style="display: none; margin-bottom: 15px;">
+      <select id="savedAddressesSelect" onchange="loadSelectedAddress()">
+        <option value="">-- Select a saved address --</option>
+      </select>
+    </div>
+
     <button type="submit" id="submitBtn">Submit Request</button>
     <button type="button" onclick="firebase.auth().signOut()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:15px;">Logout</button>
   </form>
@@ -446,6 +468,17 @@
   <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
     <h2 style="color: var(--text); margin: 0; font-size: 18px; text-transform: uppercase;">Order Dashboard</h2>
     <button onclick="hideOrdersHistory()" class="btn-back-form">BACK TO FORM</button>
+  </div>
+  <!-- Search and filter bar -->
+  <div class="order-search-bar">
+    <input type="text" id="orderSearchInput" placeholder="Search by package, PO, names, address..." oninput="orderSearchText=this.value; renderOrdersHistory();">
+    <select id="orderStatusFilter" onchange="orderStatusFilter=this.value; renderOrdersHistory();">
+      <option value="all">All status</option>
+      <option value="pending">Pending</option>
+      <option value="in_progress">In progress</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
   </div>
   <div id="live-status-header" style="font-size: 11px; color: #f39c12; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;"></div>
   <div id="orders-list"></div>
@@ -479,8 +512,8 @@
   <div class="settings-section">
     <h3>Theme</h3>
     <div class="theme-toggle">
-      <button id="theme-light" onclick="setTheme('light')" class="active">Light</button>
-      <button id="theme-dark" onclick="setTheme('dark')">Dark</button>
+      <button id="theme-light" onclick="setTheme('light')">Light</button>
+      <button id="theme-dark" onclick="setTheme('dark')" class="active">Dark</button>
     </div>
   </div>
   <div class="settings-section">
@@ -501,6 +534,11 @@
     <textarea id="default-other_info" placeholder="Driver Notes" rows="2" style="margin-bottom:8px;"></textarea>
     <button id="save-defaults-btn" class="btn-save" onclick="saveDefaults()">Save Defaults</button>
   </div>
+  <div class="settings-section">
+    <h3>Address Book</h3>
+    <div id="savedAddressesList"></div>
+    <button class="btn-save" onclick="addCurrentAddressToBook()">Save Current Address</button>
+  </div>
 </div>
 </div>
 
@@ -510,8 +548,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  if (localStorage.getItem('ec_theme') === 'dark') document.body.classList.remove('light-mode');
-  else document.body.classList.add('light-mode');
+  // Dark mode default: if stored theme is 'light' then add class, else keep dark
+  if (localStorage.getItem('ec_theme') === 'light') document.body.classList.add('light-mode');
+  else document.body.classList.remove('light-mode');
   function toggleTheme() { 
     document.body.classList.toggle('light-mode'); 
     localStorage.setItem('ec_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); 
@@ -554,6 +593,17 @@
   let expandedCompletedCards = new Set();
   let driverZones = {};
   let driverLocations = {};
+
+  // For editing
+  let editingJobId = null;
+
+  // For search/filter
+  let orderSearchText = '';
+  let orderStatusFilter = 'all';
+
+  // For address book
+  let savedAddresses = JSON.parse(localStorage.getItem('ec_addresses') || '[]');
+  let currentAddressTarget = 'pickup'; // which field we are saving for
 
   // Listen for driver zones
   db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
@@ -810,6 +860,7 @@
   function openSettings() {
     loadDefaultsIntoModal();
     updateThemeButtons();
+    renderSavedAddressesList();
     document.getElementById('settings-modal').style.display = 'block';
     // Removed overflow hidden to allow background scrolling
   }
@@ -863,6 +914,42 @@
     submitBtn.innerText = "Submit Request";
     submitBtn.disabled = false;
     submitBtn.style.opacity = "1";
+    editingJobId = null; // reset editing mode
+  }
+
+  // Cancel order function
+  function cancelOrder(jobId) {
+    if (!confirm('Are you sure you want to cancel this pending order?')) return;
+    db.ref('jobs/' + jobId).update({ status: 'cancelled' }).catch(err => alert('Error: ' + err.message));
+  }
+
+  // Edit order function
+  function editOrder(jobId) {
+    const job = currentUserJobs[jobId];
+    if (!job) return;
+    editingJobId = jobId;
+    // Populate form
+    form.name.value = job.name || '';
+    form.pickup_location.value = job.pickup_location || '';
+    form.city.value = job.pickup_city || '';
+    form.p_email.value = job.p_email || '';
+    form.p_phone.value = job.p_phone || '';
+    form.delivery_name.value = job.delivery_name || '';
+    form.destination.value = job.destination || '';
+    form.drop_city.value = job.delivery_city || '';
+    form.d_email.value = job.d_email || '';
+    form.d_phone.value = job.d_phone || '';
+    form.package_details.value = job.package_details || '';
+    form.po_number.value = job.po_number || '';
+    form.other_info.value = job.other_info || '';
+    pickupVerified = true; // assume addresses are valid (they came from a previous submission)
+    dropVerified = true;
+    submitBtn.innerText = "Update Request";
+    // Switch back to main form view
+    hideOrdersHistory(); // this will show main container and reset some flags but we need to keep editingJobId
+    // Re-show main container and hide orders
+    document.getElementById('main-app-container').style.display = 'block';
+    document.getElementById('orders-history-container').style.display = 'none';
   }
 
   function renderOrdersHistory() {
@@ -886,32 +973,47 @@
     });
     jobs.sort((a,b) => b.timestamp - a.timestamp);
 
-    jobs.forEach(job => {
+    // Filter based on search and status
+    const filteredJobs = jobs.filter(job => {
+      // status filter
+      if (orderStatusFilter !== 'all') {
+        if (orderStatusFilter === 'pending' && job.status !== 'pending_pickup') return false;
+        if (orderStatusFilter === 'in_progress' && !['pending_pickup','in_transit','pending_delivery'].includes(job.status)) return false;
+        if (orderStatusFilter === 'completed' && job.status !== 'completed') return false;
+        if (orderStatusFilter === 'cancelled' && job.status !== 'cancelled') return false;
+      }
+      // text search
+      if (orderSearchText.trim() !== '') {
+        const term = orderSearchText.toLowerCase();
+        const haystack = (job.package_details + ' ' + job.po_number + ' ' + job.name + ' ' + job.delivery_name + ' ' + job.pickup_location + ' ' + job.destination).toLowerCase();
+        if (!haystack.includes(term)) return false;
+      }
+      return true;
+    });
+
+    filteredJobs.forEach(job => {
       const dateStr = new Date(job.timestamp).toLocaleString();
       const status = job.status || 'pending_pickup';
       const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
 
       // Completion flags for each stage
       const c1 = true; // Ordered always completed
-      // Assigned completed if driver is currently assigned OR if job has progressed beyond pending_pickup (implying it was assigned at some point)
       const c2 = (assigned !== null) || !!(job.picked_up_by) || (status === 'in_transit') || (status === 'pending_delivery') || (status === 'completed');
-      const c3 = !!(job.picked_up_by) || status === 'in_transit'; // Picked‑Up completed if pickup happened
-      const c4 = (status === 'completed') || (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true); // Out for Delivery completed if delivered OR (pending_delivery + driver on shift)
-      const c5 = (status === 'completed'); // Delivered completed if job is completed
+      const c3 = !!(job.picked_up_by) || status === 'in_transit';
+      const c4 = (status === 'completed') || (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true);
+      const c5 = (status === 'completed');
 
-      // Determine active stage (the one that should pulse)
       let activeStage = null;
       if (status === 'pending_pickup' && assigned) {
-        activeStage = 2; // Assigned
+        activeStage = 2;
       } else if (status === 'in_transit') {
-        activeStage = 3; // Picked‑Up
+        activeStage = 3;
       } else if (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true) {
-        activeStage = 4; // Out for Delivery
+        activeStage = 4;
       } else if (status === 'completed') {
-        activeStage = null; // no active stage for completed jobs
+        activeStage = null;
       }
 
-      // Build node classes array
       const nodeClasses = [
         c1 ? 'completed' : '',
         c2 ? 'completed' : '',
@@ -923,7 +1025,6 @@
         nodeClasses[activeStage - 1] += ' active';
       }
 
-      // Fill width: number of completed nodes before the active node (if any) * 25%
       let fillWidth = '0%';
       if (activeStage) {
         let completedBefore = 0;
@@ -1012,9 +1113,20 @@
           </div>
         `;
       } else {
+        // For non-completed, add cancel and edit buttons if pending
+        let actionButtons = '';
+        if (status === 'pending_pickup') {
+          actionButtons = `
+            <div class="order-actions">
+              <button class="cancel-btn" onclick="cancelOrder('${job.id}')">Cancel</button>
+              <button class="edit-btn" onclick="editOrder('${job.id}')">Edit</button>
+            </div>
+          `;
+        }
         list.innerHTML += `
           <div class="order-card">
             ${cardInnerHtml}
+            ${actionButtons}
           </div>
         `;
       }
@@ -1040,7 +1152,7 @@
 
     const lastOrderTime = localStorage.getItem('lastOrderTime');
     const nowTime = Date.now();
-    if (lastOrderTime && nowTime - lastOrderTime < 30000) {
+    if (lastOrderTime && nowTime - lastOrderTime < 30000 && !editingJobId) {
         alert("Please wait a moment before submitting another request.");
         return;
     }
@@ -1050,7 +1162,7 @@
         return;
     }
 
-    submitBtn.innerText = "Transmitting...";
+    submitBtn.innerText = editingJobId ? "Updating..." : "Transmitting...";
     submitBtn.style.opacity = "0.7";
     submitBtn.disabled = true;
 
@@ -1074,32 +1186,48 @@
           status: "pending_pickup",
           type: "pickup",
           assigned_to: assignedDriver, 
-          timestamp: Date.now(),
+          timestamp: editingJobId ? currentUserJobs[editingJobId]?.timestamp || Date.now() : Date.now(),
           created_by: firebase.auth().currentUser ? firebase.auth().currentUser.email : "Web Portal",
           ...coords
         };
 
-        db.ref("jobs").push(jobData).then((newRef) => {
-          localStorage.setItem('lastOrderTime', Date.now());
-          
-          // Optimistically add the new job to currentUserJobs
-          const newJobId = newRef.key;
-          if (!currentUserJobs) currentUserJobs = {};
-          currentUserJobs[newJobId] = { ...jobData, id: newJobId };
-          
-          // If orders dashboard is open, re-render immediately
-          if (document.getElementById('orders-history-container').style.display === 'block') {
-            renderOrdersHistory();
-          }
-          
-          form.style.display = "none";
-          document.getElementById("thanksMessage").style.display = "block";
-          window.scrollTo({top: 0, behavior: 'smooth'});
-        }).catch((error) => {
-          submitBtn.innerText = "Submit Request";
-          submitBtn.disabled = false;
-          submitBtn.style.opacity = "1";
-        });
+        if (editingJobId) {
+          // Update existing job
+          db.ref("jobs/" + editingJobId).update(jobData).then(() => {
+            localStorage.setItem('lastOrderTime', Date.now());
+            editingJobId = null;
+            form.style.display = "none";
+            document.getElementById("thanksMessage").style.display = "block";
+            window.scrollTo({top: 0, behavior: 'smooth'});
+          }).catch((error) => {
+            submitBtn.innerText = "Update Request";
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = "1";
+          });
+        } else {
+          // Push new job
+          db.ref("jobs").push(jobData).then((newRef) => {
+            localStorage.setItem('lastOrderTime', Date.now());
+            
+            // Optimistically add the new job to currentUserJobs
+            const newJobId = newRef.key;
+            if (!currentUserJobs) currentUserJobs = {};
+            currentUserJobs[newJobId] = { ...jobData, id: newJobId };
+            
+            // If orders dashboard is open, re-render immediately
+            if (document.getElementById('orders-history-container').style.display === 'block') {
+              renderOrdersHistory();
+            }
+            
+            form.style.display = "none";
+            document.getElementById("thanksMessage").style.display = "block";
+            window.scrollTo({top: 0, behavior: 'smooth'});
+          }).catch((error) => {
+            submitBtn.innerText = "Submit Request";
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = "1";
+          });
+        }
     };
 
     // Geocoding logic (now outside finalizeSubmission)
@@ -1264,6 +1392,73 @@
       document.body.style.overflow = '';
     });
   }
+
+  // Address book functions
+  function openAddressBook(target) {
+    currentAddressTarget = target;
+    renderSavedAddressesList();
+    document.getElementById('settings-modal').style.display = 'block';
+  }
+
+  function renderSavedAddressesList() {
+    const listDiv = document.getElementById('savedAddressesList');
+    if (!listDiv) return;
+    listDiv.innerHTML = '';
+    savedAddresses.forEach((addr, index) => {
+      listDiv.innerHTML += `
+        <div style="border:1px solid var(--border); padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong>${addr.nickname}</strong><br>
+            <span style="font-size:12px;">${addr.address} (${addr.city})</span>
+          </div>
+          <div>
+            <button onclick="useAddress(${index})" style="background:var(--accent); color:#000; border:none; padding:4px 8px; margin-right:4px;">Use</button>
+            <button onclick="deleteAddress(${index})" style="background:#b3002d; color:#fff; border:none; padding:4px 8px;">Del</button>
+          </div>
+        </div>
+      `;
+    });
+    if (savedAddresses.length === 0) listDiv.innerHTML = '<p>No saved addresses.</p>';
+  }
+
+  function addCurrentAddressToBook() {
+    const nickname = prompt('Enter a nickname for this address (e.g., Office, Warehouse):');
+    if (!nickname) return;
+    const address = document.getElementById(currentAddressTarget === 'pickup' ? 'f-pickup' : 'f-drop-address').value;
+    const city = document.getElementsByName(currentAddressTarget === 'pickup' ? 'city' : 'drop_city')[0].value;
+    if (!address || !city) {
+      alert('Please enter a valid address first.');
+      return;
+    }
+    savedAddresses.push({ nickname, address, city, target: currentAddressTarget });
+    localStorage.setItem('ec_addresses', JSON.stringify(savedAddresses));
+    renderSavedAddressesList();
+  }
+
+  function useAddress(index) {
+    const addr = savedAddresses[index];
+    if (addr.target === 'pickup') {
+      document.getElementById('f-pickup').value = addr.address;
+      document.getElementsByName('city')[0].value = addr.city;
+      pickupVerified = true;
+    } else {
+      document.getElementById('f-drop-address').value = addr.address;
+      document.getElementsByName('drop_city')[0].value = addr.city;
+      dropVerified = true;
+    }
+    document.getElementById('settings-modal').style.display = 'none';
+  }
+
+  function deleteAddress(index) {
+    savedAddresses.splice(index, 1);
+    localStorage.setItem('ec_addresses', JSON.stringify(savedAddresses));
+    renderSavedAddressesList();
+  }
+
+  function loadSelectedAddress() {
+    // This is for the dropdown (optional)
+  }
+
 </script>
 
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
