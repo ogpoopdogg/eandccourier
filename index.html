@@ -513,12 +513,18 @@
     <h3>Autofill Defaults</h3>
     <p>Fill in fields to auto-populate when using Autofill.</p>
     <input type="text" id="default-name" placeholder="Pickup Contact Name" style="margin-bottom:8px;">
-    <input type="text" id="default-pickup" placeholder="Pickup Address" style="margin-bottom:8px;">
+    <div style="position: relative; margin-bottom:8px;">
+      <input type="text" id="default-pickup" placeholder="Pickup Address" style="padding-right: 40px;">
+      <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('settings-pickup')" type="button">📍</button>
+    </div>
     <input type="text" id="default-city" placeholder="Pickup City" style="margin-bottom:8px;">
     <input type="email" id="default-p_email" placeholder="Pickup Email" style="margin-bottom:8px;">
     <input type="tel" id="default-p_phone" placeholder="Pickup Phone" style="margin-bottom:8px;">
     <input type="text" id="default-delivery_name" placeholder="Delivery Contact Name" style="margin-bottom:8px;">
-    <input type="text" id="default-destination" placeholder="Delivery Address" style="margin-bottom:8px;">
+    <div style="position: relative; margin-bottom:8px;">
+      <input type="text" id="default-destination" placeholder="Delivery Address" style="padding-right: 40px;">
+      <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('settings-drop')" type="button">📍</button>
+    </div>
     <input type="text" id="default-drop_city" placeholder="Delivery City" style="margin-bottom:8px;">
     <input type="email" id="default-d_email" placeholder="Delivery Email" style="margin-bottom:8px;">
     <input type="tel" id="default-d_phone" placeholder="Delivery Phone" style="margin-bottom:8px;">
@@ -528,8 +534,8 @@
     <button id="save-defaults-btn" class="btn-save" onclick="saveDefaults()">Save Autofill Details</button>
   </div>
   <div class="settings-section">
-    <h3>Address Book</h3>
     <button class="btn-save" onclick="addCurrentAddressToBook()">Save to Address Book</button>
+    <h3>Address Book</h3>
     <div id="savedAddressesList"></div>
   </div>
 </div>
@@ -745,10 +751,22 @@
         const defaultPickup = document.getElementById('default-pickup');
         const defaultDest = document.getElementById('default-destination');
         if (defaultPickup) {
-          new google.maps.places.Autocomplete(defaultPickup, opts);
+          const autoPickup = new google.maps.places.Autocomplete(defaultPickup, opts);
+          autoPickup.addListener('place_changed', () => {
+            const place = autoPickup.getPlace();
+            if (place && place.address_components) {
+              document.getElementById('default-city').value = extractCity(place.address_components);
+            }
+          });
         }
         if (defaultDest) {
-          new google.maps.places.Autocomplete(defaultDest, opts);
+          const autoDest = new google.maps.places.Autocomplete(defaultDest, opts);
+          autoDest.addListener('place_changed', () => {
+            const place = autoDest.getPlace();
+            if (place && place.address_components) {
+              document.getElementById('default-drop_city').value = extractCity(place.address_components);
+            }
+          });
         }
 
         if (navigator.geolocation) {
@@ -1393,10 +1411,16 @@
           document.getElementById('f-pickup').value = addr;
           document.getElementsByName('city')[0].value = city;
           pickupVerified = true;
-        } else {
+        } else if (currentPickerTarget === 'drop') {
           document.getElementById('f-drop-address').value = addr;
           document.getElementsByName('drop_city')[0].value = city;
           dropVerified = true;
+        } else if (currentPickerTarget === 'settings-pickup') {
+          document.getElementById('default-pickup').value = addr;
+          document.getElementById('default-city').value = city;
+        } else if (currentPickerTarget === 'settings-drop') {
+          document.getElementById('default-destination').value = addr;
+          document.getElementById('default-drop_city').value = city;
         }
       }
       document.getElementById('location-picker-modal').style.display = 'none';
@@ -1441,6 +1465,12 @@
   }
 
   function addCurrentAddressToBook() {
+    const pickupName = form.name.value.trim();
+    const deliveryName = form.delivery_name.value.trim();
+    if (!pickupName && !deliveryName) {
+        alert('Please enter at least a pickup contact name or delivery contact name before saving to address book.');
+        return;
+    }
     const nickname = prompt('Enter a nickname for this address (e.g., Office, Warehouse):');
     if (!nickname) return;
     const address = document.getElementById(currentAddressTarget === 'pickup' ? 'f-pickup' : 'f-drop-address').value;
