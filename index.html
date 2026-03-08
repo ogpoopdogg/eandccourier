@@ -561,8 +561,10 @@
   }
   function updateThemeButtons() {
     const isLight = document.body.classList.contains('light-mode');
-    document.getElementById('theme-light').classList.toggle('active', isLight);
-    document.getElementById('theme-dark').classList.toggle('active', !isLight);
+    const lightBtn = document.getElementById('theme-light');
+    const darkBtn = document.getElementById('theme-dark');
+    if (lightBtn) lightBtn.classList.toggle('active', isLight);
+    if (darkBtn) darkBtn.classList.toggle('active', !isLight);
   }
 
   // Initialize Firebase
