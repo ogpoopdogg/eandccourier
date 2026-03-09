@@ -76,6 +76,15 @@
       color: #000000;
   }
 
+  /* Package details color */
+  .package-details {
+    color: #ff8c00; /* orange */
+    font-weight: bold;
+  }
+  body.light-mode .package-details {
+    color: #000000;
+  }
+
   @keyframes fadeInPage {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
@@ -529,6 +538,18 @@
     <div class="settings-section">
       <button class="btn-save" style="width:100%;" onclick="r()">Address Book</button>
     </div>
+    <!-- Account section for email/password change -->
+    <div class="settings-section">
+      <h3>Account</h3>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-save" style="flex:1;" onclick="toggleEmailChange()">Change Email</button>
+        <button class="btn-save" style="flex:1;" onclick="sendPasswordReset()">Change Password</button>
+      </div>
+      <div id="emailChangeDiv" style="display:none; margin-top:10px;">
+        <input type="email" id="newEmailInput" placeholder="Enter new email" style="width:100%; padding:10px; background:var(--input-bg); color:var(--text); border:1px solid var(--border); margin-bottom:8px;">
+        <button class="btn-save" style="width:100%;" onclick="changeUserEmail()">Update Email</button>
+      </div>
+    </div>
   </div>
 
   <!-- Autofill Details Sub-view -->
@@ -576,9 +597,9 @@
       <div id="savedAddressesList"></div>
     </div>
 
-    <!-- Address Book Create Form View -->
+    <!-- Address Book Create/Edit Form View -->
     <div id="addressbook-create-view" style="display: none;">
-      <h3 style="color:var(--accent); margin-top:0;">Create Contact</h3>
+      <h3 id="addressbook-form-title" style="color:var(--accent); margin-top:0;">Create Contact</h3>
       <div class="settings-section">
         <input type="text" id="new-contact-name" placeholder="Contact / Business Name" style="margin-bottom:8px;">
         <div style="position: relative; margin-bottom:8px;">
@@ -588,10 +609,12 @@
         <input type="email" id="new-contact-email" placeholder="Email" style="margin-bottom:8px;">
         <input type="tel" id="new-contact-phone" placeholder="Phone" style="margin-bottom:8px;" oninput="h(this)">
         <div style="display:flex; gap:10px;">
-          <button class="btn-save" style="flex:1;" onclick="u()">Save to Address Book</button>
+          <button class="btn-save" style="flex:1;" id="save-contact-btn" onclick="u()">Save to Address Book</button>
           <button class="btn-cancel" style="flex:1;" onclick="t()">Cancel</button>
         </div>
         <button class="btn-cancel" onclick="clearContactForm()" style="margin-top:5px; width:100%;">Clear</button>
+        <!-- Delete contact button (hidden by default) -->
+        <button id="delete-contact-btn" class="btn-cancel" style="margin-top:5px; width:100%; background:#b3002d; color:white; border:none; display:none;" onclick="deleteCurrentContact()">Delete Contact</button>
       </div>
     </div>
   </div>
@@ -617,6 +640,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 var M=null,N=null,O=null,P=new Set(),Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database();
+var editingContactIndex = null; // for address book edit
 
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 db.ref("driver_zones").on("value",_e=>Q=_e.val()||{});
@@ -655,13 +679,68 @@ function l(){var _Z=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');i
 function m(){var _$={name:document.getElementById('default-name').value,pickup_location:document.getElementById('default-pickup').value,city:document.getElementById('default-city').value,p_email:document.getElementById('default-p_email').value,p_phone:document.getElementById('default-p_phone').value,delivery_name:document.getElementById('default-delivery_name').value,destination:document.getElementById('default-destination').value,drop_city:document.getElementById('default-drop_city').value,d_email:document.getElementById('default-d_email').value,d_phone:document.getElementById('default-d_phone').value,package_details:document.getElementById('default-package_details').value,po_number:document.getElementById('default-po_number').value,other_info:document.getElementById('default-other_info').value};localStorage.setItem('autofillDefaults',JSON.stringify(_$));alert('Defaults saved!')}
 function n(){var _aa=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');document.getElementById('default-name').value=_aa.name||'';document.getElementById('default-pickup').value=_aa.pickup_location||'';document.getElementById('default-city').value=_aa.city||'';document.getElementById('default-p_email').value=_aa.p_email||'';document.getElementById('default-p_phone').value=_aa.p_phone||'';document.getElementById('default-delivery_name').value=_aa.delivery_name||'';document.getElementById('default-destination').value=_aa.destination||'';document.getElementById('default-drop_city').value=_aa.drop_city||'';document.getElementById('default-d_email').value=_aa.d_email||'';document.getElementById('default-d_phone').value=_aa.d_phone||'';document.getElementById('default-package_details').value=_aa.package_details||'';document.getElementById('default-po_number').value=_aa.po_number||'';document.getElementById('default-other_info').value=_aa.other_info||''}
 function o(){n();c();G();document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';document.getElementById('settings-modal').style.display='block'}
-function p(){document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none'}
+function p(){document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none'; // reset editing when back
+  editingContactIndex = null;
+  document.getElementById('delete-contact-btn').style.display = 'none';
+  document.getElementById('save-contact-btn').innerText = 'Save to Address Book';
+  document.getElementById('addressbook-form-title').innerText = 'Create Contact';
+}
 function q(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='block';document.getElementById('settings-addressbook').style.display='none'}
 function r(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='block';document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none';G()}
-function s(){document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('new-contact-name').value='';document.getElementById('new-contact-address').value='';document.getElementById('new-contact-email').value='';document.getElementById('new-contact-phone').value=''}
-function t(){document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none'}
-function u(){var _ab=document.getElementById('new-contact-name').value.trim(),_ac=document.getElementById('new-contact-address').value.trim(),_ad=document.getElementById('new-contact-email').value.trim(),_ae=document.getElementById('new-contact-phone').value.trim();if(!_ab||!_ac){alert('Please enter at least a name and address.');return}
-var _af='';V.push({name:_ab,address:_ac,city:_af,email:_ad,phone:_ae,target:W});saveAddressBookToFirebase();G();t()}
+function s(){ // create new
+  editingContactIndex = null;
+  document.getElementById('addressbook-list-view').style.display='none';
+  document.getElementById('addressbook-create-view').style.display='block';
+  document.getElementById('addressbook-form-title').innerText = 'Create Contact';
+  document.getElementById('save-contact-btn').innerText = 'Save to Address Book';
+  document.getElementById('delete-contact-btn').style.display = 'none';
+  document.getElementById('new-contact-name').value='';
+  document.getElementById('new-contact-address').value='';
+  document.getElementById('new-contact-email').value='';
+  document.getElementById('new-contact-phone').value='';
+}
+function t(){ // cancel from create/edit
+  document.getElementById('addressbook-list-view').style.display='block';
+  document.getElementById('addressbook-create-view').style.display='none';
+  editingContactIndex = null;
+}
+function u(){ // save or update contact
+  var _ab=document.getElementById('new-contact-name').value.trim(),_ac=document.getElementById('new-contact-address').value.trim(),_ad=document.getElementById('new-contact-email').value.trim(),_ae=document.getElementById('new-contact-phone').value.trim();
+  if(!_ab||!_ac){alert('Please enter at least a name and address.');return}
+  var _af=''; // city not collected
+  var contact = {name:_ab, address:_ac, city:_af, email:_ad, phone:_ae, target:W};
+  if (editingContactIndex !== null) {
+    V[editingContactIndex] = contact; // update
+  } else {
+    V.push(contact);
+  }
+  saveAddressBookToFirebase();
+  G();
+  t(); // back to list
+}
+function editContact(index) {
+  editingContactIndex = index;
+  var c = V[index];
+  document.getElementById('new-contact-name').value = c.name || '';
+  document.getElementById('new-contact-address').value = c.address || '';
+  document.getElementById('new-contact-email').value = c.email || '';
+  document.getElementById('new-contact-phone').value = c.phone || '';
+  document.getElementById('addressbook-list-view').style.display = 'none';
+  document.getElementById('addressbook-create-view').style.display = 'block';
+  document.getElementById('addressbook-form-title').innerText = 'Edit Contact';
+  document.getElementById('save-contact-btn').innerText = 'Update Contact';
+  document.getElementById('delete-contact-btn').style.display = 'block';
+}
+function deleteCurrentContact() {
+  if (editingContactIndex !== null) {
+    if (confirm('Delete this contact?')) {
+      V.splice(editingContactIndex, 1);
+      saveAddressBookToFirebase();
+      G();
+      t();
+    }
+  }
+}
 function v(){var _ag=firebase.auth().currentUser;if(!_ag)return;db.ref("jobs").orderByChild("created_by").equalTo(_ag.email).once('value').then(_ah=>{N=_ah.val()||{};if(document.getElementById('orders-history-container').style.display==='block')A()})}
 function w(){document.getElementById('main-app-container').style.display='none';document.getElementById('orders-history-container').style.display='block';v();if(window.X)clearInterval(window.X);window.X=setInterval(()=>{if(document.getElementById('orders-history-container').style.display==='block')A();else{clearInterval(window.X);window.X=null}},2000)}
 function x(){if(window.X){clearInterval(window.X);window.X=null}P.clear();document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';document.getElementById('pickupForm').reset();ad=!1;ae=!1;ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1";S=null}
@@ -670,7 +749,7 @@ function z(_ak){var _al=N[_ak];if(!_al)return;S=_ak;af.name.value=_al.name||'';a
 function A(){if(document.getElementById('orders-history-container').style.display!=='block')return;var _am=document.getElementById('orders-list'),_an=document.getElementById('live-status-header');if(!N||Object.keys(N).length===0){_am.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
 var _ao=new Date();_an.innerText="Status Live as of "+_ao.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});_am.innerHTML='';var _ap=[];Object.entries(N).forEach(([_aq,_ar])=>{_ap.push({..._ar,id:_aq})});_ap.sort((_as,_at)=>_at.timestamp-_as.timestamp);var _au=_ap.filter(_av=>{if(U!=='all'){if(U==='pending'&&_av.status!=='pending_pickup')return!1;if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(_av.status))return!1;if(U==='completed'&&_av.status!=='completed')return!1;if(U==='cancelled'&&_av.status!=='cancelled')return!1}
 if(T.trim()!==''){var _aw=T.toLowerCase(),_ax=(_av.package_details+' '+_av.po_number+' '+_av.name+' '+_av.delivery_name+' '+_av.pickup_location+' '+_av.destination).toLowerCase();if(!_ax.includes(_aw))return!1}return!0});_au.forEach(_ay=>{var _az=new Date(_ay.timestamp).toLocaleString(),_aA=_ay.status||'pending_pickup',_aB=(_ay.assigned_to&&_ay.assigned_to!=='Unassigned')?_ay.assigned_to:null,_aC=!0,_aD=(_aB!==null)||!!_ay.picked_up_by||(_aA==='in_transit')||(_aA==='pending_delivery')||(_aA==='completed'),_aE=!!_ay.picked_up_by||_aA==='in_transit',_aF=(_aA==='completed')||(_aA==='pending_delivery'&&_aB&&R[_aB]?.shift_active===!0),_aG=(_aA==='completed'),_aH=null;if(_aA==='pending_pickup'&&_aB)_aH=2;else if(_aA==='in_transit')_aH=3;else if(_aA==='pending_delivery'&&_aB&&R[_aB]?.shift_active===!0)_aH=4;else if(_aA==='completed')_aH=null;var _aI=[_aC?'completed':'',_aD?'completed':'',_aE?'completed':'',_aF?'completed':'',_aG?'completed':''];if(_aH)_aI[_aH-1]+=' active';var _aJ='0%';if(_aH){var _aK=0;for(var _aL=0;_aL<_aH-1;_aL++)if(_aI[_aL].includes('completed'))_aK++;_aJ=(_aK*25)+'%'}else{var _aM=[_aC,_aD,_aE,_aF,_aG].filter(Boolean).length;if(_aM>1)_aJ=((_aM-1)*25)+'%'}
-var _aN=_ay.package_details||'N/A',_aO=_ay.po_number?_ay.po_number:'N/A',_aP=(_aA==='completed'),_aQ='order-card-'+_ay.id,_aR=`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width: ${_aJ};"></div></div><div class="ocean-node ${_aI[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${_aI[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${_aI[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${_aI[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${_aI[4]}"><div class="ocean-label">Delivered</div></div></div>`, _aS=`<div class="order-date">${_az}</div><div class="dashboard-section"><div class="loc-flex"><div><strong>Pickup</strong>${_ay.name}<br><span style="color:#aaa; font-size:12px;">${_ay.pickup_location}</span></div></div></div><div class="dashboard-section" style="margin-top: 15px;"><div class="loc-flex"><div><strong>Delivery</strong>${_ay.delivery_name}<br><span style="color:#aaa; font-size:12px;">${_ay.destination}</span></div></div></div><div class="dashboard-section" style="margin-top: 15px;"><div class="loc-flex"><div><strong>Packages/Items/Dimensions</strong><span style="color:#aaa; font-size:12px;">${_aN}</span></div></div></div><div class="dashboard-section" style="margin-top: 15px;"><div class="loc-flex"><div><strong>PO / Ref</strong><span style="color:#aaa; font-size:12px;">${_aO}</span></div></div></div>${_aR}`;if(_aP){var _aT=P.has(_ay.id),_aU=new Date(_ay.timestamp),_aV=_aU.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,'');_am.innerHTML+=`<div style="margin-bottom: 2px;"><button onclick="B('${_ay.id}')" style="width: 100%; padding: 6px 10px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 4px; color: var(--text); text-align: left; cursor: pointer; font-size: 12px; line-height: 1.4;"><div><span style="font-weight:bold;">${_aV}</span> <span>${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div></button><div id="${_aQ}" class="order-card" style="display: ${_aT?'block':'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">${_aS}</div></div>`}else{var _aW='';if(_aA==='pending_pickup')_aW=`<div class="order-actions"><button class="cancel-btn" onclick="y('${_ay.id}')">Cancel</button><button class="edit-btn" onclick="z('${_ay.id}')">Edit</button></div>`;_am.innerHTML+=`<div class="order-card">${_aS}${_aW}</div>`}})}
+var _aN=_ay.package_details||'N/A',_aO=_ay.po_number?_ay.po_number:'N/A',_aP=(_aA==='completed'),_aQ='order-card-'+_ay.id,_aR=`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width: ${_aJ};"></div></div><div class="ocean-node ${_aI[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${_aI[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${_aI[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${_aI[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${_aI[4]}"><div class="ocean-label">Delivered</div></div></div>`, _aS=`<div class="order-date">${_az}</div><div class="dashboard-section"><div class="loc-flex"><div><strong>Pickup</strong>${_ay.name}<br><span style="color:#aaa; font-size:12px;">${_ay.pickup_location}</span></div></div></div><div class="dashboard-section" style="margin-top: 15px;"><div class="loc-flex"><div><strong>Delivery</strong>${_ay.delivery_name}<br><span style="color:#aaa; font-size:12px;">${_ay.destination}</span></div></div></div><div class="dashboard-section" style="margin-top: 15px;"><div class="loc-flex"><div><strong>Packages/Items/Dimensions</strong><span style="color:#aaa; font-size:12px;">${_aN}</span></div></div></div><div class="dashboard-section" style="margin-top: 15px;"><div class="loc-flex"><div><strong>PO / Ref</strong><span style="color:#aaa; font-size:12px;">${_aO}</span></div></div></div>${_aR}`;if(_aP){var _aT=P.has(_ay.id),_aU=new Date(_ay.timestamp),_aV=_aU.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,'');_am.innerHTML+=`<div style="margin-bottom: 2px;"><button onclick="B('${_ay.id}')" style="width: 100%; padding: 6px 10px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 4px; color: var(--text); text-align: left; cursor: pointer; font-size: 12px; line-height: 1.4;"><div style="display:flex; flex-direction:column; gap:4px;"><span style="font-weight:bold;">${_aV}</span><span class="package-details">${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div></button><div id="${_aQ}" class="order-card" style="display: ${_aT?'block':'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">${_aS}</div></div>`}else{var _aW='';if(_aA==='pending_pickup')_aW=`<div class="order-actions"><button class="cancel-btn" onclick="y('${_ay.id}')">Cancel</button><button class="edit-btn" onclick="z('${_ay.id}')">Edit</button></div>`;_am.innerHTML+=`<div class="order-card">${_aS}${_aW}</div>`}})}
 function B(_aX){var _aY=document.getElementById('order-card-'+_aX);if(_aY){if(_aY.style.display==='none'){_aY.style.display='block';P.add(_aX)}else{_aY.style.display='none';P.delete(_aX)}}}
 af.addEventListener("submit",_aZ=>{_aZ.preventDefault();if(document.getElementById('website_url_hp').value)return;var _ba=localStorage.getItem('lastOrderTime'),_bb=Date.now();if(_ba&&_bb-_ba<30000&&!S){alert("Please wait a moment before submitting another request.");return}
 if(!ad||!ae){alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");return}
@@ -680,7 +759,7 @@ var Z,aa,ab='';function E(_by){ab=_by;var _bz=document.getElementById('location-
 function C(){var _bK=document.getElementById('loc-search-bar'),_bL=_bK.value;if(!_bL)return;var _bM=_bL.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(_bM){var _bN={lat:+_bM[1],lng:+_bM[2]};Z.setCenter(_bN);Z.setZoom(17)}else{var _bO=new google.maps.Geocoder();_bO.geocode({address:_bL},(_bP,_bQ)=>{if(_bQ==='OK'&&_bP[0]){Z.setCenter(_bP[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
 function D(){var _bR=Z.getCenter(),_bS=new google.maps.Geocoder();_bS.geocode({location:_bR},(_bT,_bU)=>{if(_bU==='OK'&&_bT[0]){var _bV=_bT[0].formatted_address,_bW=i(_bT[0].address_components);if(ab==='pickup'){document.getElementById('f-pickup').value=_bV;document.getElementsByName('city')[0].value=_bW;ad=!0}else if(ab==='drop'){document.getElementById('f-drop-address').value=_bV;document.getElementsByName('drop_city')[0].value=_bW;ae=!0}else if(ab==='settings-pickup'){document.getElementById('default-pickup').value=_bV;document.getElementById('default-city').value=_bW}else if(ab==='settings-drop'){document.getElementById('default-destination').value=_bV;document.getElementById('default-drop_city').value=_bW}else if(ab==='new-contact'){document.getElementById('new-contact-address').value=_bV}}document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''})}
 function F(_bX){W=_bX;G();document.getElementById('settings-modal').style.display='block';r()}
-function G(){var _bY=document.getElementById('savedAddressesList');if(!_bY)return;_bY.innerHTML='';V.forEach((_bZ,_ca)=>{_bY.innerHTML+=`<div style="border:1px solid var(--border); padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;"><div><strong>${_bZ.name}</strong><br><span style="font-size:12px;">${_bZ.address} ${_bZ.city?'('+_bZ.city+')':''}</span><br><span style="font-size:11px; color:#aaa;">${_bZ.email} ${_bZ.phone?'• '+_bZ.phone:''}</span></div><div><button onclick="H(${_ca})" style="background:var(--accent); color:#000; border:none; padding:4px 8px; margin-right:4px;">Use</button><button onclick="I(${_ca})" style="background:#b3002d; color:#fff; border:none; padding:4px 8px;">Del</button></div></div>`});if(V.length===0)_bY.innerHTML='<p>No saved addresses.</p>'}
+function G(){var _bY=document.getElementById('savedAddressesList');if(!_bY)return;_bY.innerHTML='';V.forEach((_bZ,_ca)=>{_bY.innerHTML+=`<div style="border:1px solid var(--border); padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;"><div onclick="editContact(${_ca})" style="flex:1; cursor:pointer;"><strong>${_bZ.name}</strong><br><span style="font-size:12px;">${_bZ.address} ${_bZ.city?'('+_bZ.city+')':''}</span><br><span style="font-size:11px; color:#aaa;">${_bZ.email} ${_bZ.phone?'• '+_bZ.phone:''}</span></div><div><button onclick="H(${_ca}); event.stopPropagation();" style="background:var(--accent); color:#000; border:none; padding:10px 16px; border-radius:8px; font-weight:bold; font-size:14px;">Select</button></div></div>`});if(V.length===0)_bY.innerHTML='<p>No saved addresses.</p>'}
 function H(_cb){ var _cc=V[_cb]; if(W==='pickup'){ document.getElementById('f-pickup').value=_cc.address; document.getElementsByName('city')[0].value=_cc.city||''; document.getElementsByName('name')[0].value=_cc.name||''; document.getElementsByName('p_email')[0].value=_cc.email||''; document.getElementsByName('p_phone')[0].value=_cc.phone||''; ad=!0 }else{ document.getElementById('f-drop-address').value=_cc.address; document.getElementsByName('drop_city')[0].value=_cc.city||''; document.getElementsByName('delivery_name')[0].value=_cc.name||''; document.getElementsByName('d_email')[0].value=_cc.email||''; document.getElementsByName('d_phone')[0].value=_cc.phone||''; ae=!0 } document.getElementById('settings-modal').style.display='none' }
 function I(_cd){V.splice(_cd,1);saveAddressBookToFirebase();G();}
 function J(){}
@@ -722,6 +801,42 @@ function clearContactForm() {
   document.getElementById('new-contact-address').value = '';
   document.getElementById('new-contact-email').value = '';
   document.getElementById('new-contact-phone').value = '';
+}
+// New functions for email/password change
+function toggleEmailChange() {
+  var div = document.getElementById('emailChangeDiv');
+  div.style.display = div.style.display === 'none' ? 'block' : 'none';
+}
+function changeUserEmail() {
+  var newEmail = document.getElementById('newEmailInput').value;
+  var user = firebase.auth().currentUser;
+  if (user && newEmail !== "") {
+    user.verifyBeforeUpdateEmail(newEmail)
+      .then(function() {
+        alert("A verification link has been sent to your new email! Please check your inbox and verify.");
+        document.getElementById('newEmailInput').value = '';
+        document.getElementById('emailChangeDiv').style.display = 'none';
+      })
+      .catch(function(error) {
+        alert("Error: " + error.message);
+      });
+  } else {
+    alert("Please log in and enter a valid email.");
+  }
+}
+function sendPasswordReset() {
+  var user = firebase.auth().currentUser;
+  if (user && user.email) {
+    firebase.auth().sendPasswordResetEmail(user.email)
+      .then(() => {
+        alert("Password reset email sent to " + user.email + ". Please check your inbox.");
+      })
+      .catch(error => {
+        alert("Error: " + error.message);
+      });
+  } else {
+    alert("No user logged in.");
+  }
 }
 // Fallback to show auth overlay if neither container is visible after 2 seconds
 setTimeout(function() {
