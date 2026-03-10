@@ -91,6 +91,54 @@
     margin-top: 8px;
   }
 
+  /* Light mode additional fixes */
+  body.light-mode {
+    color: #000000;
+  }
+  body.light-mode button,
+  body.light-mode .btn,
+  body.light-mode .btn-primary,
+  body.light-mode .btn-secondary,
+  body.light-mode .btn-accent,
+  body.light-mode .btn-save,
+  body.light-mode .btn-cancel,
+  body.light-mode .btn-danger {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #cccccc !important;
+  }
+  body.light-mode .btn-accent {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  body.light-mode .header-wrap {
+    background: #ffffff;
+  }
+  body.light-mode .order-row {
+    background: #f9f9f9;
+  }
+  body.light-mode .order-detail-panel {
+    background: #f0f0f0;
+  }
+  body.light-mode .ocean-label {
+    color: #000000;
+  }
+  body.light-mode .timeline-icons span {
+    color: #000000;
+  }
+  body.light-mode .timeline-icons span.active {
+    color: #ffd700;
+  }
+  body.light-mode input, 
+  body.light-mode textarea, 
+  body.light-mode select {
+    color: #000000;
+    background: #ffffff;
+  }
+  body.light-mode ::placeholder {
+    color: #888888;
+  }
+
   @keyframes fadeInPage {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
@@ -238,7 +286,7 @@
     .flex-row { flex-direction: column; gap: 12px; }
   }
 
-  /* Submit button with spinner */
+  /* Submit button without spinner */
   button[type="submit"] { 
     width: 100%; 
     margin-top: 25px;
@@ -268,19 +316,6 @@
   
   button[type="submit"]:active:not(:disabled) { transform: translateY(1px); }
 
-  .btn-spinner {
-    display: none;
-    width: 1.2em;
-    height: 1.2em;
-    border: 2px solid rgba(255,215,0,0.3);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  button[type="submit"].loading .btn-spinner {
-    display: inline-block;
-  }
   button[type="submit"]:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -415,27 +450,52 @@
     font-size: 11px;
     color: var(--placeholder);
   }
-  .timeline-icons span.active {
+  .timeline-icons span.completed {
     color: var(--accent);
     font-weight: bold;
   }
-  /* Infinite scroll loading indicator */
-  .orders-loading {
-    text-align: center;
-    padding: 20px;
-    color: var(--placeholder);
+  .timeline-icons span.current {
+    animation: pulse 1.5s infinite;
+    color: var(--accent);
+    font-weight: bold;
+    text-shadow: 0 0 8px var(--accent);
   }
-  .spinner-large {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255,215,0,0.2);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto;
+  .timeline-icons.cancelled {
+    filter: grayscale(1) opacity(0.5);
   }
 
-  /* Map pin dot */
+  /* Order actions (edit/cancel) */
+  .order-actions {
+    grid-column: span 2;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .edit-btn, .cancel-btn {
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .edit-btn {
+    background: var(--accent);
+    color: #000;
+  }
+  .cancel-btn {
+    background: var(--danger);
+    color: #fff;
+  }
+  .edit-btn:hover, .cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Map pin dot - red waypoint */
   .map-pin-dot {
     position: absolute;
     top: 50%;
@@ -443,17 +503,10 @@
     transform: translate(-50%, -100%);
     width: 24px;
     height: 24px;
-    background: #ffd700;
+    background: red;
     border-radius: 50%;
-    box-shadow: 0 0 0 0 rgba(255,215,0,0.7);
+    box-shadow: 0 0 0 2px white;
     z-index: 10;
-    transition: background 0.3s;
-  }
-  body.light-mode .map-pin-dot {
-    background: #b39700;
-  }
-  .map-pin-dot.pulse {
-    animation: pulse 1.5s infinite;
   }
   .map-pin-dot.pop-ripple::after {
     content: '';
@@ -464,7 +517,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: rgba(255,215,0,0.4);
+    background: rgba(255,0,0,0.4);
     animation: ripple 0.5s ease-out;
   }
 
@@ -577,11 +630,41 @@
     outline-offset: 2px;
   }
 
+  /* Search bar spacing */
+  .order-search-bar {
+    margin-bottom: 15px;
+  }
+
+  /* Mobile adjustments */
   @media (max-width: 600px) {
     .order-row-main {
-      grid-template-columns: 80px 1fr 60px 1fr 60px 40px;
-      font-size: 11px;
+      grid-template-columns: 70px 1fr 50px 1fr 50px 40px;
+      font-size: 10px;
       gap: 4px;
+      padding: 8px;
+    }
+    .order-package-col, .order-pickup-delivery {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    .order-date-col {
+      font-size: 9px;
+    }
+    .order-status-badge {
+      font-size: 9px;
+      padding: 2px 4px;
+    }
+    .order-detail-panel {
+      grid-template-columns: 1fr;
+    }
+    .order-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+    .edit-btn, .cancel-btn {
+      width: 100%;
+      text-align: center;
     }
   }
 </style>
@@ -733,7 +816,6 @@
     </div>
 
     <button type="submit" id="submitBtn" class="btn btn-primary">
-      <span class="btn-spinner"></span>
       <span class="btn-text">Submit Request</span>
     </button>
     <button type="button" id="cancelEditBtn" style="display:none; width:100%; margin-top:5px; background:#b3002d; color:white; border:none; padding:12px; border-radius:4px; cursor:pointer; font-weight:700;" onclick="cancelEdit()" class="btn btn-danger">Cancel Edit</button>
@@ -768,7 +850,7 @@
   </div>
   <div id="live-status-header" style="font-size: 11px; color: #f39c12; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;"></div>
   <div id="orders-list" class="order-dashboard" style="max-height: 60vh; overflow-y: auto;"></div>
-  <div id="orders-loading" class="orders-loading" style="display: none;"><div class="spinner-large"></div></div>
+  <!-- Loading spinner removed -->
 </div>
 
 <div id="location-picker-modal" class="modal" onclick="if(event.target===this) { this.style.display='none'; document.body.style.overflow=''; }">
@@ -783,7 +865,7 @@
 </div>
 <div style="flex: 1; position: relative;">
 <div id="picker-map" style="width:100%; height:100%;"></div>
-<div class="map-pin-dot pulse" id="mapPinDot"></div>
+<div class="map-pin-dot" id="mapPinDot"></div>
 </div>
 <button class="btn-save btn btn-primary" style="width: 100%; border-radius: 0; padding: 16px; font-size: 16px; position: sticky; bottom: 0; z-index: 11;" onclick="D()">SET LOCATION</button>
 </div>
@@ -1047,9 +1129,8 @@ function v(){var _ag=firebase.auth().currentUser;if(!_ag)return;db.ref("jobs").o
 function w(){
   document.getElementById('main-app-container').style.display='none';
   document.getElementById('orders-history-container').style.display='block';
-  document.getElementById('orders-loading').style.display = 'block';
+  // Loading spinner removed
   v().then(() => {
-    document.getElementById('orders-loading').style.display = 'none';
     A();
   });
   if(window.X)clearInterval(window.X);
@@ -1177,13 +1258,18 @@ function renderMoreOrders() {
             <strong>PO/Ref:</strong> ${_ay.po_number || 'N/A'}<br>
             <strong>Driver Notes:</strong> ${_ay.other_info || 'None'}<br>
           </div>
-          <div style="grid-column: span 2;" class="timeline-icons">
-            <span class="${_ay.status ? 'active' : ''}">📝 Ordered</span>
-            <span class="${_aB ? 'active' : ''}">👤 Assigned</span>
-            <span class="${_ay.picked_up_by ? 'active' : ''}">📦 Picked‑Up</span>
-            <span class="${(_aA==='pending_delivery' && _aB && R[_aB]?.shift_active) ? 'active' : ''}">🚚 Out for Delivery</span>
-            <span class="${_aA==='completed' ? 'active' : ''}">✅ Delivered</span>
+          <div style="grid-column: span 2;" class="timeline-icons ${_isCancelled ? 'cancelled' : ''}">
+            <span class="${_ay.status ? 'completed' : ''} ${_aA === 'pending_pickup' ? 'current' : ''}">📝 Ordered</span>
+            <span class="${_aB ? 'completed' : ''} ${_aA === 'in_transit' ? 'current' : ''}">👤 Assigned</span>
+            <span class="${_ay.picked_up_by ? 'completed' : ''} ${_aA === 'in_transit' ? 'current' : ''}">📦 Picked‑Up</span>
+            <span class="${(_aA==='pending_delivery' && _aB && R[_aB]?.shift_active) ? 'completed' : ''} ${_aA === 'pending_delivery' ? 'current' : ''}">🚚 Out for Delivery</span>
+            <span class="${_aA==='completed' ? 'completed current' : ''}">✅ Delivered</span>
           </div>
+          ${(_aA === 'pending_pickup' && !_isCancelled) ? `
+          <div class="order-actions">
+            <button class="edit-btn" onclick="z('${_ay.id}')">Edit</button>
+            <button class="cancel-btn" onclick="y('${_ay.id}')">Cancel</button>
+          </div>` : ''}
         </div>
       </div>
     `;
@@ -1285,7 +1371,7 @@ af.addEventListener("submit",_aZ=>{
   })
 });
 var Y;window.addEventListener('beforeinstallprompt',_bw=>{_bw.preventDefault();Y=_bw;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();var _bx=await Y.userChoice;if(_bx.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
-var Z,aa,ab='';function E(_by){ab=_by;var _bz=document.getElementById('location-picker-modal');_bz.style.display='block';document.body.style.overflow='hidden';trapFocus(_bz);if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});var _bA=document.getElementById('loc-search-bar'),_bB=new google.maps.places.Autocomplete(_bA);_bB.bindTo('bounds',Z);_bB.addListener('place_changed',()=>{var _bC=_bB.getPlace();if(_bC.geometry){Z.setCenter(_bC.geometry.location);Z.setZoom(17)}});_bA.addEventListener('keydown',_bD=>{if(_bD.key==='Enter'){var _bE=_bA.value,_bF=_bE.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(_bF){var _bG={lat:+_bF[1],lng:+_bF[2]};Z.setCenter(_bG);Z.setZoom(17)}else{var _bH=new google.maps.Geocoder();_bH.geocode({address:_bE},(_bI,_bJ)=>{if(_bJ==='OK'&&_bI[0]){Z.setCenter(_bI[0].geometry.location);Z.setZoom(17)}})}}})}}
+var Z,aa,ab='';function E(_by){ab=_by;var _bz=document.getElementById('location-picker-modal');_bz.style.display='block';document.body.style.overflow='hidden';trapFocus(_bz);if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,gestureHandling:'greedy',styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});var _bA=document.getElementById('loc-search-bar'),_bB=new google.maps.places.Autocomplete(_bA);_bB.bindTo('bounds',Z);_bB.addListener('place_changed',()=>{var _bC=_bB.getPlace();if(_bC.geometry){Z.setCenter(_bC.geometry.location);Z.setZoom(17)}});_bA.addEventListener('keydown',_bD=>{if(_bD.key==='Enter'){var _bE=_bA.value,_bF=_bE.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(_bF){var _bG={lat:+_bF[1],lng:+_bF[2]};Z.setCenter(_bG);Z.setZoom(17)}else{var _bH=new google.maps.Geocoder();_bH.geocode({address:_bE},(_bI,_bJ)=>{if(_bJ==='OK'&&_bI[0]){Z.setCenter(_bI[0].geometry.location);Z.setZoom(17)}})}}})}}
 function C(){var _bK=document.getElementById('loc-search-bar'),_bL=_bK.value;if(!_bL)return;var _bM=_bL.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(_bM){var _bN={lat:+_bM[1],lng:+_bM[2]};Z.setCenter(_bN);Z.setZoom(17)}else{var _bO=new google.maps.Geocoder();_bO.geocode({address:_bL},(_bP,_bQ)=>{if(_bQ==='OK'&&_bP[0]){Z.setCenter(_bP[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
 function D(){
   var _bR=Z.getCenter(),_bS=new google.maps.Geocoder();
