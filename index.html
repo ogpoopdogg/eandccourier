@@ -683,6 +683,11 @@ firebase.database().ref('users/'+_g.uid+'/addressBook').once('value', snap => {
   localStorage.setItem('ec_addresses', JSON.stringify(V));
   G();
 });
+// Load autofill defaults from Firebase
+firebase.database().ref('users/'+_g.uid+'/autofillDefaults').once('value', snap => {
+  var defaults = snap.val() || {};
+  localStorage.setItem('autofillDefaults', JSON.stringify(defaults));
+});
 }else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null; V = [];}
 firebase.database().ref('developer').on('value',_l=>{if(!_l) return; _h.innerHTML='';var _m=_l.val()||{};Object.values(_m).forEach(_n=>{_h.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${_n.user} - <span style="color: orange;">${_n.app||'Database'}</span> - ${_n.date}</div><div style="color:#eee;">${_n.text}</div></div>`});_h.scrollTop=_h.scrollHeight})});
 
@@ -703,7 +708,16 @@ _K.addListener('place_changed',()=>{ad=!0;var _X=_K.getPlace();document.getEleme
 j();
 function k(){if(!M)return;af.name.value=M.name||'';af.pickup_location.value=M.pickup_location||'';af.city.value=M.pickup_city||'';af.p_email.value=M.p_email||'';af.p_phone.value=M.p_phone||'';af.delivery_name.value=M.delivery_name||'';af.destination.value=M.destination||'';af.drop_city.value=M.delivery_city||'';af.d_email.value=M.d_email||'';af.d_phone.value=M.d_phone||'';af.package_details.value=M.package_details||'';af.po_number.value=M.po_number||'';af.other_info.value=M.other_info||'';ad=!0;ae=!0}
 function l(){var _Z=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');if(_Z.name)af.name.value=_Z.name;if(_Z.pickup_location)af.pickup_location.value=_Z.pickup_location;if(_Z.city)af.city.value=_Z.city;if(_Z.p_email)af.p_email.value=_Z.p_email;if(_Z.p_phone)af.p_phone.value=_Z.p_phone;if(_Z.delivery_name)af.delivery_name.value=_Z.delivery_name;if(_Z.destination)af.destination.value=_Z.destination;if(_Z.drop_city)af.drop_city.value=_Z.drop_city;if(_Z.d_email)af.d_email.value=_Z.d_email;if(_Z.d_phone)af.d_phone.value=_Z.d_phone;if(_Z.package_details)af.package_details.value=_Z.package_details;if(_Z.po_number)af.po_number.value=_Z.po_number;if(_Z.other_info)af.other_info.value=_Z.other_info;if(_Z.pickup_location&&_Z.city)ad=!0;if(_Z.destination&&_Z.drop_city)ae=!0}
-function m(){var _$={name:document.getElementById('default-name').value,pickup_location:document.getElementById('default-pickup').value,city:document.getElementById('default-city').value,p_email:document.getElementById('default-p_email').value,p_phone:document.getElementById('default-p_phone').value,delivery_name:document.getElementById('default-delivery_name').value,destination:document.getElementById('default-destination').value,drop_city:document.getElementById('default-drop_city').value,d_email:document.getElementById('default-d_email').value,d_phone:document.getElementById('default-d_phone').value,package_details:document.getElementById('default-package_details').value,po_number:document.getElementById('default-po_number').value,other_info:document.getElementById('default-other_info').value};localStorage.setItem('autofillDefaults',JSON.stringify(_$));alert('Defaults saved!')}
+function m(){
+  var _$={name:document.getElementById('default-name').value,pickup_location:document.getElementById('default-pickup').value,city:document.getElementById('default-city').value,p_email:document.getElementById('default-p_email').value,p_phone:document.getElementById('default-p_phone').value,delivery_name:document.getElementById('default-delivery_name').value,destination:document.getElementById('default-destination').value,drop_city:document.getElementById('default-drop_city').value,d_email:document.getElementById('default-d_email').value,d_phone:document.getElementById('default-d_phone').value,package_details:document.getElementById('default-package_details').value,po_number:document.getElementById('default-po_number').value,other_info:document.getElementById('default-other_info').value};
+  localStorage.setItem('autofillDefaults',JSON.stringify(_$));
+  var user = firebase.auth().currentUser;
+  if (user) {
+    firebase.database().ref('users/'+user.uid+'/autofillDefaults').set(_$)
+      .catch(err => console.error('Error saving autofill defaults', err));
+  }
+  alert('Defaults saved!');
+}
 function n(){var _aa=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');document.getElementById('default-name').value=_aa.name||'';document.getElementById('default-pickup').value=_aa.pickup_location||'';document.getElementById('default-city').value=_aa.city||'';document.getElementById('default-p_email').value=_aa.p_email||'';document.getElementById('default-p_phone').value=_aa.p_phone||'';document.getElementById('default-delivery_name').value=_aa.delivery_name||'';document.getElementById('default-destination').value=_aa.destination||'';document.getElementById('default-drop_city').value=_aa.drop_city||'';document.getElementById('default-d_email').value=_aa.d_email||'';document.getElementById('default-d_phone').value=_aa.d_phone||'';document.getElementById('default-package_details').value=_aa.package_details||'';document.getElementById('default-po_number').value=_aa.po_number||'';document.getElementById('default-other_info').value=_aa.other_info||''}
 function o(){n();c();G();document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';document.getElementById('settings-modal').style.display='block'}
 function p(){document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none'; // reset editing when back
@@ -770,7 +784,26 @@ function deleteCurrentContact() {
 }
 function v(){var _ag=firebase.auth().currentUser;if(!_ag)return;db.ref("jobs").orderByChild("created_by").equalTo(_ag.email).once('value').then(_ah=>{N=_ah.val()||{};if(document.getElementById('orders-history-container').style.display==='block')A()})}
 function w(){document.getElementById('main-app-container').style.display='none';document.getElementById('orders-history-container').style.display='block';v();if(window.X)clearInterval(window.X);window.X=setInterval(()=>{if(document.getElementById('orders-history-container').style.display==='block')A();else{clearInterval(window.X);window.X=null}},2000)}
-function x(){if(window.X){clearInterval(window.X);window.X=null}P.clear();document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';document.getElementById('pickupForm').reset();ad=!1;ae=!1;ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1";S=null; document.getElementById('cancelEditBtn').style.display='none';}
+function x(){
+  if(window.X){clearInterval(window.X);window.X=null}
+  P.clear();
+  document.getElementById('orderSearchInput').value = '';
+  document.getElementById('orderStatusFilter').value = 'all';
+  T = '';
+  U = 'all';
+  document.getElementById('orders-history-container').style.display='none';
+  document.getElementById('main-app-container').style.display='block';
+  document.getElementById('pickupForm').style.display='block';
+  document.getElementById('thanksMessage').style.display='none';
+  document.getElementById('pickupForm').reset();
+  ad=!1;
+  ae=!1;
+  ag.innerText="Submit Request";
+  ag.disabled=!1;
+  ag.style.opacity="1";
+  S=null; 
+  document.getElementById('cancelEditBtn').style.display='none';
+}
 function y(_ai){ if(!confirm('Are you sure you want to cancel this pending order?')) return; var jobRef=db.ref('jobs/'+_ai);jobRef.once('value', snap=>{var job=snap.val();if(!job) return; var newHistory=(job.job_history?job.job_history+'\n':'')+'[CANCELLED BY USER] DND'; jobRef.update({ job_history: newHistory, status: 'cancelled', cancelled_by_user: true }).catch(_aj=>alert('Error: '+_aj.message)); }).catch(_aj=>alert('Error: '+_aj.message));}
 function z(_ak){
     if(!confirm("Are you sure you want to edit this order?")) return;
@@ -817,9 +850,9 @@ var _aN=_ay.package_details||'N/A',_aO=_ay.po_number?_ay.po_number:'N/A',_aP=(_a
   <div style="flex:1;"><strong>Pickup</strong> ${_ay.name}<br><span style="color:#aaa; font-size:12px;">${_ay.pickup_location}</span></div>
   <div style="flex:1;"><strong>Delivery</strong> ${_ay.delivery_name}<br><span style="color:#aaa; font-size:12px;">${_ay.destination}</span></div>
 </div>
-<div style="display:flex; gap:15px; margin-top:10px;">
-  <div style="flex:1;"><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa; font-size:12px;">${_aN}</span></div>
-  <div style="flex:1;"><strong>PO / Ref</strong><br><span style="color:#aaa; font-size:12px;">${_aO}</span></div>
+<div style="margin-top:10px;">
+  <div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa; font-size:12px;">${_aN}</span></div>
+  <div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa; font-size:12px;">${_aO}</span></div>
 </div>
 <div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa; font-size:12px;">${_ay.other_info || 'None'}</span></div>
 ${_timelineHtml}`;if(_aP || _aA === 'cancelled' || _isCancelled){var _aT=P.has(_ay.id),_aU=new Date(_ay.timestamp),_aV=_aU.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,'');var buttonInnerHtml;if (_aA === 'cancelled' || _isCancelled) {buttonInnerHtml = `<div style="display:flex; flex-direction:column; gap:4px;"><span style="font-weight:bold;">${_aV}</span><span class="package-details">${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div><div style="color: red; font-weight: bold;">Order Cancelled</div>`;} else {buttonInnerHtml = `<div style="display:flex; flex-direction:column; gap:4px;"><span style="font-weight:bold;">${_aV}</span><span class="package-details">${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div>`;}_am.innerHTML+=`<div style="margin-bottom: 2px;"><button onclick="B('${_ay.id}')" style="width: 100%; padding: 6px 10px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 4px; color: var(--text); text-align: left; cursor: pointer; font-size: 12px; line-height: 1.4;">${buttonInnerHtml}</button><div id="${_aQ}" class="order-card" style="display: ${_aT?'block':'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">${_aS}</div></div>`}else{var _aW='';if(_aA==='pending_pickup')_aW=`<div class="order-actions"><button class="cancel-btn" onclick="y('${_ay.id}')">Cancel</button><button class="edit-btn" onclick="z('${_ay.id}')">Edit</button></div>`;_am.innerHTML+=`<div class="order-card">${_aS}${_aW}</div>`}})}
