@@ -114,12 +114,24 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 
 body.light-mode .ocean-label{color:#000}
 @media (max-width:600px){.container{margin-top:0;border-radius:0}.header-wrap{padding:15px}form{padding:15px}}
 .order-actions .btn{padding:var(--space-xs) var(--space-sm);font-size:12px}
+/* Mobile responsiveness */
+@media (max-width:480px){
+  .ocean-timeline{display:none;}
+  .order-card .mobile-status{display:block;font-size:14px;font-weight:bold;color:var(--accent);margin-top:10px;}
+  .order-card .order-actions .btn{padding:12px;font-size:14px;}
+  .header-wrap{padding:10px;}
+  h1{font-size:18px;}
+  .section-title{font-size:12px;}
+  input,textarea,select{padding:12px;font-size:16px;}
+  button[type=submit]{padding:15px;font-size:16px;}
+  .modal-content{padding:20px;}
+}
 </style>
 </head>
 <body>
 <div id=auth-overlay style="display:none;position:absolute;top:0;left:0;width:100%;min-height:100vh;overflow-y:auto;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box">
 <div style="max-width:600px;width:100%;text-align:center;margin-bottom:30px">
-<img src=icon2.png alt="E&C Logo" style="height:60px;margin-bottom:15px;filter:drop-shadow(0 0 5px var(--accent));cursor:pointer" onclick=a() onerror="this.style.display='none'">
+<img src=icon2.png alt="E&C Logo" style="height:60px;margin-bottom:15px;filter:drop-shadow(0 0 5px var(--accent));cursor:pointer" onclick="toggleTheme()" onerror="this.style.display='none'">
 <h1 style="color:var(--accent);font-size:26px;margin:0 0 10px;text-transform:uppercase">E&C Courier</h1>
 <p style="color:#e0e0e0;font-size:15px;margin-bottom:15px;line-height:1.5">Request local courier pickups and deliveries quickly and securely.</p>
 <p style="color:#aaa;font-size:13px;margin-bottom:20px;line-height:1.5"><strong>Data Usage:</strong> We collect your email, phone, and address strictly to process dispatches at your request.</p>
@@ -129,68 +141,68 @@ body.light-mode .ocean-label{color:#000}
 <h2 style="color:#fff;margin-top:0;margin-bottom:20px;font-weight:800;text-transform:uppercase;font-size:18px">Account Login</h2>
 <div class=input-group style="text-align:left;margin-bottom:15px"><input type=email id=auth-email placeholder="Email Address" required></div>
 <div class=input-group style="text-align:left;margin-bottom:25px"><input type=password id=auth-password placeholder="Password" required></div>
-<button type=button onclick=d() class="btn btn-accent" style="width:100%;margin-bottom:12px">Login</button>
-<button type=button onclick=e() class="btn btn-primary" style="width:100%;margin-bottom:20px">Create Account</button>
-<button type=button onclick=f() style="width:100%;padding:12px;background:#fff;border:1px solid #dadce0;border-radius:4px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 1px 2px 0 rgba(60,64,67,.3);transition:background-color .2s"><svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 48 48" width=20px height=20px><path fill=#FFC107 d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill=#FF3D00 d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill=#4CAF50 d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.519-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill=#1976D2 d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg><span style="font-family:Roboto,sans-serif;font-size:14px;font-weight:500;color:#3c4043">Sign in with Google</span></button>
-<a href=# onclick="g();return!1" style="color:var(--placeholder);font-size:13px;text-decoration:underline">Forgot Password?</a>
+<button type=button onclick="login()" class="btn btn-accent" style="width:100%;margin-bottom:12px">Login</button>
+<button type=button onclick="signUp()" class="btn btn-primary" style="width:100%;margin-bottom:20px">Create Account</button>
+<button type=button onclick="googleSignIn()" style="width:100%;padding:12px;background:#fff;border:1px solid #dadce0;border-radius:4px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 1px 2px 0 rgba(60,64,67,.3);transition:background-color .2s"><svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 48 48" width=20px height=20px><path fill=#FFC107 d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill=#FF3D00 d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill=#4CAF50 d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.519-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill=#1976D2 d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg><span style="font-family:Roboto,sans-serif;font-size:14px;font-weight:500;color:#3c4043">Sign in with Google</span></button>
+<a href=# onclick="forgotPassword();return!1" style="color:var(--placeholder);font-size:13px;text-decoration:underline">Forgot Password?</a>
 </div>
 </div>
 <div class=container id=main-app-container style=display:none>
 <div class=header-wrap style=flex-direction:column>
 <button id=installAppBtn style="display:none;background:var(--accent);color:#000;border:0;padding:10px 20px;font-weight:900;border-radius:6px;margin-bottom:15px;cursor:pointer;font-size:14px;text-transform:uppercase" class="btn btn-accent">Install App</button>
 <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
-<div style="display:flex;align-items:center;gap:15px"><img src=icon2.png alt="E&C Logo" style=cursor:pointer onclick=a() onerror="this.style.display='none'"> <h1>Request Pickup Now</h1></div>
-<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick=o() class=btn-icon>⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button></div>
+<div style="display:flex;align-items:center;gap:15px"><img src=icon2.png alt="E&C Logo" style=cursor:pointer onclick="toggleTheme()" onerror="this.style.display='none'"> <h1>Request Pickup Now</h1></div>
+<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick="openSettings()" class=btn-icon aria-label="Settings">⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick="showOrdersDashboard()" type=button class="btn btn-accent">View Orders</button></div>
 </div>
 </div>
 <form id=pickupForm>
 <input type=text name=website_url_hp id=website_url_hp style=display:none tabindex=-1 autocomplete=off>
-<button type=button id=autofillDetailsBtn style="width:100%;padding:10px;background:#333;color:#fff;border:1px solid var(--accent);border-radius:4px;margin-bottom:15px;cursor:pointer;text-transform:uppercase;font-size:12px;font-weight:700" onclick=l() class="btn btn-secondary">Autofill</button>
-<button type=button id=autofillBtn style="display:none;width:100%;padding:10px;background:#333;color:#fff;border:1px solid var(--accent);border-radius:4px;margin-bottom:15px;cursor:pointer;text-transform:uppercase;font-size:12px;font-weight:700" onclick=k() class="btn btn-secondary">Autofill from Last Order</button>
+<button type=button id=autofillDetailsBtn style="width:100%;padding:10px;background:#333;color:#fff;border:1px solid var(--accent);border-radius:4px;margin-bottom:15px;cursor:pointer;text-transform:uppercase;font-size:12px;font-weight:700" onclick="autofillFromDefaults()" class="btn btn-secondary">Autofill</button>
+<button type=button id=autofillBtn style="display:none;width:100%;padding:10px;background:#333;color:#fff;border:1px solid var(--accent);border-radius:4px;margin-bottom:15px;cursor:pointer;text-transform:uppercase;font-size:12px;font-weight:700" onclick="autofillFromLastOrder()" class="btn btn-secondary">Autofill from Last Order</button>
 <div class=section-title>Pickup Details</div>
 <div class=input-group><label>Business / Contact Name <span class=required-mark>*</span></label><input type=text name=name placeholder="Who are we picking up from?" required autocomplete=organization></div>
-<div class=flex-row style="align-items:flex-end;flex-direction:row!important"><div class=input-group style="flex:2;position:relative"><label>Pickup Address <span class=required-mark>*</span></label><input type=text id=f-pickup name=pickup_location placeholder="Street Address" required autocomplete=street-address style=padding-right:40px><button style="position:absolute;right:10px;bottom:15px;background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('pickup')" type=button class=btn-icon>📍</button></div><div class=input-group style="flex:0 0 auto"><button type=button class="address-book-btn btn-icon" onclick="F('pickup')">📖</button></div><div class=input-group style=display:none><input type=hidden name=city required></div></div>
-<div class=flex-row><div class=input-group style=flex:1><label>Pickup Email</label><input type=email name=p_email placeholder=notifications@example.com autocomplete=email></div><div class=input-group style=flex:1><label>Pickup Phone</label><input type=tel name=p_phone placeholder="(204) 555-0123" autocomplete=tel oninput=h(this)></div></div>
+<div class=flex-row style="align-items:flex-end;flex-direction:row!important"><div class=input-group style="flex:2;position:relative"><label>Pickup Address <span class=required-mark>*</span></label><input type=text id=f-pickup name=pickup_location placeholder="Street Address" required autocomplete=street-address style=padding-right:40px><button style="position:absolute;right:10px;bottom:15px;background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="openLocationPicker('pickup')" type=button class=btn-icon aria-label="Pick location on map">📍</button></div><div class=input-group style="flex:0 0 auto"><button type=button class="address-book-btn btn-icon" onclick="openAddressBookForField('pickup')" aria-label="Address book">📖</button></div><div class=input-group style=display:none><input type=hidden name=city required></div></div>
+<div class=flex-row><div class=input-group style=flex:1><label>Pickup Email</label><input type=email name=p_email placeholder=notifications@example.com autocomplete=email></div><div class=input-group style=flex:1><label>Pickup Phone</label><input type=tel name=p_phone placeholder="(204) 555-0123" autocomplete=tel onblur="formatPhoneNumber(this)"></div></div>
 <div class=section-title>Delivery Details</div>
 <div class=input-group><label>Delivery Name <span class=required-mark>*</span></label><input type=text name=delivery_name placeholder="Business or Contact Name" required></div>
-<div class=flex-row style="align-items:flex-end;flex-direction:row!important"><div class=input-group style="flex:2;position:relative"><label>Delivery Address <span class=required-mark>*</span></label><input type=text id=f-drop-address name=destination placeholder="Street Address" required style=padding-right:40px><button style="position:absolute;right:10px;bottom:15px;background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('drop')" type=button class=btn-icon>📍</button></div><div class=input-group style="flex:0 0 auto"><button type=button class="address-book-btn btn-icon" onclick="F('drop')">📖</button></div><div class=input-group style=display:none><input type=hidden name=drop_city required></div></div>
-<div class=flex-row><div class=input-group style=flex:1><label>Delivery Email</label><input type=email name=d_email placeholder=notifications@example.com autocomplete=email></div><div class=input-group style=flex:1><label>Delivery Phone</label><input type=tel name=d_phone placeholder="(204) 555-0123" autocomplete=tel oninput=h(this)></div></div>
+<div class=flex-row style="align-items:flex-end;flex-direction:row!important"><div class=input-group style="flex:2;position:relative"><label>Delivery Address <span class=required-mark>*</span></label><input type=text id=f-drop-address name=destination placeholder="Street Address" required style=padding-right:40px><button style="position:absolute;right:10px;bottom:15px;background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="openLocationPicker('drop')" type=button class=btn-icon aria-label="Pick location on map">📍</button></div><div class=input-group style="flex:0 0 auto"><button type=button class="address-book-btn btn-icon" onclick="openAddressBookForField('drop')" aria-label="Address book">📖</button></div><div class=input-group style=display:none><input type=hidden name=drop_city required></div></div>
+<div class=flex-row><div class=input-group style=flex:1><label>Delivery Email</label><input type=email name=d_email placeholder=notifications@example.com autocomplete=email></div><div class=input-group style=flex:1><label>Delivery Phone</label><input type=tel name=d_phone placeholder="(204) 555-0123" autocomplete=tel onblur="formatPhoneNumber(this)"></div></div>
 <div class=section-title>Cargo & Information</div>
 <div class=input-group><label>Packages / Items / Dimensions <span class=required-mark>*</span></label><textarea name=package_details rows=3 placeholder="e.g. 2 Boxes (12x12x12), 1 Skid" required></textarea></div>
 <div class=input-group><label>PO Number / Reference</label><input type=text name=po_number placeholder=Optional></div>
 <div class=input-group><label>Driver Notes / Instructions</label><textarea name=other_info rows=3 placeholder="Gate codes, specific door numbers, hours, etc."></textarea></div>
-<div id=addressBookDropdown style="display:none;margin-bottom:15px"><select id=savedAddressesSelect onchange=J()><option value="">-- Select a saved address --</option></select></div>
+<div id=addressBookDropdown style="display:none;margin-bottom:15px"><select id=savedAddressesSelect onchange="emptyFunction()"><option value="">-- Select a saved address --</option></select></div>
 <button type=submit id=submitBtn class="btn btn-primary">Submit Request</button>
-<button type=button id=cancelEditBtn style="display:none;width:100%;margin-top:5px;background:#b3002d;color:#fff;border:0;padding:12px;border-radius:4px;cursor:pointer;font-weight:700" onclick=cancelEdit() class="btn btn-danger">Cancel Edit</button>
-<button type=button onclick=clearMainForm() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:5px" class="btn btn-secondary">Clear Form</button>
-<button type=button onclick=K() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:15px" class="btn btn-secondary">Logout</button>
+<button type=button id=cancelEditBtn style="display:none;width:100%;margin-top:5px;background:#b3002d;color:#fff;border:0;padding:12px;border-radius:4px;cursor:pointer;font-weight:700" onclick="cancelEdit()" class="btn btn-danger">Cancel Edit</button>
+<button type=button onclick="clearMainForm()" style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:5px" class="btn btn-secondary">Clear Form</button>
+<button type=button onclick="logout()" style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:15px" class="btn btn-secondary">Logout</button>
 </form>
 <div id=thanksMessage><span class=success-icon>✅</span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:6px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
 </div>
 <div class=container id=orders-history-container style="display:none;padding:20px">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><h2 style="color:var(--text);margin:0;font-size:18px;text-transform:uppercase">Order Dashboard</h2><button onclick=x() class="btn-back-form btn btn-secondary">BACK TO FORM</button></div>
-<div class=order-search-bar><input type=text id=orderSearchInput placeholder="Search by package, PO, names, address..." oninput="T=this.value;A()"><select id=orderStatusFilter onchange="U=this.value;A()"><option value=all>All status</option><option value=in_progress>In progress</option><option value=completed>Completed</option><option value=cancelled>Cancelled</option></select></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><h2 style="color:var(--text);margin:0;font-size:18px;text-transform:uppercase">Order Dashboard</h2><button onclick="backToForm()" class="btn-back-form btn btn-secondary">BACK TO FORM</button></div>
+<div class=order-search-bar><input type=text id=orderSearchInput placeholder="Search by package, PO, names, address..." oninput="window.searchTerm=this.value;renderOrders()"><select id=orderStatusFilter onchange="window.statusFilter=this.value;renderOrders()"><option value=all>All status</option><option value=in_progress>In progress</option><option value=completed>Completed</option><option value=cancelled>Cancelled</option></select></div>
 <div id=live-status-header style="font-size:11px;color:#f39c12;font-weight:700;margin-bottom:20px;text-transform:uppercase;letter-spacing:1px"></div>
 <div id=orders-list></div>
 </div>
-<div id=location-picker-modal class=modal onclick="if(event.target===this){this.style.display='none';document.body.style.overflow=''}">
+<div id=location-picker-modal class=modal role="dialog" aria-modal="true" onclick="if(event.target===this){closeLocationPicker()}">
 <div class=modal-content style="padding:0;max-width:600px;height:80vh;display:flex;flex-direction:column;overflow:hidden;position:relative">
-<div style="padding:15px;background:var(--card);border-bottom:1px solid var(--accent);display:flex;justify-content:space-between;align-items:center"><h2 style="color:var(--accent);margin:0;font-size:16px;font-weight:700;text-transform:uppercase">Pick Location</h2><button class="btn-cancel btn btn-secondary" style="padding:8px 12px;font-size:12px;margin:0" onclick="document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''">CLOSE</button></div>
-<div style="padding:10px;background:var(--card);border-bottom:1px solid var(--border);display:flex;gap:5px"><input type=text id=loc-search-bar placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0;flex:1;padding:10px"><button onclick=C() style="padding:10px;background:var(--accent);color:#000;border:0;border-radius:4px;cursor:pointer" class="btn btn-accent">Go</button></div>
+<div style="padding:15px;background:var(--card);border-bottom:1px solid var(--accent);display:flex;justify-content:space-between;align-items:center"><h2 style="color:var(--accent);margin:0;font-size:16px;font-weight:700;text-transform:uppercase">Pick Location</h2><button class="btn-cancel btn btn-secondary" style="padding:8px 12px;font-size:12px;margin:0" onclick="closeLocationPicker()">CLOSE</button></div>
+<div style="padding:10px;background:var(--card);border-bottom:1px solid var(--border);display:flex;gap:5px"><input type=text id=loc-search-bar placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0;flex:1;padding:10px"><button onclick="searchLocation()" style="padding:10px;background:var(--accent);color:#000;border:0;border-radius:4px;cursor:pointer" class="btn btn-accent">Go</button></div>
 <div style="flex:1;position:relative"><div id=picker-map style=width:100%;height:100%></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);pointer-events:none;font-size:32px;text-shadow:0 2px 4px rgba(0,0,0,.5);z-index:10">📍</div></div>
-<button class="btn-save btn btn-primary" style="width:100%;border-radius:0;padding:16px;font-size:16px;position:sticky;bottom:0;z-index:11" onclick=D()>SET LOCATION</button>
+<button class="btn-save btn btn-primary" style="width:100%;border-radius:0;padding:16px;font-size:16px;position:sticky;bottom:0;z-index:11" onclick="setLocationFromMap()">SET LOCATION</button>
 </div>
 </div>
-<div id=settings-modal class=modal onclick="if(event.target===this){this.style.display='none';document.body.style.overflow=''}">
+<div id=settings-modal class=modal role="dialog" aria-modal="true" onclick="if(event.target===this){closeSettings()}">
 <div class=modal-content style="background:var(--card);margin:5% auto;padding:30px;width:90%;max-width:550px;border:1px solid var(--accent);color:var(--text);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.5);box-sizing:border-box;max-height:80vh;overflow-y:auto">
-<div id=settings-main><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Settings</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick="document.getElementById('settings-modal').style.display='none';document.body.style.overflow=''">✖</button></div>
-<div class=settings-section><h3>Theme</h3><div class=theme-toggle><button id=theme-light onclick="b('light')" class="btn btn-secondary">Light</button><button id=theme-dark onclick="b('dark')" class="btn btn-secondary active">Dark</button></div></div>
+<div id=settings-main><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Settings</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick="closeSettings()">✖</button></div>
+<div class=settings-section><h3>Theme</h3><div class=theme-toggle><button id=theme-light onclick="setTheme('light')" class="btn btn-secondary">Light</button><button id=theme-dark onclick="setTheme('dark')" class="btn btn-secondary active">Dark</button></div></div>
 <div class=settings-section><h3>Preferences</h3></div>
-<div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick=q()>Autofill Details</button></div>
-<div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick=r()>Address Book</button></div>
-<div class=settings-section><h3>Account</h3><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 onclick=toggleEmailChange()>Change Email</button><button class="btn-save btn btn-primary" style=flex:1 onclick=sendPasswordReset()>Change Password</button></div><div id=emailChangeDiv style="display:none;margin-top:10px"><input type=email id=newEmailInput placeholder="Enter new email" style="width:100%;padding:10px;background:var(--input-bg);color:var(--text);border:1px solid var(--border);margin-bottom:8px"><button class="btn-save btn btn-primary" style=width:100% onclick=changeUserEmail()>Update Email</button></div></div></div>
-<div id=settings-autofill style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Autofill Details</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div class=settings-section><p>Fill in fields to auto-populate when using Autofill.</p><input type=text id=default-name placeholder="Pickup Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-pickup placeholder="Pickup Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-pickup')" type=button class=btn-icon>📍</button></div><input type=text id=default-city placeholder="Pickup City" style=margin-bottom:8px><input type=email id=default-p_email placeholder="Pickup Email" style=margin-bottom:8px><input type=tel id=default-p_phone placeholder="Pickup Phone" style=margin-bottom:8px><input type=text id=default-delivery_name placeholder="Delivery Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-destination placeholder="Delivery Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-drop')" type=button class=btn-icon>📍</button></div><input type=text id=default-drop_city placeholder="Delivery City" style=margin-bottom:8px><input type=email id=default-d_email placeholder="Delivery Email" style=margin-bottom:8px><input type=tel id=default-d_phone placeholder="Delivery Phone" style=margin-bottom:8px><input type=text id=default-package_details placeholder="Packages/Items/Dimensions" style=margin-bottom:8px><input type=text id=default-po_number placeholder="PO Number" style=margin-bottom:8px><textarea id=default-other_info placeholder="Driver Notes" rows=2 style=margin-bottom:8px></textarea><button id=save-defaults-btn class="btn-save btn btn-primary" onclick=m()>Save Autofill Details</button><button class="btn-cancel btn btn-secondary" onclick=clearAutofillForm() style="margin-top:5px;width:100%">Clear</button><button class="btn-cancel btn btn-secondary" style="margin-top:10px;width:100%" onclick=p()>← Back to Settings</button></div></div>
-<div id=settings-addressbook style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Address Book</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div id=addressbook-list-view><button class="btn-save btn btn-primary" style="width:100%;margin-bottom:15px" onclick=s()>Create New Contact</button><div id=savedAddressesList></div></div><div id=addressbook-create-view style=display:none><h3 id=addressbook-form-title style="color:var(--accent);margin-top:0">Create Contact</h3><div class=settings-section><input type=text id=new-contact-name placeholder="Contact / Business Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=new-contact-address placeholder="Street Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('new-contact')" type=button class=btn-icon>📍</button></div><input type=email id=new-contact-email placeholder=Email style=margin-bottom:8px><input type=tel id=new-contact-phone placeholder=Phone style=margin-bottom:8px oninput=h(this)><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 id=save-contact-btn onclick=u()>Save to Address Book</button><button class="btn-cancel btn btn-secondary" style=flex:1 onclick=t()>Cancel</button></div><button class="btn-cancel btn btn-secondary" onclick=clearContactForm() style="margin-top:5px;width:100%">Clear</button><button id=delete-contact-btn class="btn-cancel btn btn-danger" style="margin-top:5px;width:100%;background:#b3002d;color:#fff;border:0;display:none" onclick=deleteCurrentContact()>Delete Contact</button></div></div></div>
+<div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick="showAutofillSettings()">Autofill Details</button></div>
+<div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick="showAddressBook()">Address Book</button></div>
+<div class=settings-section><h3>Account</h3><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 onclick="toggleEmailChange()">Change Email</button><button class="btn-save btn btn-primary" style=flex:1 onclick="sendPasswordReset()">Change Password</button></div><div id=emailChangeDiv style="display:none;margin-top:10px"><input type=email id=newEmailInput placeholder="Enter new email" style="width:100%;padding:10px;background:var(--input-bg);color:var(--text);border:1px solid var(--border);margin-bottom:8px"><button class="btn-save btn btn-primary" style=width:100% onclick="changeUserEmail()">Update Email</button></div></div></div>
+<div id=settings-autofill style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Autofill Details</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick="backToSettingsMain()">← Back</button></div><div class=settings-section><p>Fill in fields to auto-populate when using Autofill.</p><input type=text id=default-name placeholder="Pickup Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-pickup placeholder="Pickup Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="openLocationPicker('settings-pickup')" type=button class=btn-icon aria-label="Pick location">📍</button></div><input type=text id=default-city placeholder="Pickup City" style=margin-bottom:8px><input type=email id=default-p_email placeholder="Pickup Email" style=margin-bottom:8px><input type=tel id=default-p_phone placeholder="Pickup Phone" style=margin-bottom:8px><input type=text id=default-delivery_name placeholder="Delivery Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-destination placeholder="Delivery Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="openLocationPicker('settings-drop')" type=button class=btn-icon aria-label="Pick location">📍</button></div><input type=text id=default-drop_city placeholder="Delivery City" style=margin-bottom:8px><input type=email id=default-d_email placeholder="Delivery Email" style=margin-bottom:8px><input type=tel id=default-d_phone placeholder="Delivery Phone" style=margin-bottom:8px><input type=text id=default-package_details placeholder="Packages/Items/Dimensions" style=margin-bottom:8px><input type=text id=default-po_number placeholder="PO Number" style=margin-bottom:8px><textarea id=default-other_info placeholder="Driver Notes" rows=2 style=margin-bottom:8px></textarea><button id=save-defaults-btn class="btn-save btn btn-primary" onclick="saveAutofillDefaults()">Save Autofill Details</button><button class="btn-cancel btn btn-secondary" onclick="clearAutofillForm()" style="margin-top:5px;width:100%">Clear</button><button class="btn-cancel btn btn-secondary" style="margin-top:10px;width:100%" onclick="backToSettingsMain()">← Back to Settings</button></div></div>
+<div id=settings-addressbook style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Address Book</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick="backToSettingsMain()">← Back</button></div><div id=addressbook-list-view><button class="btn-save btn btn-primary" style="width:100%;margin-bottom:15px" onclick="showCreateContact()">Create New Contact</button><div id=savedAddressesList></div></div><div id=addressbook-create-view style=display:none><h3 id=addressbook-form-title style="color:var(--accent);margin-top:0">Create Contact</h3><div class=settings-section><input type=text id=new-contact-name placeholder="Contact / Business Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=new-contact-address placeholder="Street Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="openLocationPicker('new-contact')" type=button class=btn-icon aria-label="Pick location">📍</button></div><input type=email id=new-contact-email placeholder=Email style=margin-bottom:8px><input type=tel id=new-contact-phone placeholder=Phone style=margin-bottom:8px onblur="formatPhoneNumber(this)"><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 id=save-contact-btn onclick="saveContact()">Save to Address Book</button><button class="btn-cancel btn btn-secondary" style=flex:1 onclick="cancelContactEdit()">Cancel</button></div><button class="btn-cancel btn btn-secondary" onclick="clearContactForm()" style="margin-top:5px;width:100%">Clear</button><button id=delete-contact-btn class="btn-cancel btn btn-danger" style="margin-top:5px;width:100%;background:#b3002d;color:#fff;border:0;display:none" onclick="deleteCurrentContact()">Delete Contact</button></div></div></div>
 </div>
 </div>
 <script src=https://maps.googleapis.com/maps/api/js?key=AIzaSyA6umETP8wBUEV41ugAtiNiChUeLmmwmZI&libraries=geometry,drawing,places></script>
@@ -198,80 +210,1219 @@ body.light-mode .ocean-label{color:#000}
 <script src=https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js></script>
 <script src=https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js></script>
 <script>
+(function() {
+// Constants
+const SUBMIT_COOLDOWN = 30000; // ms
+const GEOCODE_TIMEOUT = 5000; // ms
+const DASHBOARD_REFRESH_INTERVAL = 2000; // ms
+
 firebase.initializeApp({apiKey:"AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",authDomain:"eandccourier-36fcc.firebaseapp.com",databaseURL:"https://eandccourier-36fcc-default-rtdb.firebaseio.com",projectId:"eandccourier-36fcc",storageBucket:"",messagingSenderId:"1067680083511",appId:"1:1067680083511:android:22d1eb3757302492bd19b2"});
-var db=firebase.database(),M=null,N=null,O=null,P=new Set,Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database(),editingContactIndex=null;
+var db=firebase.database();
+var lastOrderData = null; // M
+var ordersData = null; // N
+var currentUser = null; // not directly used
+var expandedOrderIds = new Set(); // P
+var driverZones = {}; // Q
+var driverLocations = {}; // R
+var searchTerm = ''; // T
+var statusFilter = 'all'; // U
+var addressBook = []; // V
+var activeAddressField = 'pickup'; // W
+var editingJobId = null; // X
+var mapInstance = null; // Z
+var locationPickerContext = ''; // ab
+var pickupValidated = false; // ad
+var dropValidated = false; // ae
+var pickupForm = document.getElementById("pickupForm");
+var submitBtn = document.getElementById("submitBtn");
+var editingContactIndex = null;
+
+// Listener references
+var zonesListener = null;
+var locationsListener = null;
+var jobsListener = null;
+var addressBookListener = null;
+
+// Firebase listeners
+db.ref("driver_zones").on("value", (snap) => { driverZones = snap.val() || {}; });
+zonesListener = db.ref("driver_zones").on('value', (snap) => { driverZones = snap.val() || {}; });
+
+db.ref("driver_locations").on("value", (snap) => { driverLocations = snap.val() || {}; console.log("driverLocations keys:",Object.keys(driverLocations)); if(document.getElementById('orders-history-container').style.display==='block') renderOrders(); });
+locationsListener = db.ref("driver_locations").on('value', (snap) => { driverLocations = snap.val() || {}; console.log("driverLocations keys:",Object.keys(driverLocations)); if(document.getElementById('orders-history-container').style.display==='block') renderOrders(); });
+
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
-db.ref("driver_zones").on("value",a=>Q=a.val()||{});
-db.ref("driver_locations").on("value",b=>{R=b.val()||{};console.log("driverLocations keys:",Object.keys(R));if(document.getElementById('orders-history-container').style.display==='block')A()});
-firebase.auth().onAuthStateChanged(c=>{let d=document.getElementById('dev-list');if(c){if(!c.emailVerified&&c.providerData.some(e=>e.providerId==='password')){alert("Please check your email and verify your account before logging in.");firebase.auth().signOut();return}
-document.getElementById('auth-overlay').style.display='none';document.getElementById('main-app-container').style.display='block';if(document.querySelector('input[name="p_email"]'))document.querySelector('input[name="p_email"]').value=c.email;if(O){O();O=null}
-O=db.ref("jobs").orderByChild("created_by").equalTo(c.email).on('value',f=>{if(!f)return;N=f.val()||{};if(f.exists()){let g=Object.values(N)[0];M=g;document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
-if(document.getElementById('orders-history-container').style.display==='block')A()});
-firebase.database().ref('users/'+c.uid+'/addressBook').once('value',h=>{V=h.val()||[];localStorage.setItem('ec_addresses',JSON.stringify(V));G()});
-firebase.database().ref('users/'+c.uid+'/autofillDefaults').once('value',i=>{let j=i.val()||{};localStorage.setItem('autofillDefaults',JSON.stringify(j))});
-}else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null;V=[];}
-firebase.database().ref('developer').on('value',k=>{if(!k)return;d.innerHTML='';let l=k.val()||{};Object.values(l).forEach(m=>{d.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${m.user} - <span style="color:orange;">${m.app||'Database'}</span> - ${m.date}</div><div style="color:#eee;">${m.text}</div>`});d.scrollTop=d.scrollHeight})});
-function a(){document.body.classList.toggle('light-mode');localStorage.setItem('ec_theme',document.body.classList.contains('light-mode')?'light':'dark');c()}
-function b(n){n==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',n);c()}
-function c(){let o=document.body.classList.contains('light-mode'),p=document.getElementById('theme-light'),q=document.getElementById('theme-dark');if(p)p.classList.toggle('active',o);if(q)q.classList.toggle('active',!o)}
-function d(){let r=document.getElementById('auth-email').value.trim(),s=document.getElementById('auth-password').value.trim();if(!r||!s)return alert("Please enter email and password.");firebase.auth().signInWithEmailAndPassword(r,s).catch(t=>alert("Login Error: "+t.message))}
-function e(){let u=document.getElementById('auth-email').value.trim(),v=document.getElementById('auth-password').value.trim();if(!u||!v)return alert("Please enter email and password to sign up.");firebase.auth().createUserWithEmailAndPassword(u,v).then(w=>{w.user.sendEmailVerification();alert("Account created! We sent a verification link to your email. Please verify before logging in.");firebase.auth().signOut()}).catch(x=>alert("Sign Up Error: "+x.message))}
-function f(){let y=new firebase.auth.GoogleAuthProvider();firebase.auth().signInWithPopup(y).catch(z=>alert("Google Login Error: "+z.message))}
-function g(){let A=document.getElementById('auth-email').value.trim();if(!A)return alert("Please enter your email address first, then click Forgot Password.");firebase.auth().sendPasswordResetEmail(A).then(()=>alert("Password reset email sent. Please check your inbox.")).catch(B=>alert("Error: "+B.message))}
-function h(C){let D=C.value.replace(/\D/g,'').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);C.value=!D[2]?D[1]:'('+D[1]+') '+D[2]+(D[3]?'-'+D[3]:'')}
-function i(E){if(!E)return'';for(let F of E){if(F.types.includes("locality"))return F.long_name}for(let G of E){if(G.types.includes("sublocality_level_1"))return G.long_name}for(let H of E){if(H.types.includes("administrative_area_level_2"))return H.long_name}return''}
-function j(){if(window.google?.maps?.places){let I=document.getElementById('f-pickup'),J=document.getElementById('f-drop-address'),K={componentRestrictions:{country:'ca'}},L=new google.maps.places.Autocomplete(I,K),M=new google.maps.places.Autocomplete(J,K),N=document.getElementById('default-pickup'),O=document.getElementById('default-destination'),P=document.getElementById('new-contact-address');if(N){let Q=new google.maps.places.Autocomplete(N,K);Q.addListener('place_changed',()=>{let R=Q.getPlace();if(R?.address_components)document.getElementById('default-city').value=i(R.address_components)})}
-if(O){let S=new google.maps.places.Autocomplete(O,K);S.addListener('place_changed',()=>{let T=S.getPlace();if(T?.address_components)document.getElementById('default-drop_city').value=i(T.address_components)})}
-if(P){let U=new google.maps.places.Autocomplete(P,K);U.addListener('place_changed',()=>{})}
-if(navigator.geolocation){navigator.geolocation.getCurrentPosition(V=>{let W=new google.maps.Circle({center:{lat:V.coords.latitude,lng:V.coords.longitude},radius:1e5});L.setBounds(W.getBounds());M.setBounds(W.getBounds());if(N)new google.maps.places.Autocomplete(N,K).setBounds(W.getBounds());if(O)new google.maps.places.Autocomplete(O,K).setBounds(W.getBounds());if(P)new google.maps.places.Autocomplete(P,K).setBounds(W.getBounds())},X=>console.warn("Geolocation warning/error, falling back to general CA scope:",X.message))}
-L.addListener('place_changed',()=>{ad=!0;let Y=L.getPlace();document.getElementsByName('city')[0].value=i(Y.address_components)});M.addListener('place_changed',()=>{ae=!0;let Z=M.getPlace();document.getElementsByName('drop_city')[0].value=i(Z.address_components)});I.addEventListener('input',()=>{ad=!1});J.addEventListener('input',()=>{ae=!1})}else setTimeout(j,500)}
-j();
-function k(){if(!M)return;af.name.value=M.name||'';af.pickup_location.value=M.pickup_location||'';af.city.value=M.pickup_city||'';af.p_email.value=M.p_email||'';af.p_phone.value=M.p_phone||'';af.delivery_name.value=M.delivery_name||'';af.destination.value=M.destination||'';af.drop_city.value=M.delivery_city||'';af.d_email.value=M.d_email||'';af.d_phone.value=M.d_phone||'';af.package_details.value=M.package_details||'';af.po_number.value=M.po_number||'';af.other_info.value=M.other_info||'';ad=!0;ae=!0}
-function l(){let a0=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');if(a0.name)af.name.value=a0.name;if(a0.pickup_location)af.pickup_location.value=a0.pickup_location;if(a0.city)af.city.value=a0.city;if(a0.p_email)af.p_email.value=a0.p_email;if(a0.p_phone)af.p_phone.value=a0.p_phone;if(a0.delivery_name)af.delivery_name.value=a0.delivery_name;if(a0.destination)af.destination.value=a0.destination;if(a0.drop_city)af.drop_city.value=a0.drop_city;if(a0.d_email)af.d_email.value=a0.d_email;if(a0.d_phone)af.d_phone.value=a0.d_phone;if(a0.package_details)af.package_details.value=a0.package_details;if(a0.po_number)af.po_number.value=a0.po_number;if(a0.other_info)af.other_info.value=a0.other_info;if(a0.pickup_location&&a0.city)ad=!0;if(a0.destination&&a0.drop_city)ae=!0}
-function m(){let a1={name:document.getElementById('default-name').value,pickup_location:document.getElementById('default-pickup').value,city:document.getElementById('default-city').value,p_email:document.getElementById('default-p_email').value,p_phone:document.getElementById('default-p_phone').value,delivery_name:document.getElementById('default-delivery_name').value,destination:document.getElementById('default-destination').value,drop_city:document.getElementById('default-drop_city').value,d_email:document.getElementById('default-d_email').value,d_phone:document.getElementById('default-d_phone').value,package_details:document.getElementById('default-package_details').value,po_number:document.getElementById('default-po_number').value,other_info:document.getElementById('default-other_info').value};
-localStorage.setItem('autofillDefaults',JSON.stringify(a1));let a2=firebase.auth().currentUser;if(a2)firebase.database().ref('users/'+a2.uid+'/autofillDefaults').set(a1).catch(a3=>console.error('Error saving autofill defaults',a3));alert('Defaults saved!');}
-function n(){let a4=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');document.getElementById('default-name').value=a4.name||'';document.getElementById('default-pickup').value=a4.pickup_location||'';document.getElementById('default-city').value=a4.city||'';document.getElementById('default-p_email').value=a4.p_email||'';document.getElementById('default-p_phone').value=a4.p_phone||'';document.getElementById('default-delivery_name').value=a4.delivery_name||'';document.getElementById('default-destination').value=a4.destination||'';document.getElementById('default-drop_city').value=a4.drop_city||'';document.getElementById('default-d_email').value=a4.d_email||'';document.getElementById('default-d_phone').value=a4.d_phone||'';document.getElementById('default-package_details').value=a4.package_details||'';document.getElementById('default-po_number').value=a4.po_number||'';document.getElementById('default-other_info').value=a4.other_info||''}
-function o(){n();c();G();document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';document.getElementById('settings-modal').style.display='block'}
-function p(){document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';editingContactIndex=null;document.getElementById('delete-contact-btn').style.display='none';document.getElementById('save-contact-btn').innerText='Save to Address Book';document.getElementById('addressbook-form-title').innerText='Create Contact';}
-function q(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='block';document.getElementById('settings-addressbook').style.display='none'}
-function r(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='block';document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none';G()}
-function s(){editingContactIndex=null;document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('addressbook-form-title').innerText='Create Contact';document.getElementById('save-contact-btn').innerText='Save to Address Book';document.getElementById('delete-contact-btn').style.display='none';document.getElementById('new-contact-name').value='';document.getElementById('new-contact-address').value='';document.getElementById('new-contact-email').value='';document.getElementById('new-contact-phone').value='';}
-function t(){document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none';editingContactIndex=null;}
-function u(){let a5=document.getElementById('new-contact-name').value.trim(),a6=document.getElementById('new-contact-address').value.trim(),a7=document.getElementById('new-contact-email').value.trim(),a8=document.getElementById('new-contact-phone').value.trim();if(!a5||!a6){alert('Please enter at least a name and address.');return}
-let a9={name:a5,address:a6,city:'',email:a7,phone:a8,target:W};if(editingContactIndex!==null)V[editingContactIndex]=a9;else V.push(a9);saveAddressBookToFirebase();G();t();}
-function editContact(ba){editingContactIndex=ba;let bb=V[ba];document.getElementById('new-contact-name').value=bb.name||'';document.getElementById('new-contact-address').value=bb.address||'';document.getElementById('new-contact-email').value=bb.email||'';document.getElementById('new-contact-phone').value=bb.phone||'';document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('addressbook-form-title').innerText='Edit Contact';document.getElementById('save-contact-btn').innerText='Update Contact';document.getElementById('delete-contact-btn').style.display='block';}
-function deleteCurrentContact(){if(editingContactIndex!==null&&confirm('Delete this contact?')){V.splice(editingContactIndex,1);saveAddressBookToFirebase();G();t();}}
-function v(){let bc=firebase.auth().currentUser;if(!bc)return;db.ref("jobs").orderByChild("created_by").equalTo(bc.email).once('value').then(bd=>{N=bd.val()||{};if(document.getElementById('orders-history-container').style.display==='block')A()})}
-function w(){document.getElementById('main-app-container').style.display='none';document.getElementById('orders-history-container').style.display='block';v();if(window.X)clearInterval(window.X);window.X=setInterval(()=>{if(document.getElementById('orders-history-container').style.display==='block')A();else{clearInterval(window.X);window.X=null}},2000)}
-function x(){if(window.X){clearInterval(window.X);window.X=null}P.clear();document.getElementById('orderSearchInput').value='';document.getElementById('orderStatusFilter').value='all';T='';U='all';document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';document.getElementById('pickupForm').reset();ad=!1;ae=!1;ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1";S=null;document.getElementById('cancelEditBtn').style.display='none';}
-function y(be){if(!confirm('Are you sure you want to cancel this pending order?'))return;let bf=db.ref('jobs/'+be);bf.once('value',bg=>{let bh=bg.val();if(!bh)return;let bi=(bh.job_history?bh.job_history+'\n':'')+'[CANCELLED BY USER] DND';bf.update({job_history:bi,status:'cancelled',cancelled_by_user:true}).catch(bj=>alert('Error: '+bj.message));}).catch(bk=>alert('Error: '+bk.message));}
-function z(bl){if(!confirm("Are you sure you want to edit this order?"))return;let bm=N[bl];if(!bm)return;S=bl;af.name.value=bm.name||'';af.pickup_location.value=bm.pickup_location||'';af.city.value=bm.pickup_city||'';af.p_email.value=bm.p_email||'';af.p_phone.value=bm.p_phone||'';af.delivery_name.value=bm.delivery_name||'';af.destination.value=bm.destination||'';af.drop_city.value=bm.delivery_city||'';af.d_email.value=bm.d_email||'';af.d_phone.value=bm.d_phone||'';af.package_details.value=bm.package_details||'';af.po_number.value=bm.po_number||'';af.other_info.value=bm.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";if(window.X){clearInterval(window.X);window.X=null}document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';ag.disabled=!1;ag.style.opacity="1";document.getElementById('cancelEditBtn').style.display='block';}
-function A(){if(document.getElementById('orders-history-container').style.display!=='block')return;let bn=document.getElementById('orders-list'),bo=document.getElementById('live-status-header');if(!N||Object.keys(N).length===0){bn.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
-let bp=new Date();bo.innerText="Status Live as of "+bp.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});bn.innerHTML='';let bq=[];Object.entries(N).forEach(([br,bs])=>{bq.push({...bs,id:br})});bq.sort((bt,bu)=>bt.timestamp-bu.timestamp).reverse();let bv=bq.filter(bw=>{if(U!=='all'){if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(bw.status))return!1;if(U==='completed'&&(bw.status!=='completed'||bw.cancelled_by_user===!0))return!1;if(U==='cancelled'&&!(bw.status==='cancelled'||bw.cancelled_by_user===!0))return!1}if(T.trim()!==''){let bx=T.toLowerCase(),by=(bw.package_details+' '+bw.po_number+' '+bw.name+' '+bw.delivery_name+' '+bw.pickup_location+' '+bw.destination).toLowerCase();if(!by.includes(bx))return!1}return!0});bv.forEach(bz=>{let bA=new Date(bz.timestamp).toLocaleString(),bB=bz.status||'pending_pickup',bC=(bz.assigned_to&&bz.assigned_to!=='Unassigned')?bz.assigned_to:null,bD=!0,bE=(bC!==null)||!!bz.picked_up_by||(bB==='in_transit')||(bB==='pending_delivery')||(bB==='completed'),bF=!!bz.picked_up_by||bB==='in_transit',bG=(bB==='completed')||(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0),bH=(bB==='completed'),bI=null,bJ=bz.cancelled_by_user===!0;if(bB==='pending_pickup'&&bC)bI=2;else if(bB==='in_transit')bI=3;else if(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0)bI=4;else if(bB==='completed')bI=null;let bK=[bD?'completed':'',bE?'completed':'',bF?'completed':'',bG?'completed':'',bH?'completed':''];if(bI)bK[bI-1]+=' active';let bL='0%';if(bI){let bM=0;for(let bN=0;bN<bI-1;bN++)if(bK[bN].includes('completed'))bM++;bL=(bM*25)+'%'}else{let bO=[bD,bE,bF,bG,bH].filter(Boolean).length;if(bO>1)bL=((bO-1)*25)+'%'}
-let bP=bz.package_details||'N/A',bQ=bz.po_number?'PO: '+bz.po_number:'N/A',bR=(bB==='completed'),bS='order-card-'+bz.id,bT=bJ?'':`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,bU=`<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info||'None'}</span></div>${bT}`;if(bR||bB==='cancelled'||bJ){let bV=P.has(bz.id),bW=new Date(bz.timestamp),bX=bW.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,''),bY;if(bB==='cancelled'||bJ)bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;else bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;bn.innerHTML+=`<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;">${bU}</div></div>`}else{let bZ='';if(bB==='pending_pickup')bZ=`<div class="order-actions"><button class="cancel-btn btn btn-danger" onclick="y('${bz.id}')">Cancel</button><button class="edit-btn btn btn-accent" onclick="z('${bz.id}')">Edit</button></div>`;bn.innerHTML+=`<div class="order-card">${bU}${bZ}</div>`}})}
-function B(ca){let cb=document.getElementById('order-card-'+ca);if(cb){if(cb.style.display==='none'){cb.style.display='block';P.add(ca)}else{cb.style.display='none';P.delete(ca)}}}
-af.addEventListener("submit",cc=>{cc.preventDefault();if(document.getElementById('website_url_hp').value)return;let cd=localStorage.getItem('lastOrderTime'),ce=Date.now();if(cd&&ce-cd<30000&&!S){alert("Please wait a moment before submitting another request.");return}
-if(!ad||!ae){alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");return}
-ag.innerText=S?"Updating...":"Transmitting...";ag.style.opacity="0.7";ag.disabled=!0;let cf=(cg,ch='Unassigned')=>{let ci={name:af.name.value.trim(),pickup_location:af.pickup_location.value.trim(),pickup_city:af.city.value.trim(),city:af.city.value.trim(),p_email:af.p_email.value.trim(),p_phone:af.p_phone.value.trim(),delivery_name:af.delivery_name.value.trim(),destination:af.destination.value.trim(),delivery_city:af.drop_city.value.trim(),d_email:af.d_email.value.trim(),d_phone:af.d_phone.value.trim(),package_details:af.package_details.value.trim(),po_number:af.po_number.value.trim()||"",other_info:af.other_info.value.trim(),job_history:"[Client Request]",status:"pending_pickup",type:"pickup",assigned_to:ch,timestamp:S?N[S]?.timestamp||Date.now():Date.now(),created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",...cg};if(S){db.ref("jobs/"+S).update(ci).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'});document.getElementById('cancelEditBtn').style.display='none';}).catch(cj=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(ci).then(ck=>{localStorage.setItem('lastOrderTime',Date.now());let cl=ck.key;if(!N)N={};N[cl]={...ci,id:cl};if(document.getElementById('orders-history-container').style.display==='block')A();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(cm=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};let cn=new google.maps.Geocoder(),co=af.pickup_location.value.trim()+", "+af.city.value.trim(),cp=!1,cq=setTimeout(()=>{if(!cp){cp=!0;cf()}},3000);cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="OK"&&cr[0]){let ct=cr[0].geometry.location,cu={lat:ct.lat(),lng:ct.lng()},cv='Unassigned';for(let cw in Q){let cx=Q[cw];if(cx.polygon){let cy=new google.maps.Polygon({paths:cx.polygon});if(google.maps.geometry.poly.containsLocation(ct,cy)){cv=cw;break}}}cf(cu,cv)}else cf()})});
-var Y;window.addEventListener('beforeinstallprompt',cz=>{cz.preventDefault();Y=cz;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();let cA=await Y.userChoice;if(cA.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
-var Z,aa,ab='';function E(cB){ab=cB;let cC=document.getElementById('location-picker-modal');cC.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});let cD=document.getElementById('loc-search-bar'),cE=new google.maps.places.Autocomplete(cD);cE.bindTo('bounds',Z);cE.addListener('place_changed',()=>{let cF=cE.getPlace();if(cF.geometry){Z.setCenter(cF.geometry.location);Z.setZoom(17)}});cD.addEventListener('keydown',cG=>{if(cG.key==='Enter'){let cH=cD.value,cI=cH.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cI){let cJ={lat:+cI[1],lng:+cI[2]};Z.setCenter(cJ);Z.setZoom(17)}else{let cK=new google.maps.Geocoder();cK.geocode({address:cH},(cL,cM)=>{if(cM==='OK'&&cL[0]){Z.setCenter(cL[0].geometry.location);Z.setZoom(17)}})}}})}}
-function C(){let cN=document.getElementById('loc-search-bar'),cO=cN.value;if(!cO)return;let cP=cO.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cP){let cQ={lat:+cP[1],lng:+cP[2]};Z.setCenter(cQ);Z.setZoom(17)}else{let cR=new google.maps.Geocoder();cR.geocode({address:cO},(cS,cT)=>{if(cT==='OK'&&cS[0]){Z.setCenter(cS[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
-function D(){let cU=Z.getCenter(),cV=new google.maps.Geocoder();cV.geocode({location:cU},(cW,cX)=>{if(cX==='OK'&&cW[0]){let cY=cW[0].formatted_address,cZ=i(cW[0].address_components);if(ab==='pickup'){document.getElementById('f-pickup').value=cY;document.getElementsByName('city')[0].value=cZ;ad=!0}else if(ab==='drop'){document.getElementById('f-drop-address').value=cY;document.getElementsByName('drop_city')[0].value=cZ;ae=!0}else if(ab==='settings-pickup'){document.getElementById('default-pickup').value=cY;document.getElementById('default-city').value=cZ}else if(ab==='settings-drop'){document.getElementById('default-destination').value=cY;document.getElementById('default-drop_city').value=cZ}else if(ab==='new-contact'){document.getElementById('new-contact-address').value=cY}}document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''})}
-function F(ca){W=ca;G();document.getElementById('settings-modal').style.display='block';r()}
-function G(){let cb=document.getElementById('savedAddressesList');if(!cb)return;cb.innerHTML='';V.forEach((cc,cd)=>{cb.innerHTML+=`<div style="border:1px solid var(--border);padding:8px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;"><div onclick="editContact(${cd})" style="flex:1;cursor:pointer;"><strong>${cc.name}</strong><br><span style="font-size:12px;">${cc.address} ${cc.city?'('+cc.city+')':''}</span><br><span style="font-size:11px;color:#aaa;">${cc.email} ${cc.phone?'• '+cc.phone:''}</span></div><div><button onclick="H(${cd});event.stopPropagation();" style="background:var(--accent);color:#000;border:0;padding:10px 16px;border-radius:8px;font-weight:700;font-size:14px;" class="btn btn-accent">Select</button></div></div>`});if(V.length===0)cb.innerHTML='<p>No saved addresses.</p>';}
-function H(ce){let cf=V[ce];if(W==='pickup'){document.getElementById('f-pickup').value=cf.address;document.getElementsByName('city')[0].value=cf.city||'';document.getElementsByName('name')[0].value=cf.name||'';document.getElementsByName('p_email')[0].value=cf.email||'';document.getElementsByName('p_phone')[0].value=cf.phone||'';ad=!0}else{document.getElementById('f-drop-address').value=cf.address;document.getElementsByName('drop_city')[0].value=cf.city||'';document.getElementsByName('delivery_name')[0].value=cf.name||'';document.getElementsByName('d_email')[0].value=cf.email||'';document.getElementsByName('d_phone')[0].value=cf.phone||'';ae=!0}document.getElementById('settings-modal').style.display='none';}
-function I(cg){V.splice(cg,1);saveAddressBookToFirebase();G();}
-function J(){}
-function K(){if(confirm("Are you sure you want to logout?"))firebase.auth().signOut()}
-function saveAddressBookToFirebase(){let ch=firebase.auth().currentUser;if(ch)firebase.database().ref('users/'+ch.uid+'/addressBook').set(V).then(()=>{localStorage.setItem('ec_addresses',JSON.stringify(V))}).catch(ci=>console.error('Error saving address book',ci));else localStorage.setItem('ec_addresses',JSON.stringify(V));}
-function clearMainForm(){if(!confirm('Are you sure you want to clear the form?'))return;af.reset();ad=!1;ae=!1;}
-function clearAutofillForm(){if(!confirm('Are you sure you want to clear all autofill fields?'))return;document.getElementById('default-name').value='';document.getElementById('default-pickup').value='';document.getElementById('default-city').value='';document.getElementById('default-p_email').value='';document.getElementById('default-p_phone').value='';document.getElementById('default-delivery_name').value='';document.getElementById('default-destination').value='';document.getElementById('default-drop_city').value='';document.getElementById('default-d_email').value='';document.getElementById('default-d_phone').value='';document.getElementById('default-package_details').value='';document.getElementById('default-po_number').value='';document.getElementById('default-other_info').value='';}
-function clearContactForm(){if(!confirm('Are you sure you want to clear the contact form?'))return;document.getElementById('new-contact-name').value='';document.getElementById('new-contact-address').value='';document.getElementById('new-contact-email').value='';document.getElementById('new-contact-phone').value='';}
-function toggleEmailChange(){let cj=document.getElementById('emailChangeDiv');cj.style.display=cj.style.display==='none'?'block':'none';}
-function changeUserEmail(){let ck=document.getElementById('newEmailInput').value,cl=firebase.auth().currentUser;if(cl&&ck!==""){cl.verifyBeforeUpdateEmail(ck).then(function(){alert("A verification link has been sent to your new email! Please check your inbox and verify.");document.getElementById('newEmailInput').value='';document.getElementById('emailChangeDiv').style.display='none';}).catch(function(cm){alert("Error: "+cm.message);});}else alert("Please log in and enter a valid email.");}
-function sendPasswordReset(){let cn=firebase.auth().currentUser;if(cn&&cn.email){firebase.auth().sendPasswordResetEmail(cn.email).then(()=>{alert("Password reset email sent to "+cn.email+". Please check your inbox.");}).catch(co=>{alert("Error: "+co.message);});}else alert("No user logged in.");}
-function cancelEdit(){if(S){if(!confirm("Are you sure you want to cancel editing?"))return;S=null;ag.innerText="Submit Request";document.getElementById('cancelEditBtn').style.display='none';af.reset();ad=!1;ae=!1;w();}}
-setTimeout(function(){if(document.getElementById('auth-overlay').style.display==='none'&&document.getElementById('main-app-container').style.display==='none')document.getElementById('auth-overlay').style.display='flex';},2000);
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
+      alert("Please check your email and verify your account before logging in.");
+      firebase.auth().signOut();
+      return;
+    }
+    document.getElementById('auth-overlay').style.display = 'none';
+    document.getElementById('main-app-container').style.display = 'block';
+    if (document.querySelector('input[name="p_email"]')) {
+      document.querySelector('input[name="p_email"]').value = user.email;
+    }
+
+    // Attach jobs listener
+    if (jobsListener) {
+      db.ref("jobs").off('value', jobsListener);
+    }
+    jobsListener = db.ref("jobs").orderByChild("created_by").equalTo(user.email).on('value', function(snap) {
+      if (!snap) return;
+      ordersData = snap.val() || {};
+      if (snap.exists()) {
+        lastOrderData = Object.values(ordersData)[0];
+        document.getElementById('autofillBtn').style.display = 'block';
+      } else {
+        lastOrderData = null;
+        document.getElementById('autofillBtn').style.display = 'none';
+      }
+      if (document.getElementById('orders-history-container').style.display === 'block') {
+        renderOrders();
+      }
+    });
+
+    // Address book listener
+    if (addressBookListener) {
+      firebase.database().ref('users/' + user.uid + '/addressBook').off('value', addressBookListener);
+    }
+    addressBookListener = firebase.database().ref('users/' + user.uid + '/addressBook').on('value', function(snap) {
+      addressBook = snap.val() || [];
+      localStorage.setItem('ec_addresses', JSON.stringify(addressBook));
+      renderAddressBookList();
+    });
+
+    // Load autofill defaults
+    firebase.database().ref('users/' + user.uid + '/autofillDefaults').once('value', function(snap) {
+      localStorage.setItem('autofillDefaults', JSON.stringify(snap.val() || {}));
+    });
+
+  } else {
+    document.getElementById('auth-overlay').style.display = 'flex';
+    document.getElementById('main-app-container').style.display = 'none';
+    if (jobsListener) {
+      db.ref("jobs").off('value', jobsListener);
+      jobsListener = null;
+    }
+    if (addressBookListener) {
+      firebase.database().ref('users/' + (firebase.auth().currentUser ? firebase.auth().currentUser.uid : '') + '/addressBook').off('value', addressBookListener);
+      addressBookListener = null;
+    }
+    ordersData = null;
+    addressBook = [];
+    // Clear dashboard interval if any
+    if (window.dashboardInterval) {
+      clearInterval(window.dashboardInterval);
+      window.dashboardInterval = null;
+    }
+  }
+});
+
+// Theme functions
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  localStorage.setItem('ec_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+  updateThemeButtons();
+}
+
+function setTheme(mode) {
+  if (mode === 'light') {
+    document.body.classList.add('light-mode');
+  } else {
+    document.body.classList.remove('light-mode');
+  }
+  localStorage.setItem('ec_theme', mode);
+  updateThemeButtons();
+}
+
+function updateThemeButtons() {
+  var isLight = document.body.classList.contains('light-mode');
+  var lightBtn = document.getElementById('theme-light');
+  var darkBtn = document.getElementById('theme-dark');
+  if (lightBtn) lightBtn.classList.toggle('active', isLight);
+  if (darkBtn) darkBtn.classList.toggle('active', !isLight);
+}
+
+// Auth functions
+function login() {
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value.trim();
+  if (!email || !password) return alert("Please enter email and password.");
+  firebase.auth().signInWithEmailAndPassword(email, password).catch(function(err) {
+    alert("Login Error: " + err.message);
+  });
+}
+
+function signUp() {
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value.trim();
+  if (!email || !password) return alert("Please enter email and password to sign up.");
+  firebase.auth().createUserWithEmailAndPassword(email, password).then(function(cred) {
+    cred.user.sendEmailVerification();
+    alert("Account created! We sent a verification link to your email. Please verify before logging in.");
+    firebase.auth().signOut();
+  }).catch(function(err) {
+    alert("Sign Up Error: " + err.message);
+  });
+}
+
+function googleSignIn() {
+  var provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).catch(function(err) {
+    alert("Google Login Error: " + err.message);
+  });
+}
+
+function forgotPassword() {
+  var email = document.getElementById('auth-email').value.trim();
+  if (!email) return alert("Please enter your email address first, then click Forgot Password.");
+  firebase.auth().sendPasswordResetEmail(email).then(function() {
+    alert("Password reset email sent. Please check your inbox.");
+  }).catch(function(err) {
+    alert("Error: " + err.message);
+  });
+}
+
+// Utility functions
+function formatPhoneNumber(input) {
+  var val = input.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+  input.value = !val[2] ? val[1] : '(' + val[1] + ') ' + val[2] + (val[3] ? '-' + val[3] : '');
+}
+
+function extractCityFromAddress(components) {
+  if (!components) return '';
+  for (var comp of components) {
+    if (comp.types.includes("locality")) return comp.long_name;
+  }
+  for (var comp of components) {
+    if (comp.types.includes("sublocality_level_1")) return comp.long_name;
+  }
+  for (var comp of components) {
+    if (comp.types.includes("administrative_area_level_2")) return comp.long_name;
+  }
+  for (var comp of components) {
+    if (comp.types.includes("postal_town")) return comp.long_name;
+  }
+  return '';
+}
+
+// Autocomplete initialization
+function initPlacesAutocomplete() {
+  if (!window.google?.maps?.places) {
+    setTimeout(initPlacesAutocomplete, 500);
+    return;
+  }
+  var pickupInput = document.getElementById('f-pickup');
+  var dropInput = document.getElementById('f-drop-address');
+  var options = { componentRestrictions: { country: 'ca' } };
+  var pickupAuto = new google.maps.places.Autocomplete(pickupInput, options);
+  var dropAuto = new google.maps.places.Autocomplete(dropInput, options);
+  var defaultPickup = document.getElementById('default-pickup');
+  var defaultDrop = document.getElementById('default-destination');
+  var newContact = document.getElementById('new-contact-address');
+
+  if (defaultPickup) {
+    new google.maps.places.Autocomplete(defaultPickup, options).addListener('place_changed', function() {
+      var place = this.getPlace();
+      if (place?.address_components) {
+        document.getElementById('default-city').value = extractCityFromAddress(place.address_components);
+      }
+    });
+  }
+  if (defaultDrop) {
+    new google.maps.places.Autocomplete(defaultDrop, options).addListener('place_changed', function() {
+      var place = this.getPlace();
+      if (place?.address_components) {
+        document.getElementById('default-drop_city').value = extractCityFromAddress(place.address_components);
+      }
+    });
+  }
+  if (newContact) {
+    new google.maps.places.Autocomplete(newContact, options);
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      var circle = new google.maps.Circle({ center: { lat: pos.coords.latitude, lng: pos.coords.longitude }, radius: 100000 });
+      pickupAuto.setBounds(circle.getBounds());
+      dropAuto.setBounds(circle.getBounds());
+      if (defaultPickup) new google.maps.places.Autocomplete(defaultPickup, options).setBounds(circle.getBounds());
+      if (defaultDrop) new google.maps.places.Autocomplete(defaultDrop, options).setBounds(circle.getBounds());
+      if (newContact) new google.maps.places.Autocomplete(newContact, options).setBounds(circle.getBounds());
+    }, function(err) {
+      console.warn("Geolocation warning/error, falling back to general CA scope:", err.message);
+    });
+  }
+
+  pickupAuto.addListener('place_changed', function() {
+    pickupValidated = true;
+    var place = pickupAuto.getPlace();
+    document.getElementsByName('city')[0].value = extractCityFromAddress(place.address_components);
+  });
+  dropAuto.addListener('place_changed', function() {
+    dropValidated = true;
+    var place = dropAuto.getPlace();
+    document.getElementsByName('drop_city')[0].value = extractCityFromAddress(place.address_components);
+  });
+
+  pickupInput.addEventListener('input', function() { pickupValidated = false; });
+  dropInput.addEventListener('input', function() { dropValidated = false; });
+}
+initPlacesAutocomplete();
+
+// Autofill functions
+function autofillFromLastOrder() {
+  if (!lastOrderData) return;
+  pickupForm.name.value = lastOrderData.name || '';
+  pickupForm.pickup_location.value = lastOrderData.pickup_location || '';
+  pickupForm.city.value = lastOrderData.pickup_city || '';
+  pickupForm.p_email.value = lastOrderData.p_email || '';
+  pickupForm.p_phone.value = lastOrderData.p_phone || '';
+  pickupForm.delivery_name.value = lastOrderData.delivery_name || '';
+  pickupForm.destination.value = lastOrderData.destination || '';
+  pickupForm.drop_city.value = lastOrderData.delivery_city || '';
+  pickupForm.d_email.value = lastOrderData.d_email || '';
+  pickupForm.d_phone.value = lastOrderData.d_phone || '';
+  pickupForm.package_details.value = lastOrderData.package_details || '';
+  pickupForm.po_number.value = lastOrderData.po_number || '';
+  pickupForm.other_info.value = lastOrderData.other_info || '';
+  pickupValidated = true;
+  dropValidated = true;
+}
+
+function autofillFromDefaults() {
+  var defaults = JSON.parse(localStorage.getItem('autofillDefaults') || '{}');
+  if (defaults.name) pickupForm.name.value = defaults.name;
+  if (defaults.pickup_location) pickupForm.pickup_location.value = defaults.pickup_location;
+  if (defaults.city) pickupForm.city.value = defaults.city;
+  if (defaults.p_email) pickupForm.p_email.value = defaults.p_email;
+  if (defaults.p_phone) pickupForm.p_phone.value = defaults.p_phone;
+  if (defaults.delivery_name) pickupForm.delivery_name.value = defaults.delivery_name;
+  if (defaults.destination) pickupForm.destination.value = defaults.destination;
+  if (defaults.drop_city) pickupForm.drop_city.value = defaults.drop_city;
+  if (defaults.d_email) pickupForm.d_email.value = defaults.d_email;
+  if (defaults.d_phone) pickupForm.d_phone.value = defaults.d_phone;
+  if (defaults.package_details) pickupForm.package_details.value = defaults.package_details;
+  if (defaults.po_number) pickupForm.po_number.value = defaults.po_number;
+  if (defaults.other_info) pickupForm.other_info.value = defaults.other_info;
+  if (defaults.pickup_location && defaults.city) pickupValidated = true;
+  if (defaults.destination && defaults.drop_city) dropValidated = true;
+}
+
+function saveAutofillDefaults() {
+  var data = {
+    name: document.getElementById('default-name').value,
+    pickup_location: document.getElementById('default-pickup').value,
+    city: document.getElementById('default-city').value,
+    p_email: document.getElementById('default-p_email').value,
+    p_phone: document.getElementById('default-p_phone').value,
+    delivery_name: document.getElementById('default-delivery_name').value,
+    destination: document.getElementById('default-destination').value,
+    drop_city: document.getElementById('default-drop_city').value,
+    d_email: document.getElementById('default-d_email').value,
+    d_phone: document.getElementById('default-d_phone').value,
+    package_details: document.getElementById('default-package_details').value,
+    po_number: document.getElementById('default-po_number').value,
+    other_info: document.getElementById('default-other_info').value
+  };
+  localStorage.setItem('autofillDefaults', JSON.stringify(data));
+  var user = firebase.auth().currentUser;
+  if (user) {
+    firebase.database().ref('users/' + user.uid + '/autofillDefaults').set(data).catch(function(err) {
+      console.error('Error saving autofill defaults', err);
+    });
+  }
+  alert('Defaults saved!');
+}
+
+function loadAutofillDefaults() {
+  var data = JSON.parse(localStorage.getItem('autofillDefaults') || '{}');
+  document.getElementById('default-name').value = data.name || '';
+  document.getElementById('default-pickup').value = data.pickup_location || '';
+  document.getElementById('default-city').value = data.city || '';
+  document.getElementById('default-p_email').value = data.p_email || '';
+  document.getElementById('default-p_phone').value = data.p_phone || '';
+  document.getElementById('default-delivery_name').value = data.delivery_name || '';
+  document.getElementById('default-destination').value = data.destination || '';
+  document.getElementById('default-drop_city').value = data.drop_city || '';
+  document.getElementById('default-d_email').value = data.d_email || '';
+  document.getElementById('default-d_phone').value = data.d_phone || '';
+  document.getElementById('default-package_details').value = data.package_details || '';
+  document.getElementById('default-po_number').value = data.po_number || '';
+  document.getElementById('default-other_info').value = data.other_info || '';
+}
+
+// Settings navigation
+function openSettings() {
+  loadAutofillDefaults();
+  updateThemeButtons();
+  renderAddressBookList();
+  document.getElementById('settings-main').style.display = 'block';
+  document.getElementById('settings-autofill').style.display = 'none';
+  document.getElementById('settings-addressbook').style.display = 'none';
+  document.getElementById('settings-modal').style.display = 'block';
+  // Focus management
+  document.getElementById('settings-modal').querySelector('button').focus();
+}
+
+function closeSettings() {
+  document.getElementById('settings-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  // Return focus to settings button
+  document.getElementById('settingsBtn').focus();
+}
+
+function backToSettingsMain() {
+  document.getElementById('settings-main').style.display = 'block';
+  document.getElementById('settings-autofill').style.display = 'none';
+  document.getElementById('settings-addressbook').style.display = 'none';
+  editingContactIndex = null;
+  document.getElementById('delete-contact-btn').style.display = 'none';
+  document.getElementById('save-contact-btn').innerText = 'Save to Address Book';
+  document.getElementById('addressbook-form-title').innerText = 'Create Contact';
+}
+
+function showAutofillSettings() {
+  document.getElementById('settings-main').style.display = 'none';
+  document.getElementById('settings-autofill').style.display = 'block';
+  document.getElementById('settings-addressbook').style.display = 'none';
+}
+
+function showAddressBook() {
+  document.getElementById('settings-main').style.display = 'none';
+  document.getElementById('settings-autofill').style.display = 'none';
+  document.getElementById('settings-addressbook').style.display = 'block';
+  document.getElementById('addressbook-list-view').style.display = 'block';
+  document.getElementById('addressbook-create-view').style.display = 'none';
+  renderAddressBookList();
+}
+
+// Address book
+function showCreateContact() {
+  editingContactIndex = null;
+  document.getElementById('addressbook-list-view').style.display = 'none';
+  document.getElementById('addressbook-create-view').style.display = 'block';
+  document.getElementById('addressbook-form-title').innerText = 'Create Contact';
+  document.getElementById('save-contact-btn').innerText = 'Save to Address Book';
+  document.getElementById('delete-contact-btn').style.display = 'none';
+  document.getElementById('new-contact-name').value = '';
+  document.getElementById('new-contact-address').value = '';
+  document.getElementById('new-contact-email').value = '';
+  document.getElementById('new-contact-phone').value = '';
+}
+
+function cancelContactEdit() {
+  document.getElementById('addressbook-list-view').style.display = 'block';
+  document.getElementById('addressbook-create-view').style.display = 'none';
+  editingContactIndex = null;
+}
+
+function saveContact() {
+  var name = document.getElementById('new-contact-name').value.trim();
+  var address = document.getElementById('new-contact-address').value.trim();
+  var email = document.getElementById('new-contact-email').value.trim();
+  var phone = document.getElementById('new-contact-phone').value.trim();
+  if (!name || !address) {
+    alert('Please enter at least a name and address.');
+    return;
+  }
+  var contact = { name: name, address: address, city: '', email: email, phone: phone, target: activeAddressField };
+  if (editingContactIndex !== null) {
+    addressBook[editingContactIndex] = contact;
+  } else {
+    addressBook.push(contact);
+  }
+  saveAddressBookToFirebase();
+  renderAddressBookList();
+  cancelContactEdit();
+}
+
+function editContact(index) {
+  editingContactIndex = index;
+  var contact = addressBook[index];
+  document.getElementById('new-contact-name').value = contact.name || '';
+  document.getElementById('new-contact-address').value = contact.address || '';
+  document.getElementById('new-contact-email').value = contact.email || '';
+  document.getElementById('new-contact-phone').value = contact.phone || '';
+  document.getElementById('addressbook-list-view').style.display = 'none';
+  document.getElementById('addressbook-create-view').style.display = 'block';
+  document.getElementById('addressbook-form-title').innerText = 'Edit Contact';
+  document.getElementById('save-contact-btn').innerText = 'Update Contact';
+  document.getElementById('delete-contact-btn').style.display = 'block';
+}
+
+function deleteCurrentContact() {
+  if (editingContactIndex !== null && confirm('Delete this contact?')) {
+    addressBook.splice(editingContactIndex, 1);
+    saveAddressBookToFirebase();
+    renderAddressBookList();
+    cancelContactEdit();
+  }
+}
+
+function renderAddressBookList() {
+  var container = document.getElementById('savedAddressesList');
+  if (!container) return;
+  container.innerHTML = '';
+  addressBook.forEach(function(contact, idx) {
+    var div = document.createElement('div');
+    div.style = 'border:1px solid var(--border);padding:8px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;';
+    var info = document.createElement('div');
+    info.style = 'flex:1;cursor:pointer;';
+    info.onclick = function() { editContact(idx); };
+    info.innerHTML = '<strong>' + escapeHTML(contact.name) + '</strong><br><span style="font-size:12px;">' + escapeHTML(contact.address) + (contact.city ? ' (' + escapeHTML(contact.city) + ')' : '') + '</span><br><span style="font-size:11px;color:#aaa;">' + escapeHTML(contact.email) + (contact.phone ? ' • ' + escapeHTML(contact.phone) : '') + '</span>';
+    var btn = document.createElement('button');
+    btn.className = 'btn btn-accent';
+    btn.style = 'background:var(--accent);color:#000;border:0;padding:10px 16px;border-radius:8px;font-weight:700;font-size:14px;';
+    btn.textContent = 'Select';
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      selectAddressFromBook(idx);
+    };
+    div.appendChild(info);
+    div.appendChild(btn);
+    container.appendChild(div);
+  });
+  if (addressBook.length === 0) {
+    container.innerHTML = '<p>No saved addresses.</p>';
+  }
+}
+
+function selectAddressFromBook(index) {
+  var contact = addressBook[index];
+  if (activeAddressField === 'pickup') {
+    document.getElementById('f-pickup').value = contact.address;
+    document.getElementsByName('city')[0].value = contact.city || '';
+    document.getElementsByName('name')[0].value = contact.name || '';
+    document.getElementsByName('p_email')[0].value = contact.email || '';
+    document.getElementsByName('p_phone')[0].value = contact.phone || '';
+    pickupValidated = true;
+  } else {
+    document.getElementById('f-drop-address').value = contact.address;
+    document.getElementsByName('drop_city')[0].value = contact.city || '';
+    document.getElementsByName('delivery_name')[0].value = contact.name || '';
+    document.getElementsByName('d_email')[0].value = contact.email || '';
+    document.getElementsByName('d_phone')[0].value = contact.phone || '';
+    dropValidated = true;
+  }
+  closeSettings();
+}
+
+function emptyFunction() {}
+
+function logout() {
+  if (confirm("Are you sure you want to logout?")) firebase.auth().signOut();
+}
+
+function saveAddressBookToFirebase() {
+  var user = firebase.auth().currentUser;
+  if (user) {
+    firebase.database().ref('users/' + user.uid + '/addressBook').set(addressBook).then(function() {
+      localStorage.setItem('ec_addresses', JSON.stringify(addressBook));
+    }).catch(function(err) {
+      console.error('Error saving address book', err);
+    });
+  } else {
+    localStorage.setItem('ec_addresses', JSON.stringify(addressBook));
+  }
+}
+
+// Dashboard functions
+function showOrdersDashboard() {
+  document.getElementById('main-app-container').style.display = 'none';
+  document.getElementById('orders-history-container').style.display = 'block';
+  renderOrders();
+  if (window.dashboardInterval) clearInterval(window.dashboardInterval);
+  window.dashboardInterval = setInterval(function() {
+    if (document.getElementById('orders-history-container').style.display === 'block') {
+      renderOrders();
+    } else {
+      clearInterval(window.dashboardInterval);
+      window.dashboardInterval = null;
+    }
+  }, DASHBOARD_REFRESH_INTERVAL);
+}
+
+function backToForm() {
+  if (window.dashboardInterval) {
+    clearInterval(window.dashboardInterval);
+    window.dashboardInterval = null;
+  }
+  expandedOrderIds.clear();
+  document.getElementById('orderSearchInput').value = '';
+  document.getElementById('orderStatusFilter').value = 'all';
+  searchTerm = '';
+  statusFilter = 'all';
+  document.getElementById('orders-history-container').style.display = 'none';
+  document.getElementById('main-app-container').style.display = 'block';
+  document.getElementById('pickupForm').style.display = 'block';
+  document.getElementById('thanksMessage').style.display = 'none';
+  pickupForm.reset();
+  pickupValidated = false;
+  dropValidated = false;
+  submitBtn.innerText = "Submit Request";
+  submitBtn.disabled = false;
+  submitBtn.style.opacity = "1";
+  editingJobId = null;
+  document.getElementById('cancelEditBtn').style.display = 'none';
+}
+
+function cancelOrder(orderId) {
+  if (!confirm('Are you sure you want to cancel this pending order?')) return;
+  var jobRef = db.ref('jobs/' + orderId);
+  jobRef.once('value').then(function(snap) {
+    var job = snap.val();
+    if (!job) return;
+    var history = (job.job_history ? job.job_history + '\n' : '') + '[CANCELLED BY USER] DND';
+    jobRef.update({
+      job_history: history,
+      status: 'cancelled',
+      cancelled_by_user: true
+    }).catch(function(err) {
+      alert('Error: ' + err.message);
+    });
+  }).catch(function(err) {
+    alert('Error: ' + err.message);
+  });
+}
+
+function editOrder(orderId) {
+  var job = ordersData[orderId];
+  if (!job) return;
+  editingJobId = orderId;
+  pickupForm.name.value = job.name || '';
+  pickupForm.pickup_location.value = job.pickup_location || '';
+  pickupForm.city.value = job.pickup_city || '';
+  pickupForm.p_email.value = job.p_email || '';
+  pickupForm.p_phone.value = job.p_phone || '';
+  pickupForm.delivery_name.value = job.delivery_name || '';
+  pickupForm.destination.value = job.destination || '';
+  pickupForm.drop_city.value = job.delivery_city || '';
+  pickupForm.d_email.value = job.d_email || '';
+  pickupForm.d_phone.value = job.d_phone || '';
+  pickupForm.package_details.value = job.package_details || '';
+  pickupForm.po_number.value = job.po_number || '';
+  pickupForm.other_info.value = job.other_info || '';
+  pickupValidated = true;
+  dropValidated = true;
+  submitBtn.innerText = "Update Request";
+  if (window.dashboardInterval) {
+    clearInterval(window.dashboardInterval);
+    window.dashboardInterval = null;
+  }
+  document.getElementById('orders-history-container').style.display = 'none';
+  document.getElementById('main-app-container').style.display = 'block';
+  document.getElementById('pickupForm').style.display = 'block';
+  document.getElementById('thanksMessage').style.display = 'none';
+  submitBtn.disabled = false;
+  submitBtn.style.opacity = "1";
+  document.getElementById('cancelEditBtn').style.display = 'block';
+}
+
+function renderOrders() {
+  if (document.getElementById('orders-history-container').style.display !== 'block') return;
+  var listDiv = document.getElementById('orders-list');
+  var headerDiv = document.getElementById('live-status-header');
+  if (!ordersData || Object.keys(ordersData).length === 0) {
+    listDiv.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
+    return;
+  }
+
+  var now = new Date();
+  headerDiv.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+
+  var ordersArray = [];
+  Object.entries(ordersData).forEach(function(entry) {
+    ordersArray.push({ ...entry[1], id: entry[0] });
+  });
+  ordersArray.sort(function(a, b) { return a.timestamp - b.timestamp; }).reverse();
+
+  var filtered = ordersArray.filter(function(order) {
+    if (statusFilter !== 'all') {
+      if (statusFilter === 'in_progress' && !['pending_pickup', 'in_transit', 'pending_delivery'].includes(order.status)) return false;
+      if (statusFilter === 'completed' && (order.status !== 'completed' || order.cancelled_by_user === true)) return false;
+      if (statusFilter === 'cancelled' && !(order.status === 'cancelled' || order.cancelled_by_user === true)) return false;
+    }
+    if (searchTerm.trim() !== '') {
+      var term = searchTerm.toLowerCase();
+      var text = (order.package_details + ' ' + order.po_number + ' ' + order.name + ' ' + order.delivery_name + ' ' + order.pickup_location + ' ' + order.destination).toLowerCase();
+      if (!text.includes(term)) return false;
+    }
+    return true;
+  });
+
+  listDiv.innerHTML = '';
+  filtered.forEach(function(order) {
+    var timestamp = new Date(order.timestamp).toLocaleString();
+    var status = order.status || 'pending_pickup';
+    var assigned = (order.assigned_to && order.assigned_to !== 'Unassigned') ? order.assigned_to : null;
+    var step1 = true; // ordered
+    var step2 = (assigned !== null) || !!order.picked_up_by || (status === 'in_transit') || (status === 'pending_delivery') || (status === 'completed');
+    var step3 = !!order.picked_up_by || status === 'in_transit';
+    var step4 = (status === 'completed') || (status === 'pending_delivery' && assigned && driverLocations[assigned]?.shift_active === true);
+    var step5 = (status === 'completed');
+    var cancelled = order.cancelled_by_user === true;
+
+    // Build step classes
+    var stepClasses = [
+      step1 ? 'completed' : '',
+      step2 ? 'completed' : '',
+      step3 ? 'completed' : '',
+      step4 ? 'completed' : '',
+      step5 ? 'completed' : ''
+    ];
+    var activeIndex = null;
+    if (status === 'pending_pickup' && assigned) activeIndex = 2;
+    else if (status === 'in_transit') activeIndex = 3;
+    else if (status === 'pending_delivery' && assigned && driverLocations[assigned]?.shift_active === true) activeIndex = 4;
+    else if (status === 'completed') activeIndex = null;
+    if (activeIndex) stepClasses[activeIndex - 1] += ' active';
+
+    var fillWidth = '0%';
+    if (activeIndex) {
+      var completedCount = 0;
+      for (var i = 0; i < activeIndex - 1; i++) {
+        if (stepClasses[i].includes('completed')) completedCount++;
+      }
+      fillWidth = (completedCount * 25) + '%';
+    } else {
+      var stepsDone = [step1, step2, step3, step4, step5].filter(Boolean).length;
+      if (stepsDone > 1) fillWidth = ((stepsDone - 1) * 25) + '%';
+    }
+
+    var timelineHtml = '';
+    if (!cancelled) {
+      timelineHtml = '<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:' + fillWidth + ';"></div></div>' +
+        '<div class="ocean-node ' + stepClasses[0] + '"><div class="ocean-label">Ordered</div></div>' +
+        '<div class="ocean-node ' + stepClasses[1] + '"><div class="ocean-label">Assigned</div></div>' +
+        '<div class="ocean-node ' + stepClasses[2] + '"><div class="ocean-label">Picked‑Up</div></div>' +
+        '<div class="ocean-node ' + stepClasses[3] + '"><div class="ocean-label">Out for Delivery</div></div>' +
+        '<div class="ocean-node ' + stepClasses[4] + '"><div class="ocean-label">Delivered</div></div></div>' +
+        '<div class="mobile-status" style="display:none;">Status: ' + status.replace(/_/g, ' ') + '</div>';
+    }
+
+    // Build card content safely with textContent where user data appears
+    var card = document.createElement('div');
+    card.className = 'order-card';
+
+    var dateDiv = document.createElement('div');
+    dateDiv.className = 'order-date';
+    dateDiv.textContent = timestamp;
+    card.appendChild(dateDiv);
+
+    var flexDiv = document.createElement('div');
+    flexDiv.style = 'display:flex;gap:15px;margin-top:10px;';
+    var pickupDiv = document.createElement('div');
+    pickupDiv.style = 'flex:1;';
+    pickupDiv.innerHTML = '<strong>Pickup</strong> ' + escapeHTML(order.name || '') + '<br><span style="color:#aaa;font-size:12px;">' + escapeHTML(order.pickup_location || '') + '</span>';
+    var deliveryDiv = document.createElement('div');
+    deliveryDiv.style = 'flex:1;';
+    deliveryDiv.innerHTML = '<strong>Delivery</strong> ' + escapeHTML(order.delivery_name || '') + '<br><span style="color:#aaa;font-size:12px;">' + escapeHTML(order.destination || '') + '</span>';
+    flexDiv.appendChild(pickupDiv);
+    flexDiv.appendChild(deliveryDiv);
+    card.appendChild(flexDiv);
+
+    var metaDiv = document.createElement('div');
+    metaDiv.style = 'margin-top:10px;';
+    var pkgDiv = document.createElement('div');
+    pkgDiv.innerHTML = '<strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">' + escapeHTML(order.package_details || 'N/A') + '</span>';
+    var poDiv = document.createElement('div');
+    poDiv.style = 'margin-top:5px;';
+    poDiv.innerHTML = '<strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">' + escapeHTML(order.po_number || 'N/A') + '</span>';
+    metaDiv.appendChild(pkgDiv);
+    metaDiv.appendChild(poDiv);
+    card.appendChild(metaDiv);
+
+    var notesDiv = document.createElement('div');
+    notesDiv.style = 'margin-top:10px;';
+    notesDiv.innerHTML = '<strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">' + escapeHTML(order.other_info || 'None') + '</span>';
+    card.appendChild(notesDiv);
+
+    if (timelineHtml) {
+      var timelineDiv = document.createElement('div');
+      timelineDiv.innerHTML = timelineHtml; // static, safe
+      card.appendChild(timelineDiv);
+    }
+
+    if (cancelled) {
+      // Simplified collapsed view
+      var collapsible = document.createElement('div');
+      collapsible.style = 'margin-bottom:2px;';
+      var btn = document.createElement('button');
+      btn.style = 'width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;';
+      var dateStr = new Date(order.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).replace(/,/g, '');
+      btn.innerHTML = '<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">' + dateStr + '</span><span class="package-details">' + escapeHTML(order.package_details || 'N/A') + '</span></div><div><span style="color:#ffd700;">' + escapeHTML(order.name || '?') + '</span> → <span style="color:#90ee90;">' + escapeHTML(order.delivery_name || '?') + '</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>';
+      btn.onclick = function() { toggleOrderDetails(order.id); };
+      collapsible.appendChild(btn);
+      var detailsDiv = document.createElement('div');
+      detailsDiv.id = 'order-card-' + order.id;
+      detailsDiv.style = 'display:' + (expandedOrderIds.has(order.id) ? 'block' : 'none') + ';margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;';
+      detailsDiv.className = 'order-card';
+      detailsDiv.appendChild(card.cloneNode(true));
+      collapsible.appendChild(detailsDiv);
+      listDiv.appendChild(collapsible);
+    } else {
+      // Full card with actions
+      card.appendChild(document.createElement('br'));
+      var actionsDiv = document.createElement('div');
+      actionsDiv.className = 'order-actions';
+      if (status === 'pending_pickup') {
+        var cancelBtn = document.createElement('button');
+        cancelBtn.className = 'cancel-btn btn btn-danger';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = function() { cancelOrder(order.id); };
+        var editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn btn btn-accent';
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = function() { editOrder(order.id); };
+        actionsDiv.appendChild(cancelBtn);
+        actionsDiv.appendChild(editBtn);
+        card.appendChild(actionsDiv);
+      }
+      listDiv.appendChild(card);
+    }
+  });
+}
+
+function toggleOrderDetails(orderId) {
+  var el = document.getElementById('order-card-' + orderId);
+  if (el) {
+    if (el.style.display === 'none') {
+      el.style.display = 'block';
+      expandedOrderIds.add(orderId);
+    } else {
+      el.style.display = 'none';
+      expandedOrderIds.delete(orderId);
+    }
+  }
+}
+
+// Helper to escape HTML
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>"]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    if (m === '"') return '&quot;';
+    return m;
+  });
+}
+
+// Map picker functions
+function openLocationPicker(context) {
+  locationPickerContext = context;
+  var modal = document.getElementById('location-picker-modal');
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  if (!mapInstance) {
+    mapInstance = new google.maps.Map(document.getElementById('picker-map'), {
+      center: { lat: 49.8951, lng: -97.1384 },
+      zoom: 12,
+      disableDefaultUI: true,
+      zoomControl: true,
+      scrollwheel: true,
+      styles: [{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]
+    });
+    var searchInput = document.getElementById('loc-search-bar');
+    var autocomplete = new google.maps.places.Autocomplete(searchInput);
+    autocomplete.bindTo('bounds', mapInstance);
+    autocomplete.addListener('place_changed', function() {
+      var place = autocomplete.getPlace();
+      if (place.geometry) {
+        mapInstance.setCenter(place.geometry.location);
+        mapInstance.setZoom(17);
+      }
+    });
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchLocation();
+      }
+    });
+  }
+}
+
+function closeLocationPicker() {
+  document.getElementById('location-picker-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  // Return focus to the button that opened it (simplified)
+}
+
+function searchLocation() {
+  var query = document.getElementById('loc-search-bar').value;
+  if (!query) return;
+  var gpsMatch = query.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+  if (gpsMatch) {
+    var lat = parseFloat(gpsMatch[1]);
+    var lng = parseFloat(gpsMatch[2]);
+    mapInstance.setCenter({ lat: lat, lng: lng });
+    mapInstance.setZoom(17);
+  } else {
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ address: query }, function(results, status) {
+      if (status === 'OK' && results[0]) {
+        mapInstance.setCenter(results[0].geometry.location);
+        mapInstance.setZoom(17);
+      } else {
+        alert('Location not found');
+      }
+    });
+  }
+}
+
+function setLocationFromMap() {
+  var center = mapInstance.getCenter();
+  var geocoder = new google.maps.Geocoder();
+  geocoder.geocode({ location: center }, function(results, status) {
+    if (status === 'OK' && results[0]) {
+      var address = results[0].formatted_address;
+      var city = extractCityFromAddress(results[0].address_components);
+      if (locationPickerContext === 'pickup') {
+        document.getElementById('f-pickup').value = address;
+        document.getElementsByName('city')[0].value = city;
+        pickupValidated = true;
+      } else if (locationPickerContext === 'drop') {
+        document.getElementById('f-drop-address').value = address;
+        document.getElementsByName('drop_city')[0].value = city;
+        dropValidated = true;
+      } else if (locationPickerContext === 'settings-pickup') {
+        document.getElementById('default-pickup').value = address;
+        document.getElementById('default-city').value = city;
+      } else if (locationPickerContext === 'settings-drop') {
+        document.getElementById('default-destination').value = address;
+        document.getElementById('default-drop_city').value = city;
+      } else if (locationPickerContext === 'new-contact') {
+        document.getElementById('new-contact-address').value = address;
+      }
+      closeLocationPicker();
+    } else {
+      alert('Could not determine address for this location.');
+    }
+  });
+}
+
+function openAddressBookForField(field) {
+  activeAddressField = field;
+  openSettings();
+  showAddressBook();
+}
+
+// Form submission
+pickupForm.addEventListener("submit", function(e) {
+  e.preventDefault();
+  if (document.getElementById('website_url_hp').value) return;
+
+  var lastTime = localStorage.getItem('lastOrderTime');
+  var now = Date.now();
+  if (lastTime && now - lastTime < SUBMIT_COOLDOWN && !editingJobId) {
+    alert("Please wait a moment before submitting another request.");
+    return;
+  }
+
+  if (!pickupValidated || !dropValidated) {
+    alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");
+    return;
+  }
+
+  submitBtn.innerText = editingJobId ? "Updating..." : "Transmitting...";
+  submitBtn.style.opacity = "0.7";
+  submitBtn.disabled = true;
+
+  var pickupAddress = pickupForm.pickup_location.value.trim() + ", " + pickupForm.city.value.trim();
+  var dropAddress = pickupForm.destination.value.trim() + ", " + pickupForm.drop_city.value.trim();
+
+  // Geocode both addresses sequentially with timeout
+  Promise.all([
+    geocodeAddress(pickupAddress).catch(function() { return null; }),
+    geocodeAddress(dropAddress).catch(function() { return null; })
+  ]).then(function(results) {
+    var pickupLatLng = results[0];
+    var dropLatLng = results[1];
+
+    var jobData = {
+      name: pickupForm.name.value.trim(),
+      pickup_location: pickupForm.pickup_location.value.trim(),
+      pickup_city: pickupForm.city.value.trim(),
+      city: pickupForm.city.value.trim(),
+      p_email: pickupForm.p_email.value.trim(),
+      p_phone: pickupForm.p_phone.value.trim(),
+      delivery_name: pickupForm.delivery_name.value.trim(),
+      destination: pickupForm.destination.value.trim(),
+      delivery_city: pickupForm.drop_city.value.trim(),
+      d_email: pickupForm.d_email.value.trim(),
+      d_phone: pickupForm.d_phone.value.trim(),
+      package_details: pickupForm.package_details.value.trim(),
+      po_number: pickupForm.po_number.value.trim() || "",
+      other_info: pickupForm.other_info.value.trim(),
+      job_history: "[Client Request]",
+      status: "pending_pickup",
+      type: "pickup",
+      timestamp: editingJobId ? (ordersData[editingJobId]?.timestamp || Date.now()) : Date.now(),
+      created_by: firebase.auth().currentUser ? firebase.auth().currentUser.email : "Web Portal"
+    };
+
+    if (pickupLatLng) {
+      jobData.lat = pickupLatLng.lat;
+      jobData.lng = pickupLatLng.lng;
+      // Determine zone
+      var zone = 'Unassigned';
+      for (var z in driverZones) {
+        if (driverZones[z].polygon) {
+          var poly = new google.maps.Polygon({ paths: driverZones[z].polygon });
+          if (google.maps.geometry.poly.containsLocation(new google.maps.LatLng(pickupLatLng.lat, pickupLatLng.lng), poly)) {
+            zone = z;
+            break;
+          }
+        }
+      }
+      jobData.assigned_to = zone;
+    } else {
+      jobData.assigned_to = 'Unassigned';
+    }
+
+    if (editingJobId) {
+      // Update only editable fields
+      var updatePayload = {
+        name: jobData.name,
+        pickup_location: jobData.pickup_location,
+        pickup_city: jobData.pickup_city,
+        p_email: jobData.p_email,
+        p_phone: jobData.p_phone,
+        delivery_name: jobData.delivery_name,
+        destination: jobData.destination,
+        delivery_city: jobData.delivery_city,
+        d_email: jobData.d_email,
+        d_phone: jobData.d_phone,
+        package_details: jobData.package_details,
+        po_number: jobData.po_number,
+        other_info: jobData.other_info
+        // Do not update assigned_to, lat, lng, status, etc.
+      };
+      db.ref("jobs/" + editingJobId).update(updatePayload).then(function() {
+        localStorage.setItem('lastOrderTime', Date.now());
+        editingJobId = null;
+        pickupForm.style.display = "none";
+        document.getElementById("thanksMessage").style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('cancelEditBtn').style.display = 'none';
+      }).catch(function(err) {
+        submitBtn.innerText = "Update Request";
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+        alert("Error updating order: " + err.message);
+      });
+    } else {
+      db.ref("jobs").push(jobData).then(function(newRef) {
+        localStorage.setItem('lastOrderTime', Date.now());
+        var key = newRef.key;
+        if (!ordersData) ordersData = {};
+        ordersData[key] = { ...jobData, id: key };
+        if (document.getElementById('orders-history-container').style.display === 'block') renderOrders();
+        pickupForm.style.display = "none";
+        document.getElementById("thanksMessage").style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }).catch(function(err) {
+        submitBtn.innerText = "Submit Request";
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+        alert("Error submitting order: " + err.message);
+      });
+    }
+  }).catch(function(err) {
+    // This catch handles geocoding timeout or failure
+    submitBtn.innerText = editingJobId ? "Update Request" : "Submit Request";
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = "1";
+    alert("Geocoding failed: " + (err.message || "Could not verify address. Please try again."));
+  });
+});
+
+function geocodeAddress(address) {
+  return new Promise(function(resolve, reject) {
+    var geocoder = new google.maps.Geocoder();
+    var timeout = setTimeout(function() {
+      reject(new Error("Geocoding timeout"));
+    }, GEOCODE_TIMEOUT);
+    geocoder.geocode({ address: address }, function(results, status) {
+      clearTimeout(timeout);
+      if (status === 'OK' && results[0]) {
+        var loc = results[0].geometry.location;
+        resolve({ lat: loc.lat(), lng: loc.lng() });
+      } else {
+        reject(new Error("Geocoding failed: " + status));
+      }
+    });
+  });
+}
+
+// Cancel edit
+function cancelEdit() {
+  if (editingJobId) {
+    if (!confirm("Are you sure you want to cancel editing?")) return;
+    editingJobId = null;
+    submitBtn.innerText = "Submit Request";
+    document.getElementById('cancelEditBtn').style.display = 'none';
+    pickupForm.reset();
+    pickupValidated = false;
+    dropValidated = false;
+    showOrdersDashboard();
+  }
+}
+
+// Clear form
+function clearMainForm() {
+  if (!confirm('Are you sure you want to clear the form?')) return;
+  pickupForm.reset();
+  pickupValidated = false;
+  dropValidated = false;
+}
+
+function clearAutofillForm() {
+  if (!confirm('Are you sure you want to clear all autofill fields?')) return;
+  document.getElementById('default-name').value = '';
+  document.getElementById('default-pickup').value = '';
+  document.getElementById('default-city').value = '';
+  document.getElementById('default-p_email').value = '';
+  document.getElementById('default-p_phone').value = '';
+  document.getElementById('default-delivery_name').value = '';
+  document.getElementById('default-destination').value = '';
+  document.getElementById('default-drop_city').value = '';
+  document.getElementById('default-d_email').value = '';
+  document.getElementById('default-d_phone').value = '';
+  document.getElementById('default-package_details').value = '';
+  document.getElementById('default-po_number').value = '';
+  document.getElementById('default-other_info').value = '';
+}
+
+function clearContactForm() {
+  if (!confirm('Are you sure you want to clear the contact form?')) return;
+  document.getElementById('new-contact-name').value = '';
+  document.getElementById('new-contact-address').value = '';
+  document.getElementById('new-contact-email').value = '';
+  document.getElementById('new-contact-phone').value = '';
+}
+
+function toggleEmailChange() {
+  var div = document.getElementById('emailChangeDiv');
+  div.style.display = div.style.display === 'none' ? 'block' : 'none';
+}
+
+function changeUserEmail() {
+  var newEmail = document.getElementById('newEmailInput').value;
+  var user = firebase.auth().currentUser;
+  if (user && newEmail) {
+    user.verifyBeforeUpdateEmail(newEmail).then(function() {
+      alert("A verification link has been sent to your new email! Please check your inbox and verify.");
+      document.getElementById('newEmailInput').value = '';
+      document.getElementById('emailChangeDiv').style.display = 'none';
+    }).catch(function(err) {
+      alert("Error: " + err.message);
+    });
+  } else {
+    alert("Please log in and enter a valid email.");
+  }
+}
+
+function sendPasswordReset() {
+  var user = firebase.auth().currentUser;
+  if (user && user.email) {
+    firebase.auth().sendPasswordResetEmail(user.email).then(function() {
+      alert("Password reset email sent to " + user.email + ". Please check your inbox.");
+    }).catch(function(err) {
+      alert("Error: " + err.message);
+    });
+  } else {
+    alert("No user logged in.");
+  }
+}
+
+// PWA install
+var deferredPrompt;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installAppBtn').style.display = 'block';
+});
+document.getElementById('installAppBtn').addEventListener('click', async function() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    var choice = await deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') {
+      document.getElementById('installAppBtn').style.display = 'none';
+    }
+    deferredPrompt = null;
+  }
+});
+
+// Expose functions to global scope for onclick handlers
+window.toggleTheme = toggleTheme;
+window.setTheme = setTheme;
+window.login = login;
+window.signUp = signUp;
+window.googleSignIn = googleSignIn;
+window.forgotPassword = forgotPassword;
+window.formatPhoneNumber = formatPhoneNumber;
+window.autofillFromLastOrder = autofillFromLastOrder;
+window.autofillFromDefaults = autofillFromDefaults;
+window.saveAutofillDefaults = saveAutofillDefaults;
+window.openSettings = openSettings;
+window.closeSettings = closeSettings;
+window.backToSettingsMain = backToSettingsMain;
+window.showAutofillSettings = showAutofillSettings;
+window.showAddressBook = showAddressBook;
+window.showCreateContact = showCreateContact;
+window.cancelContactEdit = cancelContactEdit;
+window.saveContact = saveContact;
+window.editContact = editContact;
+window.deleteCurrentContact = deleteCurrentContact;
+window.emptyFunction = emptyFunction;
+window.logout = logout;
+window.showOrdersDashboard = showOrdersDashboard;
+window.backToForm = backToForm;
+window.cancelOrder = cancelOrder;
+window.editOrder = editOrder;
+window.renderOrders = renderOrders;
+window.toggleOrderDetails = toggleOrderDetails;
+window.openLocationPicker = openLocationPicker;
+window.closeLocationPicker = closeLocationPicker;
+window.searchLocation = searchLocation;
+window.setLocationFromMap = setLocationFromMap;
+window.openAddressBookForField = openAddressBookForField;
+window.clearMainForm = clearMainForm;
+window.clearAutofillForm = clearAutofillForm;
+window.clearContactForm = clearContactForm;
+window.toggleEmailChange = toggleEmailChange;
+window.changeUserEmail = changeUserEmail;
+window.sendPasswordReset = sendPasswordReset;
+window.cancelEdit = cancelEdit;
+
+// Dev portal (unchanged but function renamed)
+var ac;
+function postDevUpdate() {
+  var user = firebase.auth().currentUser;
+  if (ac.getText().trim() === "") return;
+  var name = user ? user.email.split('@')[0] : "Anonymous";
+  var now = new Date();
+  var dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  firebase.database().ref('developer').push({
+    text: ac.root.innerHTML,
+    user: name,
+    app: "Customer Portal",
+    date: dateStr,
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(function() {
+    ac.setText('');
+  }).catch(function(err) {
+    console.error("Command Center Error:", err);
+    alert("Post failed. Check database permissions.");
+  });
+}
+window.postDevUpdate = postDevUpdate;
+
+})();
 </script>
 <link href=https://cdn.quilljs.com/1.3.6/quill.snow.css rel=stylesheet>
 <script src=https://cdn.quilljs.com/1.3.6/quill.min.js></script>
@@ -280,9 +1431,8 @@ setTimeout(function(){if(document.getElementById('auth-overlay').style.display==
 <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;text-transform:uppercase;font-size:14px;letter-spacing:1px;color:var(--accent);">Developer Command Center</h3><button style="background:0 0;border:1px solid var(--accent);color:var(--accent);padding:2px 8px;cursor:pointer;font-size:14px;" onclick="document.getElementById('dev-portal').style.display='none';">✖</button></div>
 <div id=dev-list style="max-height:200px;overflow-y:auto;background:#000;padding:10px;border:1px solid #333;font-size:12px;font-family:monospace;"><p style="color:#666;">Authenticating...</p></div>
 <div id=dev-editor style="min-height:150px;background:#fff;color:#000;"></div>
-<button onclick=L() style="padding:10px;background:var(--accent);color:#000;border:0;font-weight:800;cursor:pointer;">POST UPDATE</button>
+<button onclick="postDevUpdate()" style="padding:10px;background:var(--accent);color:#000;border:0;font-weight:800;cursor:pointer;">POST UPDATE</button>
 </div>
 <style>:root{--accent:#ffd700;}.dev-item{border-bottom:1px solid #222;padding:8px 0;}.dev-hdr{color:var(--accent);font-weight:800;margin-bottom:4px;font-size:10px;}.ql-toolbar{background:#eee;border:0!important;}.ql-container{border:0!important;}</style>
-<script>var ac;function L(){let cp=firebase.auth().currentUser;if(ac.getText().trim()==="")return;let cq=cp?cp.email.split('@')[0]:"Anonymous",cr=new Date(),cs=cr.toLocaleDateString()+' '+cr.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});firebase.database().ref('developer').push({text:ac.root.innerHTML,user:cq,app:"Customer Portal",date:cs,timestamp:firebase.database.ServerValue.TIMESTAMP}).then(()=>{ac.setText('')}).catch(ct=>{console.error("Command Center Error:",ct);alert("Post failed. Check database permissions.")})}</script>
 </body>
 </html>
