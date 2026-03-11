@@ -192,8 +192,8 @@ body.light-mode .ocean-label{color:#000}
 }
 
 .ocean-node.active {
-  background: #ffc107;
-  border-color: #e0a800;
+  background: #28a745;
+  border-color: #1e7e34;
   animation: glow-pulse 2s infinite;
 }
 
@@ -381,8 +381,8 @@ body.light-mode .ocean-node.completed {
 }
 
 body.light-mode .ocean-node.active {
-  background: #ffc107;
-  border-color: #e0a800;
+  background: #28a745;
+  border-color: #1e7e34;
 }
 
 body.light-mode .ocean-node::before {
@@ -513,6 +513,10 @@ body:not(.light-mode) #settingsBtn,
 body:not(.light-mode) #installAppBtn {
   border: 1px solid var(--accent) !important;
 }
+/* Remove yellow border from pin buttons */
+.btn-icon[onclick^="E("] {
+  border: none !important;
+}
 /* Load more button */
 #loadMoreBtn {
   width: 100%;
@@ -549,10 +553,20 @@ body:not(.light-mode) #installAppBtn {
   display: inline-block;
   background: var(--input-bg);
   border: 1px solid var(--border);
-  padding: 2px 8px;
+  padding: 4px 16px;
   border-radius: 12px;
   margin-right: 5px;
-  font-size: 11px;
+  font-size: 22px;
+}
+/* Light mode specific overrides for pickup/delivery names */
+body.light-mode .order-card span[style*="color:#ffd700"],
+body.light-mode .order-card span[style*="color:#90ee90"] {
+  color: #000 !important;
+}
+body.light-mode #logoutHeaderBtn {
+  border-color: #000 !important;
+  color: #000 !important;
+  background: transparent !important;
 }
 </style>
 </head>
@@ -580,7 +594,7 @@ body:not(.light-mode) #installAppBtn {
 <button id=installAppBtn style="display:none;background:var(--accent);color:#000;border:0;padding:10px 20px;font-weight:900;border-radius:6px;margin-bottom:15px;cursor:pointer;font-size:14px;text-transform:uppercase" class="btn btn-accent">Install App</button>
 <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
 <div style="display:flex;align-items:center;gap:15px"><img src=icon2.png alt="E&C Logo" style=cursor:pointer onclick=a() onerror="this.style.display='none'"> <h1>Request Pickup Now</h1></div>
-<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick=o() class=btn-icon>⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button></div>
+<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick=o() class=btn-icon>⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button><button id=logoutHeaderBtn style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=K() type=button>Logout</button></div>
 </div>
 </div>
 <form id=pickupForm>
@@ -602,8 +616,7 @@ body:not(.light-mode) #installAppBtn {
 <div id=addressBookDropdown style="display:none;margin-bottom:15px"><select id=savedAddressesSelect onchange=J()><option value="">-- Select a saved address --</option></select></div>
 <button type=submit id=submitBtn class="btn btn-primary">Submit Request</button>
 <button type=button id=cancelEditBtn style="display:none;width:100%;margin-top:5px;background:#b3002d;color:#fff;border:0;padding:12px;border-radius:4px;cursor:pointer;font-weight:700" onclick=cancelEdit() class="btn btn-danger">Cancel Edit</button>
-<button type=button onclick=clearMainForm() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:5px" class="btn btn-secondary">Clear Form</button>
-<button type=button onclick=K() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:15px" class="btn btn-secondary">Logout</button>
+<button type=button onclick=clearMainForm() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:15px" class="btn btn-secondary">Clear Form</button>
 </form>
 <div id=thanksMessage><span class="success-icon"><svg viewBox="0 0 100 100"><path class="check-path" d="M20 50 L40 70 L80 30" /><circle class="sparkle" cx="80" cy="30" r="8" /></svg></span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:6px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
 </div>
@@ -620,8 +633,8 @@ body:not(.light-mode) #installAppBtn {
     <option value="lastMonth">Last Month</option>
     <option value="ytd">Year-to-Date</option>
   </select>
-  <input type="date" id="startDate">
-  <input type="date" id="endDate">
+  <input type="date" id="startDate" placeholder="📅">
+  <input type="date" id="endDate" placeholder="📅">
   <button id="applyDateRange" class="btn btn-secondary">Apply</button>
   <button id="clearDateRange" class="btn btn-secondary">Clear</button>
 </div>
@@ -646,7 +659,7 @@ body:not(.light-mode) #installAppBtn {
 <div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick=q()>Autofill Details</button></div>
 <div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick=r()>Address Book</button></div>
 <div class=settings-section><h3>Account</h3><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 onclick=toggleEmailChange()>Change Email</button><button class="btn-save btn btn-primary" style=flex:1 onclick=sendPasswordReset()>Change Password</button></div><div id=emailChangeDiv style="display:none;margin-top:10px"><input type=email id=newEmailInput placeholder="Enter new email" style="width:100%;padding:10px;background:var(--input-bg);color:var(--text);border:1px solid var(--border);margin-bottom:8px"><button class="btn-save btn btn-primary" style=width:100% onclick=changeUserEmail()>Update Email</button></div></div></div>
-<div id=settings-autofill style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Autofill Details</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div class=settings-section><p>Fill in fields to auto-populate when using Autofill.</p><input type=text id=default-name placeholder="Pickup Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-pickup placeholder="Pickup Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-pickup')" type=button class=btn-icon>📍</button></div><input type=text id=default-city placeholder="Pickup City" style=margin-bottom:8px><input type=email id=default-p_email placeholder="Pickup Email" style=margin-bottom:8px><input type=tel id=default-p_phone placeholder="Pickup Phone" style=margin-bottom:8px><input type=text id=default-delivery_name placeholder="Delivery Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-destination placeholder="Delivery Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-drop')" type=button class=btn-icon>📍</button></div><input type=text id=default-drop_city placeholder="Delivery City" style=margin-bottom:8px><input type=email id=default-d_email placeholder="Delivery Email" style=margin-bottom:8px><input type=tel id=default-d_phone placeholder="Delivery Phone" style=margin-bottom:8px><input type=text id=default-package_details placeholder="Packages/Items/Dimensions" style=margin-bottom:8px><input type=text id=default-po_number placeholder="PO Number" style=margin-bottom:8px><textarea id=default-other_info placeholder="Driver Notes" rows=2 style=margin-bottom:8px></textarea><button id=save-defaults-btn class="btn-save btn btn-primary" onclick=m()>Save Autofill Details</button><button class="btn-cancel btn btn-secondary" onclick=clearAutofillForm() style="margin-top:5px;width:100%">Clear</button><button class="btn-cancel btn btn-secondary" style="margin-top:10px;width:100%" onclick=p()>← Back to Settings</button></div></div>
+<div id=settings-autofill style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Autofill Details</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div class=settings-section><p>Fill in fields to auto-populate when using Autofill.</p><input type=text id=default-name placeholder="Pickup Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-pickup placeholder="Pickup Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-pickup')" type=button class=btn-icon>📍</button></div><input type=text id=default-city placeholder="Pickup City" style=margin-bottom:8px><input type=email id=default-p_email placeholder="Pickup Email" style=margin-bottom:8px><input type=tel id=default-p_phone placeholder="Pickup Phone" style=margin-bottom:8px><input type=text id=default-delivery_name placeholder="Delivery Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-destination placeholder="Delivery Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-drop')" type=button class=btn-icon>📍</button></div><input type=text id=default-drop_city placeholder="Delivery City" style=margin-bottom:8px><input type=email id=default-d_email placeholder="Delivery Email" style=margin-bottom:8px><input type=tel id=default-d_phone placeholder="Delivery Phone" style=margin-bottom:8px><input type=text id=default-package_details placeholder="Packages/Items/Dimensions" style=margin-bottom:8px><input type=text id=default-po_number placeholder="PO Number" style=margin-bottom:8px><textarea id=default-other_info placeholder="Driver Notes" rows=2 style=margin-bottom:8px></textarea><button id=save-defaults-btn class="btn-save btn btn-primary" onclick=m()>Save Autofill Details</button><button class="btn-cancel btn btn-secondary" onclick=clearAutofillForm() style="margin-top:15px;width:100%">Clear</button><button class="btn-cancel btn btn-secondary" style="margin-top:10px;width:100%" onclick=p()>← Back to Settings</button></div></div>
 <div id=settings-addressbook style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Address Book</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div id=addressbook-list-view><button class="btn-save btn btn-primary" style="width:100%;margin-bottom:15px" onclick=s()>Create New Contact</button><div id=savedAddressesList></div></div><div id=addressbook-create-view style=display:none><h3 id=addressbook-form-title style="color:var(--accent);margin-top:0">Create Contact</h3><div class=settings-section><input type=text id=new-contact-name placeholder="Contact / Business Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=new-contact-address placeholder="Street Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('new-contact')" type=button class=btn-icon>📍</button></div><input type=email id=new-contact-email placeholder=Email style=margin-bottom:8px><input type=tel id=new-contact-phone placeholder=Phone style=margin-bottom:8px oninput=h(this)><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 id=save-contact-btn onclick=u()>Save to Address Book</button><button class="btn-cancel btn btn-secondary" style=flex:1 onclick=t()>Cancel</button></div><button class="btn-cancel btn btn-secondary" onclick=clearContactForm() style="margin-top:5px;width:100%">Clear</button><button id=delete-contact-btn class="btn-cancel btn btn-danger" style="margin-top:5px;width:100%;background:#b3002d;color:#fff;border:0;display:none" onclick=deleteCurrentContact()>Delete Contact</button></div></div></div>
 </div>
 </div>
@@ -835,7 +848,7 @@ function A(){
         bR = (bB === 'completed'),
         bS = 'order-card-'+bz.id,
         bT = bJ ? '' : `<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,
-        bU = `<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:11px; padding:4px 8px;">+ tag</button></div>${bT}`;
+        bU = `<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:22px; padding:8px 16px;">+ tag</button></div>${bT}`;
     if (bR || bB === 'cancelled' || bJ) {
       let bV = P.has(bz.id),
           bW = new Date(bz.timestamp),
@@ -843,7 +856,7 @@ function A(){
           bY;
       if (bB === 'cancelled' || bJ) bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;
       else bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;
-      bn.innerHTML += `<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;"><div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:11px; padding:4px 8px;">+ tag</button></div></div></div>`;
+      bn.innerHTML += `<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid #ccc;border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;"><div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:22px; padding:8px 16px;">+ tag</button></div></div></div>`;
     } else {
       let cardContent = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -866,7 +879,7 @@ function A(){
         <div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div>
         <div class="user-tags" style="text-align:left; margin-top:10px;">
           <div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div>
-          <button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:11px; padding:4px 8px;">+ tag</button>
+          <button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:22px; padding:8px 16px;">+ tag</button>
         </div>
         ${bT}
       `;
