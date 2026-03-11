@@ -89,36 +89,8 @@ button[type=submit]:active{transform:translateY(1px)}
 .order-search-bar input{flex:2;min-width:200px;padding:12px}
 .order-search-bar select{flex:1;min-width:120px;padding:12px}
 .order-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
-.cancel-btn {
-  background: transparent;
-  color: #b3002d;
-  border: 1px solid #b3002d;
-  padding: 4px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  transition: all 0.2s;
-}
-.cancel-btn:hover {
-  background: #b3002d;
-  color: #fff;
-}
-.edit-btn {
-  background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  padding: 4px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  transition: all 0.2s;
-}
-.edit-btn:hover {
-  background: var(--accent);
-  color: #000;
-}
+.cancel-btn{background:#b3002d;color:#fff;border:0;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700}
+.edit-btn{background:var(--accent);color:#000;border:0;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700}
 .address-book-btn{background:#333;color:var(--text);border:1px solid var(--accent);padding:8px;border-radius:4px;cursor:pointer;font-size:12px}
 .saved-address-dropdown{margin-bottom:10px}
 #location-picker-modal{z-index:2001}
@@ -181,11 +153,12 @@ body.light-mode .ocean-label{color:#000}
 }
 
 /* Stage‑specific icons */
-.ocean-timeline .ocean-node:nth-child(2)::before { content: "\f0ca"; } /* Ordered */
-.ocean-timeline .ocean-node:nth-child(3)::before { content: "\f007"; } /* Assigned */
-.ocean-timeline .ocean-node:nth-child(4)::before { content: "\f466"; } /* Picked‑Up */
-.ocean-timeline .ocean-node:nth-child(5)::before { content: "\f0d1"; } /* Out for Delivery */
-.ocean-timeline .ocean-node:nth-child(6)::before { content: "\f00c"; } /* Delivered */
+.ocean-timeline .ocean-node:nth-child(1)::before { content: "\f0ca"; } /* clipboard-list */
+.ocean-timeline .ocean-node:nth-child(2)::before { content: "\f4fc"; } /* user-check */
+.ocean-timeline .ocean-node:nth-child(3)::before { content: "\f466"; } /* box (changed from box-open) */
+.ocean-timeline .ocean-node:nth-child(4)::before { content: "\f0d1"; } /* truck */
+.ocean-timeline .ocean-node:nth-child(5)::before { content: "\f00c"; } /* check-circle */
+
 .ocean-node.completed {
   background: #007bff;
   border-color: #0056b3;
@@ -214,9 +187,8 @@ body.light-mode .ocean-label{color:#000}
 
 @media (max-width: 480px) {
   .ocean-label {
-    font-size: 8px;
-    width: 50px;
-    top: 36px;
+    font-size: 9px;
+    width: 60px;
   }
 }
 
@@ -246,9 +218,9 @@ body.light-mode .ocean-label{color:#000}
   border-color: var(--accent);
 }
 
-/* Expanded card style - removed thick yellow border */
+/* Expanded card style */
 .order-card[style*="display: block"] {
-  border-left: 1px solid var(--border);
+  border-left: 6px solid var(--accent);
   background: var(--input-bg);
 }
 
@@ -301,7 +273,7 @@ body.light-mode .ocean-label{color:#000}
 }
 
 /* Buttons */
-.btn-back-form,
+.cancel-btn, .edit-btn, .btn-back-form,
 .btn-secondary, .btn-danger, .btn-accent {
   border-radius: 6px;
   padding: 8px 16px;
@@ -311,15 +283,24 @@ body.light-mode .ocean-label{color:#000}
   cursor: pointer;
 }
 
-.btn-back-form {
-  background: var(--input-bg);
-  color: var(--text);
-  border: 1px solid var(--border);
+.cancel-btn {
+  background: #b3002d;
+  color: #fff;
 }
-.btn-back-form:hover {
-  background: var(--card);
-  border-color: var(--accent);
+.cancel-btn:hover {
+  background: #990026;
+  transform: scale(1.02);
 }
+
+.edit-btn {
+  background: var(--accent);
+  color: #000;
+}
+.edit-btn:hover {
+  background: #e6c200;
+  transform: scale(1.02);
+}
+
 .btn-back-form {
   background: var(--input-bg);
   color: var(--text);
@@ -367,7 +348,7 @@ body.light-mode .order-card:hover {
 
 body.light-mode .order-card[style*="display: block"] {
   background: #f9f9f9;
-  border-left-color: var(--border);
+  border-left-color: var(--accent);
 }
 
 body.light-mode .ocean-node {
@@ -410,6 +391,8 @@ body.light-mode .btn-primary,
 body.light-mode .btn-secondary,
 body.light-mode .btn-danger,
 body.light-mode .btn-accent,
+body.light-mode .cancel-btn,
+body.light-mode .edit-btn,
 body.light-mode .address-book-btn,
 body.light-mode .btn-back-form,
 body.light-mode button[type=submit],
@@ -421,11 +404,6 @@ body.light-mode .btn-icon {
   background: #fff !important;
   color: #000 !important;
   border: 1px solid #000 !important;
-}
-
-/* Force all text inside order cards to black in light mode */
-body.light-mode .order-card * {
-  color: #000 !important;
 }
 
 /* Optional red border for danger button to keep some meaning */
@@ -453,41 +431,6 @@ body.light-mode .modal-content h2 {
   color: #000 !important;
 }
 /* ========== END LIGHT MODE OVERRIDES ========== */
-
-/* Animated checkmark for success message */
-.success-icon {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  margin-bottom: 15px;
-  position: relative;
-}
-.success-icon svg {
-  width: 100%;
-  height: 100%;
-}
-.check-path {
-  stroke: #00b32d;
-  stroke-width: 8;
-  fill: none;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  animation: drawCheck 0.7s ease forwards;
-}
-@keyframes drawCheck {
-  to { stroke-dashoffset: 0; }
-}
-.sparkle {
-  fill: white;
-  filter: drop-shadow(0 0 2px gold);
-  opacity: 0;
-  animation: sparkle 0.3s ease 0.7s forwards;
-}
-@keyframes sparkle {
-  0% { opacity: 0; transform: scale(0.5); }
-  50% { opacity: 1; transform: scale(1.5); }
-  100% { opacity: 1; transform: scale(1); }
-}
 </style>
 </head>
 <body>
@@ -539,7 +482,7 @@ body.light-mode .modal-content h2 {
 <button type=button onclick=clearMainForm() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:5px" class="btn btn-secondary">Clear Form</button>
 <button type=button onclick=K() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:15px" class="btn btn-secondary">Logout</button>
 </form>
-<div id=thanksMessage><span class="success-icon"><svg viewBox="0 0 100 100"><path class="check-path" d="M20 50 L40 70 L80 30" /><circle class="sparkle" cx="80" cy="30" r="8" /></svg></span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:6px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
+<div id=thanksMessage><span class=success-icon>✅</span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:6px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
 </div>
 <div class=container id=orders-history-container style="display:none;padding:20px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><h2 style="color:var(--text);margin:0;font-size:18px;text-transform:uppercase">Order Dashboard</h2><button onclick=x() class="btn-back-form btn btn-secondary">BACK TO FORM</button></div>
@@ -576,44 +519,17 @@ firebase.initializeApp({apiKey:"AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",authDom
 var db=firebase.database(),M=null,N=null,O=null,P=new Set,Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database(),editingContactIndex=null;
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 db.ref("driver_zones").on("value",a=>Q=a.val()||{});
-db.ref("driver_locations").on("value", b => {
-  R = b.val() || {};
-  console.log("driverLocations keys:", Object.keys(R));
-  setTimeout(() => {
-    if (document.getElementById('orders-history-container').style.display === 'block') {
-      A();
-    }
-  }, 0);
-});
+db.ref("driver_locations").on("value",b=>{R=b.val()||{};console.log("driverLocations keys:",Object.keys(R));setTimeout(()=>{if(document.getElementById('orders-history-container').style.display==='block')A();},0);});
 firebase.auth().onAuthStateChanged(c=>{let d=document.getElementById('dev-list');if(c){if(!c.emailVerified&&c.providerData.some(e=>e.providerId==='password')){alert("Please check your email and verify your account before logging in.");firebase.auth().signOut();return}
 document.getElementById('auth-overlay').style.display='none';document.getElementById('main-app-container').style.display='block';if(document.querySelector('input[name="p_email"]'))document.querySelector('input[name="p_email"]').value=c.email;if(O){O();O=null}
 O=db.ref("jobs").orderByChild("created_by").equalTo(c.email).on('value',f=>{if(!f)return;N=f.val()||{};if(f.exists()){let g=Object.values(N)[0];M=g;document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
 if(document.getElementById('orders-history-container').style.display==='block')A()});
 firebase.database().ref('users/'+c.uid+'/addressBook').once('value',h=>{V=h.val()||[];localStorage.setItem('ec_addresses',JSON.stringify(V));G()});
 firebase.database().ref('users/'+c.uid+'/autofillDefaults').once('value',i=>{let j=i.val()||{};localStorage.setItem('autofillDefaults',JSON.stringify(j))});
-// Load theme from Firebase
-firebase.database().ref('users/'+c.uid+'/theme').once('value',snap=>{
-  let theme=snap.val();
-  if(theme){
-    if(theme==='light' && !document.body.classList.contains('light-mode')){
-      document.body.classList.add('light-mode');
-      localStorage.setItem('ec_theme','light');
-    } else if(theme==='dark' && document.body.classList.contains('light-mode')){
-      document.body.classList.remove('light-mode');
-      localStorage.setItem('ec_theme','dark');
-    }
-  } else {
-    // fallback to localStorage or default dark
-    let saved=localStorage.getItem('ec_theme');
-    if(saved==='light') document.body.classList.add('light-mode');
-    else if(saved==='dark') document.body.classList.remove('light-mode');
-  }
-  c(); // update toggle buttons
-});
 }else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null;V=[];}
 firebase.database().ref('developer').on('value',k=>{if(!k)return;d.innerHTML='';let l=k.val()||{};Object.values(l).forEach(m=>{d.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${m.user} - <span style="color:orange;">${m.app||'Database'}</span> - ${m.date}</div><div style="color:#eee;">${m.text}</div>`});d.scrollTop=d.scrollHeight})});
-function a(){document.body.classList.toggle('light-mode');let theme=document.body.classList.contains('light-mode')?'light':'dark';localStorage.setItem('ec_theme',theme);c();let user=firebase.auth().currentUser;if(user){firebase.database().ref('users/'+user.uid+'/theme').set(theme);}}
-function b(n){n==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',n);c();let user=firebase.auth().currentUser;if(user){firebase.database().ref('users/'+user.uid+'/theme').set(n);}}
+function a(){document.body.classList.toggle('light-mode');localStorage.setItem('ec_theme',document.body.classList.contains('light-mode')?'light':'dark');c()}
+function b(n){n==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',n);c()}
 function c(){let o=document.body.classList.contains('light-mode'),p=document.getElementById('theme-light'),q=document.getElementById('theme-dark');if(p)p.classList.toggle('active',o);if(q)q.classList.toggle('active',!o)}
 function d(){let r=document.getElementById('auth-email').value.trim(),s=document.getElementById('auth-password').value.trim();if(!r||!s)return alert("Please enter email and password.");firebase.auth().signInWithEmailAndPassword(r,s).catch(t=>alert("Login Error: "+t.message))}
 function e(){let u=document.getElementById('auth-email').value.trim(),v=document.getElementById('auth-password').value.trim();if(!u||!v)return alert("Please enter email and password to sign up.");firebase.auth().createUserWithEmailAndPassword(u,v).then(w=>{w.user.sendEmailVerification();alert("Account created! We sent a verification link to your email. Please verify before logging in.");firebase.auth().signOut()}).catch(x=>alert("Sign Up Error: "+x.message))}
@@ -673,34 +589,8 @@ function y(be){if(!confirm('Are you sure you want to cancel this pending order?'
 function z(bl){if(!confirm("Are you sure you want to edit this order?"))return;let bm=N[bl];if(!bm)return;S=bl;af.name.value=bm.name||'';af.pickup_location.value=bm.pickup_location||'';af.city.value=bm.pickup_city||'';af.p_email.value=bm.p_email||'';af.p_phone.value=bm.p_phone||'';af.delivery_name.value=bm.delivery_name||'';af.destination.value=bm.destination||'';af.drop_city.value=bm.delivery_city||'';af.d_email.value=bm.d_email||'';af.d_phone.value=bm.d_phone||'';af.package_details.value=bm.package_details||'';af.po_number.value=bm.po_number||'';af.other_info.value=bm.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";// Removed clearInterval for X
 document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';ag.disabled=!1;ag.style.opacity="1";document.getElementById('cancelEditBtn').style.display='block';}
 function A(){if(document.getElementById('orders-history-container').style.display!=='block')return;let bn=document.getElementById('orders-list'),bo=document.getElementById('live-status-header');if(!N||Object.keys(N).length===0){bn.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
-let bp=new Date();bo.innerText="Status Live as of "+bp.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});bn.innerHTML='';let bq=[];Object.entries(N).forEach(([br,bs])=>{bq.push({...bs,id:br})});bq.sort((bt,bu)=>bt.timestamp-bu.timestamp).reverse();let bv=bq.filter(bw=>{if(U!=='all'){if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(bw.status))return!1;if(U==='completed'&&(bw.status!=='completed'||bw.cancelled_by_user===!0))return!1;if(U==='cancelled'&&!(bw.status==='cancelled'||bw.cancelled_by_user===!0))return!1}if(T.trim()!==''){let bx=T.toLowerCase(),by=(bw.package_details+' '+bw.po_number+' '+bw.name+' '+bw.delivery_name+' '+bw.pickup_location+' '+bw.destination).toLowerCase();if(!by.includes(bx))return!1}return!0});bv.forEach(bz=>{let bA=new Date(bz.timestamp).toLocaleString(),bB=bz.status||'pending_pickup',bC=(bz.assigned_to&&bz.assigned_to!=='Unassigned')?bz.assigned_to:null,bD=!0,bE=(bC!==null)||!!bz.picked_up_by||(bB==='in_transit')||(bB==='pending_delivery')||(bB==='completed'),bF=!!bz.picked_up_by||bB==='in_transit',bG=(bB==='completed')||(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0),bH=(bB==='completed'),bI=null,bJ=bz.cancelled_by_user===!0;if(bB==='pending_pickup'&&bC)bI=2;else if(bB==='in_transit')bI=3;else if(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0)bI=4;else if(bB==='completed')bI=null;let bK=[bD?'completed':'',bE?'completed':'',bF?'completed':'',bG?'completed':'',bH?'completed':''];if(bI)bK[bI-1]+=' active';let bL='0%';if(bI){let bM=0;for(let bN=0;bN<bI-1;bN++)if(bK[bN].includes('completed'))bM++;bL=(bM*25)+'%'}else{let bO=[bD,bE,bF,bG,bH].filter(Boolean).length;if(bO>1)bL=((bO-1)*25)+'%'}
-let bP=bz.package_details||'N/A',bQ=bz.po_number?'PO: '+bz.po_number:'N/A',bR=(bB==='completed'),bS='order-card-'+bz.id,bT=bJ?'':`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,bU=`<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info||'None'}</span></div>${bT}`;if(bR||bB==='cancelled'||bJ){let bV=P.has(bz.id),bW=new Date(bz.timestamp),bX=bW.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,''),bY;if(bB==='cancelled'||bJ)bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;else bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;bn.innerHTML+=`<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;">${bU}</div></div>`} else {
-  // Build the card content without the original date line, because we'll put date and buttons together
-  let cardContent = `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <div class="order-date" style="margin-bottom:0; border-bottom:0; padding-bottom:0;">${bA}</div>
-      ${bB==='pending_pickup' ? `
-        <div style="display:flex; gap:8px;">
-          <button class="cancel-btn" onclick="y('${bz.id}')">Cancel</button>
-          <button class="edit-btn" onclick="z('${bz.id}')">Edit</button>
-        </div>
-      ` : ''}
-    </div>
-    <div style="display:flex;gap:15px;margin-top:10px;">
-      <div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div>
-      <div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div>
-    </div>
-    <div style="margin-top:10px;">
-      <div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div>
-      <div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div>
-    </div>
-    <div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div>
-    ${bT}
-  `;
-  bn.innerHTML += `<div class="order-card">${cardContent}</div>`;
-  }
-});
-}
+let bp=new Date();bo.innerText="Status Live as of "+bp.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});bn.innerHTML='';let bq=[];Object.entries(N).forEach(([br,bs])=>{bq.push({...bs,id:br})});bq.sort((bt,bu)=>bt.timestamp-bu.timestamp).reverse();let bv=bq.filter(bw=>{if(U!=='all'){if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(bw.status))return!1;if(U==='completed'&&(bw.status!=='completed'||bw.cancelled_by_user===!0))return!1;if(U==='cancelled'&&!(bw.status==='cancelled'||bw.cancelled_by_user===!0))return!1}if(T.trim()!==''){let bx=T.toLowerCase(),by=(bw.package_details+' '+bw.po_number+' '+bw.name+' '+bw.delivery_name+' '+bw.pickup_location+' '+bw.destination).toLowerCase();if(!by.includes(bx))return!1}return!0});bv.forEach(bz=>{let bA=new Date(bz.timestamp).toLocaleString(),bB=bz.status||'pending_pickup',bC=(bz.assigned_to&&bz.assigned_to!=='Unassigned')?bz.assigned_to:null,bD=!0,bE=(bC!==null)||!!bz.picked_up_by||(bB==='in_transit')||(bB==='pending_delivery')||(bB==='completed'),bF=!!bz.picked_up_by||bB==='in_transit',bG=(bB==='completed')||(bB==='pending_delivery'&&bC&&R[bC]&&R[bC].shift_active===!0),bH=(bB==='completed'),bI=null,bJ=bz.cancelled_by_user===!0;if(bB==='pending_pickup'&&bC)bI=2;else if(bB==='in_transit')bI=3;else if(bB==='pending_delivery'&&bC&&R[bC]&&R[bC].shift_active===!0)bI=4;else if(bB==='completed')bI=null;let bK=[bD?'completed':'',bE?'completed':'',bF?'completed':'',bG?'completed':'',bH?'completed':''];if(bI)bK[bI-1]+=' active';let bL='0%';if(bI){let bM=0;for(let bN=0;bN<bI-1;bN++)if(bK[bN].includes('completed'))bM++;bL=(bM*25)+'%'}else{let bO=[bD,bE,bF,bG,bH].filter(Boolean).length;if(bO>1)bL=((bO-1)*25)+'%'}
+let bP=bz.package_details||'N/A',bQ=bz.po_number?'PO: '+bz.po_number:'N/A',bR=(bB==='completed'),bS='order-card-'+bz.id,bT=bJ?'':`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,bU=`<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info||'None'}</span></div>${bT}`;if(bR||bB==='cancelled'||bJ){let bV=P.has(bz.id),bW=new Date(bz.timestamp),bX=bW.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,''),bY;if(bB==='cancelled'||bJ)bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;else bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;bn.innerHTML+=`<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;">${bU}</div></div>`}else{let bZ='';if(bB==='pending_pickup')bZ=`<div class="order-actions"><button class="cancel-btn btn btn-danger" onclick="y('${bz.id}')">Cancel</button><button class="edit-btn btn btn-accent" onclick="z('${bz.id}')">Edit</button></div>`;bn.innerHTML+=`<div class="order-card">${bU}${bZ}</div>`}})}
 function B(ca){let cb=document.getElementById('order-card-'+ca);if(cb){if(cb.style.display==='none'){cb.style.display='block';P.add(ca)}else{cb.style.display='none';P.delete(ca)}}}
 af.addEventListener("submit",cc=>{cc.preventDefault();if(document.getElementById('website_url_hp').value)return;let cd=localStorage.getItem('lastOrderTime'),ce=Date.now();if(cd&&ce-cd<30000&&!S){alert("Please wait a moment before submitting another request.");return}
 if(!ad||!ae){alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");return}
