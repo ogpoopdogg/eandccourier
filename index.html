@@ -210,16 +210,15 @@ button, .btn, [role=button]{min-height:44px; min-width:44px;}
 </div>
 <div class=container id=main-app-container style=display:none>
 <div class=header-wrap style=flex-direction:column>
-  <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+  <div style="display:flex; justify-content:center; align-items:center; width:100%; position:relative;">
     <div><img src=icon2.png alt="E&C Logo" style="height:40px; cursor:pointer" onclick=a() onerror="this.style.display='none'"></div>
-    <div style="display:flex; gap:8px;">
-      <button id=installAppBtn style="display:none; background:var(--accent); color:#000; border:0; padding:8px 12px; font-weight:900; border-radius:40px; cursor:pointer; font-size:12px; text-transform:uppercase">Install App</button>
+    <div style="position:absolute; right:0; top:50%; transform:translateY(-50%);">
       <button id=settingsBtn style="background:0 0; border:0; color:var(--accent); padding:8px 12px; border-radius:4px; cursor:pointer; font-size:16px; line-height:1" onclick=o() class="btn-icon">⚙️</button>
     </div>
   </div>
   <div style="text-align:center; width:100%; margin-top:10px;">
     <h1 style="font-size:22px; margin:0 0 5px;">Request Pickup Now</h1>
-    <button id=viewOrdersBtn style="background:var(--accent); color:#000; border:0; padding:8px 12px; font-weight:700; border-radius:40px; cursor:pointer; font-size:12px; text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button>
+    <button id=viewOrdersBtn style="background:var(--accent); color:#000; border:0; padding:6px 12px; font-weight:700; border-radius:40px; cursor:pointer; font-size:12px; text-transform:uppercase; box-shadow:0 2px 8px rgba(0,0,0,0.15);" onclick=w() type=button class="btn btn-accent">Order Dashboard</button>
   </div>
 </div>
 <form id=pickupForm>
@@ -264,7 +263,8 @@ button, .btn, [role=button]{min-height:44px; min-width:44px;}
 <button type=button onclick=clearMainForm() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:40px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:15px" class="btn btn-secondary">Clear Form</button>
 </form>
 <div id=thanksMessage><span class="success-icon"><svg viewBox="0 0 100 100"><path class="check-path" d="M20 50 L40 70 L80 30" /></svg></span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:40px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
-<div style="margin-top:20px; padding:0 25px 25px; text-align:right;">
+<div style="margin-top:20px; padding:0 25px 25px; display:flex; justify-content:space-between; align-items:center;">
+  <button id="installAppBtn" style="display:none; background:var(--accent); color:#000; border:0; padding:8px 12px; font-weight:900; border-radius:40px; cursor:pointer; font-size:12px; text-transform:uppercase">Install App</button>
   <button id="logoutBottomBtn" class="btn btn-secondary" onclick="K()" style="padding:10px 20px;">Logout</button>
 </div>
 </div>
@@ -482,11 +482,11 @@ function A(){
   // Date range filtering
   let minTime = null, maxTime = null;
   if (dateRangeActive && customStart && customEnd) {
-    let startDateObj = new Date(customStart);
-    startDateObj.setHours(0,0,0,0);
+    let startParts = customStart.split('-');
+    let startDateObj = new Date(startParts[0], startParts[1]-1, startParts[2]);
     minTime = startDateObj.getTime();
-    let endDateObj = new Date(customEnd);
-    endDateObj.setHours(23,59,59,999);
+    let endParts = customEnd.split('-');
+    let endDateObj = new Date(endParts[0], endParts[1]-1, endParts[2], 23, 59, 59, 999);
     maxTime = endDateObj.getTime();
   }
   if (minTime !== null && maxTime !== null) {
